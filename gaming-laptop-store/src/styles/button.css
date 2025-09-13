@@ -1,0 +1,31 @@
+.instagram-section {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.instagram-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--primary-color);
+  color: #0d0f12;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.8rem;
+  font-weight: 700;
+  font-size: 1.3rem;
+  transition: background 0.3s ease;
+}
+
+.instagram-btn:hover {
+  background-color: var(--secondary-color);
+}
+
+.instagram-icon {
+  font-size: 1.5rem;
+}
+
+.instagram-text {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: #b0b0b0;
+}

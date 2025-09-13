@@ -1,0 +1,19 @@
+.footer-notice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 3rem 0;
+}
+
+.footer-text {
+  font-size: 0.95rem;
+  color: var(--primary-color);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+}

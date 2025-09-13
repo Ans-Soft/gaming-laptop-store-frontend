@@ -1,0 +1,42 @@
+:root {
+  --bg-color: #01060C;
+  --text-color: #f0f0f0;
+  --primary-color: #01AFFD;
+  --secondary-color: #79E0F9;
+  --third-color: #A9D8EF;
+  --card-bg: #091118;
+  --icon-bg: #113C5E;
+  --whatsapp-color: #08D85C;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.subtitle {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.4rem;
+  color: #b0b0b0;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+.subtitle .highlight {
+  color: var(--primary-color);
+  font-weight: 600;
+}
