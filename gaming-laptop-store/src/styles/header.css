@@ -24,3 +24,10 @@
 .highlight {
   color: var(--primary-color);
 }
+
+.logo-img {
+  width: 100px;    
+  height: auto;    
+  object-fit: contain;
+  margin-top: 1rem;
+}
