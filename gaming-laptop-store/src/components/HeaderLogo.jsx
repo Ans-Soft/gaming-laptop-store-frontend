@@ -7,7 +7,7 @@ export default function HeaderLogo() {
       <div className="logo">
         <img src={logo} alt="Logo Patecnológicos" className="logo-img" />
         <h1 className="logo-text">
-          Pate<span className="highlight">cnológicos</span>
+          Pate<span className="highlight">cnologicos</span>
         </h1>
       </div>
     </header>
