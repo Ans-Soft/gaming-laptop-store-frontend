@@ -25,6 +25,7 @@ export default function Dashboard() {
       description: "Administra usuarios y permisos",
       color: "#2ef06a",
       to: "/admin/users",
+      
     },
     {
       icon: <Grid size={32} />,
