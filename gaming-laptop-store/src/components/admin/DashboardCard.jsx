@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import "./../../styles/admin/dashboardCard.css";
 
 const DashboardCard = ({ icon, title, description, color, to }) => {
+
+
   return (
     <Link to={to} className="dashboard-card" style={{ borderColor: color }}>
       <div className="dashboard-card-icon" style={{ color }}>
