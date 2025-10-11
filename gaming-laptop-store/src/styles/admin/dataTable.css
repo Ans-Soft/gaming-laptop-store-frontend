@@ -1,11 +1,11 @@
-.products-container {
+.table-container {
   color: #e5e7eb;
   padding: 2rem;
   background-color: #0f1115;
   min-height: 100vh;
 }
 
-.products-header h1 {
+.table-header h1 {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -14,12 +14,12 @@
   font-weight: 700;
 }
 
-.products-header p {
+.table-header p {
   color: #9ca3af;
   margin-top: 4px;
 }
 
-.products-filters {
+.table-filters {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -70,7 +70,7 @@ select {
   font-weight: 600;
 }
 
-.products-stats {
+.table-stats {
   display: flex;
   gap: 1rem;
   margin-top: 2rem;
@@ -96,25 +96,25 @@ select {
   font-size: 1.3rem;
 }
 
-.products-table {
+.table {
   margin-top: 2rem;
   background-color: #171a20;
   border-radius: 10px;
   overflow: hidden;
 }
 
-.products-table table {
+.table table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.products-table th,
-.products-table td {
+.table th,
+.table td {
   padding: 1rem;
   text-align: left;
 }
 
-.products-table thead {
+.table thead {
   background-color: #111317;
   color: #9ca3af;
   font-size: 0.9rem;
@@ -170,6 +170,21 @@ select {
   gap: 10px;
   color: #9ca3af;
   cursor: pointer;
+  background: none;
+}
+
+
+.actions button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
 }
 
 .actions svg:hover {
