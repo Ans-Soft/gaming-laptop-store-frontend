@@ -1,5 +1,5 @@
 import React from "react";
-import "./../../styles/admin/products.css";
+import "./../../styles/admin/dataTable.css";
 import { Plus, Package, DollarSign, Search, Eye, Edit, Trash2 } from "lucide-react";
 
 const Products = () => {
@@ -53,15 +53,15 @@ const Products = () => {
     .toLocaleString("en-US", { style: "currency", currency: "USD" });
 
   return (
-    <div className="products-container">
-      <div className="products-header">
+    <div className="table-container">
+      <div className="table-header">
         <div>
           <h1><Package size={28} /> Gestión de Productos</h1>
           <p>Administra el catálogo de portátiles gamer</p>
         </div>
       </div>
 
-      <div className="products-filters">
+      <div className="table-filters">
         <div className="search-box">
           <Search size={18} />
           <input type="text" placeholder="Buscar por nombre o marca..." />
@@ -77,7 +77,7 @@ const Products = () => {
         </button>
       </div>
 
-      <div className="products-stats">
+      <div className="table-stats">
         <div className="stat-card">
           <Package size={20} />
           <div>
@@ -101,7 +101,7 @@ const Products = () => {
         </div>
       </div>
 
-      <div className="products-table">
+      <div className="table">
         <table>
           <thead>
             <tr>
@@ -116,7 +116,7 @@ const Products = () => {
           <tbody>
             {products.map((p) => (
               <tr key={p.id}>
-                <td className="product-info">
+                <td className="table-info">
                   {p.name}
                 </td>
                 <td>{p.category}</td>
