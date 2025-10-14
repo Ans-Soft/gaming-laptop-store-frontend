@@ -1,8 +1,9 @@
 import api from "./Api";
 import urls from "./Urls";
 
-export async function login(username, password) {
-  const response = await api.post(urls.login, { username, password });
+export async function login(email, password) {
+  console.log("Logging in with:", email, password, urls.login);
+  const response = await api.post(urls.login, { email, password });
   if (response.data.access && response.data.refresh) {
     localStorage.setItem("access_token", response.data.access);
     localStorage.setItem("refresh_token", response.data.refresh);
