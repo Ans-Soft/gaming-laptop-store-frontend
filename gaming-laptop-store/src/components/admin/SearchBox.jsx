@@ -1,4 +1,4 @@
-import "../../styles/admin/SearchBox.css";
+import "../../styles/admin/searchBox.css";
 import { Search, Plus } from "lucide-react";
 
 

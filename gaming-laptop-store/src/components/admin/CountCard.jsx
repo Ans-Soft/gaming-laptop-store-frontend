@@ -1,5 +1,5 @@
 import { Package } from "lucide-react";
-import "../../styles/admin/CountCard.css";
+import "../../styles/admin/countCard.css";
 
 const CountCard = ({ stats = [] }) => {
   return (
