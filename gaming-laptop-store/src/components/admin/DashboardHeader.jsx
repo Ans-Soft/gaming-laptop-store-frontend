@@ -2,7 +2,7 @@ import React from "react";
 import "../../styles/admin/dashboardHeader.css";
 import logo from "../../assets/logo.png";
 
-export default function AdminHeader() {
+const AdminHeader = () => {
   return (
     <header className="admin-header" role="banner">
       <div className="admin-header-inner">
@@ -24,3 +24,5 @@ export default function AdminHeader() {
     </header>
   );
 }
+
+export default AdminHeader;

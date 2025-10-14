@@ -1,0 +1,39 @@
+.table-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  background-color: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  border: 1px solid;
+  border-color: var(--fourth-color);
+
+}
+
+.stat-card p {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin-top: 0;
+}
+
+.stat-card h3 {
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.icon-card {
+  width: 2rem;
+  height: 2rem;
+  stroke: var(--secondary-color); /* define color de línea */
+  color: var(--secondary-color);
+  background-color: var(--icon-bg);
+  padding: 1rem;
+  border-radius: 1rem;
+}
