@@ -1,6 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
-import "../../styles/admin/ModalBase.css";
+import "../../styles/admin/modalBase.css";
 
 const ModalBase = ({ title, icon, subtitle, onClose, children, onSubmit }) => {
   return (
