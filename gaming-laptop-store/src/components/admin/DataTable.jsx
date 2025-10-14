@@ -1,10 +1,10 @@
 import React from "react";
-import { FaRegEdit, FaRegEye, FaRegTrashAlt} from "react-icons/fa";
+import { FaRegEdit, FaRegEye, FaRegTrashAlt } from "react-icons/fa";
 import "./../../styles/admin/dataTable.css";
 
 /**
  * ✅ DataTable - Componente genérico reutilizable para CRUDs
- * 
+ *
  * Props:
  *  - columns: [{ key: 'name', label: 'Producto', render?: (row)=>jsx }]
  *  - data: array de objetos (filas)
@@ -18,6 +18,9 @@ const DataTable = ({
   onEdit,
   onDelete,
   rowKey = "id",
+  showView = false,
+  showEdit = true,
+  showDelete = true,
 }) => {
   // 🔹 funciones internas para manejar clics en botones
   const handleView = (row) => onView?.(row);
@@ -53,24 +56,21 @@ const DataTable = ({
                 ))}
 
                 <td className="actions">
-                  <button
-                    title="Ver"
-                    onClick={() => handleView(row)}
-                  >
-                    <FaRegEye size={18} />
+                  {showView && (
+                    <button title="Ver" onClick={() => handleView(row)}>
+                      <FaRegEye size={18} />
+                    </button>
+                  )}
+                  {showEdit && (
+                  <button title="Editar" onClick={() => handleEdit(row)}>
+                    <FaRegEdit size={18} />
                   </button>
-                  <button
-                    title="Editar"
-                    onClick={() => handleEdit(row)}
-                  >
-                    <FaRegEdit size={18}/>
-                  </button>
-                  <button
-                    title="Eliminar"
-                    onClick={() => handleDelete(row)}
-                  >
+                  )}
+                  {showDelete && (
+                  <button title="Eliminar" onClick={() => handleDelete(row)}>
                     <FaRegTrashAlt size={18} />
                   </button>
+                  )}
                 </td>
               </tr>
             ))
