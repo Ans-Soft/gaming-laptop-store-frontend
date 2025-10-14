@@ -1,0 +1,22 @@
+.table-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  padding-bottom: 1rem;
+}
+
+.table-header p {
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.icon-title {
+  width: 3rem;
+  height: 2rem;
+  color: var(--secondary-color); /* define color de línea */
+  border-radius: 1rem;
+}
+

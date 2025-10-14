@@ -1,43 +1,11 @@
 .table-container {
   color: #e5e7eb;
   padding: 2rem;
-  background-color: #0f1115;
+  background-color: var(--bg-color);
   min-height: 100vh;
 }
 
-.table-header h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #ffffff;
-  font-size: 1.6rem;
-  font-weight: 700;
-}
 
-.table-header p {
-  color: #9ca3af;
-  margin-top: 4px;
-}
-
-.table-filters {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  background-color: #171a20;
-  padding: 1rem;
-  border-radius: 10px;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background-color: #0f1115;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  flex: 1;
-  color: #9ca3af;
-}
 
 .search-box input {
   background: none;
@@ -57,50 +25,14 @@ select {
   cursor: pointer;
 }
 
-.btn-register {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #00b894;
-  color: white;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.table-stats {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.stat-card {
-  background-color: #171a20;
-  padding: 1rem 1.5rem;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-
-.stat-card p {
-  color: #9ca3af;
-  font-size: 0.9rem;
-}
-
-.stat-card h3 {
-  color: #fff;
-  font-size: 1.3rem;
-}
 
 .table {
   margin-top: 2rem;
-  background-color: #171a20;
+  background-color: var(--card-bg);
   border-radius: 10px;
   overflow: hidden;
+  border: 1px solid;
+  border-color: var(--fourth-color);
 }
 
 .table table {
@@ -115,9 +47,12 @@ select {
 }
 
 .table thead {
-  background-color: #111317;
+  background-color: var(--card-bg);
   color: #9ca3af;
   font-size: 0.9rem;
+  border: 1px solid;
+  border-color: lid;
+  border-color: #0D181F;
 }
 
 .product-info {

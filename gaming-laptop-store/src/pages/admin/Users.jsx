@@ -1,7 +1,13 @@
 import React from "react";
 import "./../../styles/admin/dataTable.css";
-import { Plus, Package, Search } from "lucide-react";
+import "./../../styles/global.css";
+import { Package } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
+import DashboardHeader from "../../components/admin/DashboardHeader";
+import SearchBox from "../../components/admin/SearchBox";
+import CountCard from "../../components/admin/CountCard";
+import { FaRegCheckCircle, FaRegUser  } from "react-icons/fa";
+import TitleCrud from "../../components/admin/TitleCrud";
 
 const Users = () => {
   const users = [
@@ -31,56 +37,44 @@ const Users = () => {
     },
   ];
 
-  const totalUsers = users.length;
-  const totalActive = users.length; // Cuando tenga la conexión con backend determinar activos/inactivos
-
   const columns = [
     { key: "first_name", label: "Nombre" },
     { key: "last_name", label: "Apellido" },
     { key: "email", label: "Correo electrónico" },
   ];
 
+  const stats = [
+    {
+      label: "Total Usuarios",
+      count: users.length,
+      icon: <Package className="icon-card" />,
+    },
+    {
+      label: "Usuarios Activos",
+      count: users.length,
+      icon: <FaRegCheckCircle className="icon-card" />,
+    },
+  ];
+
   return (
-    <div className="table-container">
-      <div className="table-header">
-        <div>
-          <h1>
-            <Package size={28} /> Gestión de Usuarios
-          </h1>
-          <p>Administra la lista de usuarios registrados</p>
-        </div>
-      </div>
+    <section>
+      <DashboardHeader />
+      <div className="table-container ">
 
-      <div className="table-filters">
-        <div className="search-box">
-          <Search size={18} />
-          <input type="text" placeholder="Buscar por nombre o email..." />
-        </div>
-        <button className="btn-register">
-          <Plus size={18} /> Registrar Usuario
-        </button>
-      </div>
+        <TitleCrud 
+          title="Gestión de Usuarios"
+          icon={FaRegUser}
+          description="Administra la lista de usuarios registrados"
+          
+        />
 
-      <div className="table-stats">
-        <div className="stat-card">
-          <Package size={20} />
-          <div>
-            <p>Total Usuarios</p>
-            <h3>{totalUsers}</h3>
-          </div>
-        </div>
-        <div className="stat-card">
-          <Package size={20} />
-          <div>
-            <p>Total Usuarios Activos</p>
-            <h3>{totalActive}</h3>
-          </div>
-        </div>
-      </div>
+        <SearchBox />
 
-      
-      <DataTable columns={columns} data={users} />
-    </div>
+        <CountCard stats={stats} />
+
+        <DataTable columns={columns} data={users} />
+      </div>
+    </section>
   );
 };
 
