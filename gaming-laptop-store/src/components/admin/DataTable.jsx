@@ -16,16 +16,14 @@ const DataTable = ({
   data = [],
   onView,
   onEdit,
-  onDelete,
   rowKey = "id",
   showView = false,
   showEdit = true,
-  showDelete = true,
+  customActions = [],
 }) => {
   // 🔹 funciones internas para manejar clics en botones
   const handleView = (row) => onView?.(row);
   const handleEdit = (row) => onEdit?.(row);
-  const handleDelete = (row) => onDelete?.(row);
 
   // 🔹 función para renderizar celdas
   const renderCell = (col, row) => {
@@ -62,15 +60,25 @@ const DataTable = ({
                     </button>
                   )}
                   {showEdit && (
-                  <button title="Editar" onClick={() => handleEdit(row)}>
-                    <FaRegEdit size={18} />
-                  </button>
+                    <button title="Editar" onClick={() => handleEdit(row)}>
+                      <FaRegEdit size={18} />
+                    </button>
                   )}
-                  {showDelete && (
-                  <button title="Eliminar" onClick={() => handleDelete(row)}>
-                    <FaRegTrashAlt size={18} />
-                  </button>
-                  )}
+                  {customActions.map((action, index) => {
+                    if (action.show(row)) {
+                      const Icon = action.icon;
+                      return (
+                        <button
+                          key={index}
+                          title={action.title}
+                          onClick={() => action.handler(row)}
+                        >
+                          <Icon size={18} />
+                        </button>
+                      );
+                    }
+                    return null;
+                  })}
                 </td>
               </tr>
             ))

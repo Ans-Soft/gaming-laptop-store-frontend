@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { UserPlus } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { UserPlus, Edit } from "lucide-react";
 import ModalBase from "../../components/admin/ModalBase";
 import "../../styles/admin/usersForm.css";
 
-const UsersForm = ({ onClose, onSubmit }) => {
+const UsersForm = ({ onClose, onSubmit, user }) => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -11,20 +11,41 @@ const UsersForm = ({ onClose, onSubmit }) => {
     password: "",
   });
 
+  const isEditMode = Boolean(user);
+
+  useEffect(() => {
+    if (isEditMode) {
+      setFormData({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        password: "", 
+      });
+    }
+  }, [user, isEditMode]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
-    if (onSubmit) onSubmit(formData);
+    const dataToSubmit = { ...formData };
+    if (isEditMode && !dataToSubmit.password) {
+      delete dataToSubmit.password;
+    }
+    if (onSubmit) onSubmit(dataToSubmit, user?.id);
   };
 
   return (
     <ModalBase
-      title="Registrar Nuevo Usuario"
-      icon={<UserPlus size={24} />}
-      subtitle="Completa la información del usuario para agregarlo al sistema"
+      title={isEditMode ? "Editar Usuario" : "Registrar Nuevo Usuario"}
+      icon={isEditMode ? <Edit size={24} /> : <UserPlus size={24} />}
+      subtitle={
+        isEditMode
+          ? "Actualiza la información del usuario"
+          : "Completa la información del usuario para agregarlo al sistema"
+      }
       onClose={onClose}
       onSubmit={handleSubmit}
     >
@@ -71,12 +92,13 @@ const UsersForm = ({ onClose, onSubmit }) => {
             value={formData.email}
             onChange={handleChange}
             required
+            readOnly={isEditMode}
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="password">
-            Contraseña <span className="required">*</span>
+            Contraseña {isEditMode ? "(Opcional)" : <span className="required">*</span>}
           </label>
           <input
             id="password"
@@ -85,7 +107,7 @@ const UsersForm = ({ onClose, onSubmit }) => {
             placeholder="********"
             value={formData.password}
             onChange={handleChange}
-            required
+            required={!isEditMode}
           />
         </div>
       </div>

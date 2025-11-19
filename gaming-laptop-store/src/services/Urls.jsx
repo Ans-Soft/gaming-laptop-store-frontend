@@ -6,6 +6,15 @@ const urls = {
 
   usersList: `${BASE_URL}/user/list/`,
   usersRegister: `${BASE_URL}/user/register/`,
+  userUpdate: `${BASE_URL}/user/update/`,
+  userActivate: `${BASE_URL}/user/activate/`,
+  userDeactivate: `${BASE_URL}/user/deactivate/`,
+
+  brandsList: `${BASE_URL}/products/brands/list/`,
+  brandsCreate: `${BASE_URL}/products/brands/create/`,
+  brandUpdate: `${BASE_URL}/products/brands/update/`,
+  brandActivate: `${BASE_URL}/products/brands/activate/`,
+  brandDeactivate: `${BASE_URL}/products/brands/deactivate/`,
 };
 
 export default urls;
