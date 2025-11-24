@@ -84,11 +84,11 @@ const Brands = () => {
   const columns = [
     { key: "name", label: "Nombre" },
     {
-      key: "is_active",
+      key: "active",
       label: "Estado",
       render: (row) => (
-        <span className={row.is_active ? "status-active" : "status-inactive"}>
-          {row.is_active ? "Activo" : "Inactivo"}
+        <span className={row.active ? "status-active" : "status-inactive"}>
+          {row.active ? "Activo" : "Inactivo"}
         </span>
       ),
     },
@@ -102,7 +102,7 @@ const Brands = () => {
     },
     {
       label: "Marcas Activas",
-      count: brands.filter((b) => b.is_active).length,
+      count: brands.filter((b) => b.active).length,
       icon: <FaRegCheckCircle className="icon-card" />,
     },
   ];
@@ -133,13 +133,13 @@ const Brands = () => {
             {
               icon: FaCheck,
               handler: handleActivate,
-              show: (row) => !row.is_active,
+              show: (row) => !row.active,
               title: "Activar",
             },
             {
               icon: FaTimes,
               handler: handleDeactivate,
-              show: (row) => row.is_active,
+              show: (row) => row.active,
               title: "Desactivar",
             },
           ]}

@@ -37,3 +37,14 @@
 .required {
   color: var(--secondary-color);
 }
+
+.form-error-banner {
+  background-color: #4e1e21;
+  border: 1px solid #d44c56;
+  color: #fdd8d8;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
