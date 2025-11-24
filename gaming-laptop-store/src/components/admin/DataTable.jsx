@@ -21,7 +21,7 @@ const DataTable = ({
   showEdit = true,
   customActions = [],
 }) => {
-  // 🔹 funciones internas para manejar clics en botones
+  //  funciones internas para manejar clics en botones
   const handleView = (row) => onView?.(row);
   const handleEdit = (row) => onEdit?.(row);
 

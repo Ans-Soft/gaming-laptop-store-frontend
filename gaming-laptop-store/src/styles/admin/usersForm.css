@@ -37,3 +37,7 @@
 .required {
   color: var(--secondary-color);
 }
+
+.multi-select {
+  min-height: 80px; 
+}

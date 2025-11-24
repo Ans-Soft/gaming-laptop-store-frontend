@@ -2,7 +2,15 @@ import React from "react";
 import { X } from "lucide-react";
 import "../../styles/admin/modalBase.css";
 
-const ModalBase = ({ title, icon, subtitle, onClose, children, onSubmit }) => {
+const ModalBase = ({
+  title,
+  icon,
+  subtitle,
+  onClose,
+  children,
+  onSubmit,
+  isSubmitting = false,
+}) => {
   return (
     <div className="modal-overlay">
       <div className="modal-container">
@@ -12,7 +20,11 @@ const ModalBase = ({ title, icon, subtitle, onClose, children, onSubmit }) => {
             {icon && <span className="modal-icon">{icon}</span>}
             <h2>{title}</h2>
           </div>
-          <button className="close-btn" onClick={onClose}>
+          <button
+            className="close-btn"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             <X size={20} />
           </button>
         </div>
@@ -33,11 +45,16 @@ const ModalBase = ({ title, icon, subtitle, onClose, children, onSubmit }) => {
               type="button"
               className="btn-cancel"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               Cancelar
             </button>
-            <button type="submit" className="btn-submit">
-              + Guardar
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Guardando..." : "+ Guardar"}
             </button>
           </div>
         </form>
