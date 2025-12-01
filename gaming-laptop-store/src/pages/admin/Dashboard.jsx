@@ -7,9 +7,16 @@ export default function Dashboard() {
   const modules = [
     {
       icon: <Package size={32} />,
-      title: "Gestión de Productos",
-      description: "Administra el catálogo de portátiles gamer",
+      title: "Gestión de Productos Base",
+      description: "Administra el catálogo de productos base",
       color: "#00ffc3",
+      to: "/admin/base_products",
+    },
+    {
+      icon: <Package size={32} />,
+      title: "Gestión de Productos Variantes",
+      description: "Administra el catálogo de portátiles activos",
+      color: "#db6ec9ff",
       to: "/admin/products",
     },
     {

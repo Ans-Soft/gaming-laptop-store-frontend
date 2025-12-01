@@ -1,67 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { PackagePlus, Edit } from "lucide-react";
-import ModalBase from "../../components/admin/ModalBase";
+import ModalBase from "./ModalBase";
 import "../../styles/admin/usersForm.css";
-import { getCategories } from "../../services/CategoryService";
-import { getBrands } from "../../services/BrandService";
 
-// 🔧 Convierte texto a JSON o key:value, y si no, lo deja como texto
-function safeParse(text) {
-  try {
-    return JSON.parse(text);
-  } catch {
-    const lines = text.split("\n").filter((l) => l.trim() !== "");
-    const obj = {};
+import { getBaseProducts } from "../../services/BaseProduct";
 
-    let validKV = true;
 
-    lines.forEach((line) => {
-      if (!line.includes(":")) {
-        validKV = false;
-        return;
-      }
-      const [key, value] = line.split(":").map((s) => s.trim());
-      if (key && value) obj[key] = value;
-    });
+const CONDITION_CHOICES = [
+  { value: "nuevo", label: "Nuevo" },
+  { value: "open_box", label: "Open Box" },
+  { value: "refurbished", label: "Refurbished" },
+  { value: "usado", label: "Usado" },
+];
 
-    if (validKV && Object.keys(obj).length > 0) {
-      return obj;
-    }
-
-    return text;
-  }
-}
+const STOCK_CHOICES = [
+  { value: "en_stock", label: "En Stock" },
+  { value: "en_camino", label: "En Camino" },
+  { value: "por_importacion", label: "Por Importación" },
+  { value: "sin_stock", label: "Sin Stock" },
+];
 
 const ProductsForm = ({
   onClose,
   onSubmit,
-  product,
+  variant,
   isSubmitting,
   submitError,
 }) => {
   const [formData, setFormData] = useState({
-    model_name: "",
-    long_description: "",
-    brand: "",
-    specs: "",
-    categories: [],
+    base_product: "",
+    price: "",
+    condition: "nuevo",
+    stock_status: "en_stock",
+    is_published: true,
   });
-  const [categoriesList, setCategoriesList] = useState([]);
-  const [brandsList, setBrandsList] = useState([]);
 
-  const isEditMode = Boolean(product);
+  const [productsList, setProductsList] = useState([]);
+
+  const isEditMode = Boolean(variant);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cats, brs] = await Promise.all([
-          getCategories(),
-          getBrands(),
-        ]);
-        setCategoriesList(cats);
-        setBrandsList(brs);
+        const baseProducts = await getBaseProducts();
+        setProductsList(baseProducts);
       } catch (error) {
-        console.error("Error al cargar datos:", error);
+        console.error("Error cargando productos base:", error);
       }
     };
 
@@ -69,124 +53,117 @@ const ProductsForm = ({
 
     if (isEditMode) {
       setFormData({
-        model_name: product.model_name,
-        long_description: product.long_description,
-        brand: product.brand.id,
-        specs: JSON.stringify(product.specs, null, 2),
-        categories: product.categories.map((cat) => cat.id),
+        base_product: variant.base_product.id,
+        price: variant.price,
+        condition: variant.condition,
+        stock_status: variant.stock_status,
+        is_published: variant.is_published,
       });
     }
-  }, [product, isEditMode]);
+  }, [variant, isEditMode]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
-  };
-
-  const handleCategoriesChange = (e) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setFormData((prev) => ({ ...prev, categories: selectedOptions }));
   };
 
   const handleSubmit = () => {
     const cleanData = {
-      model_name: formData.model_name.trim(),
-      brand: Number(formData.brand),
-      long_description: formData.long_description.trim(),
-      specs: safeParse(formData.specs),
-      categories: formData.categories.map(Number),
+      base_product: Number(formData.base_product),
+      price: Number(formData.price),
+      condition: formData.condition,
+      stock_status: formData.stock_status,
+      is_published: formData.is_published,
     };
 
-    if (onSubmit) onSubmit(cleanData, product?.id);
+    if (onSubmit) onSubmit(cleanData, variant?.id);
   };
 
   return (
     <ModalBase
-      title={isEditMode ? "Editar Producto Base" : "Crear Producto Base"}
+      title={isEditMode ? "Editar Variante" : "Crear Variante"}
       icon={isEditMode ? <Edit size={24} /> : <PackagePlus size={24} />}
       subtitle={
         isEditMode
-          ? "Actualiza la información del producto base"
-          : "Completa la información para crear un producto base"
+          ? "Actualiza la información de la variante"
+          : "Completa la información para crear una variante"
       }
       onClose={onClose}
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
     >
       {submitError && <div className="form-error-banner">{submitError}</div>}
+
       <div className="form-grid">
         <div className="form-group">
-          <label>Nombre del Modelo *</label>
+          <label>Producto Base *</label>
+          <select
+            name="base_product"
+            value={formData.base_product}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Selecciona un producto base</option>
+            {productsList.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.model_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Precio *</label>
           <input
-            name="model_name"
-            type="text"
-            placeholder="Ej: Asus TUF F15"
-            value={formData.model_name}
+            name="price"
+            type="number"
+            placeholder="Ej: 3500000"
+            value={formData.price}
             onChange={handleChange}
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Marca *</label>
+          <label>Condición *</label>
           <select
-            name="brand"
-            value={formData.brand}
+            name="condition"
+            value={formData.condition}
             onChange={handleChange}
-            required
           >
-            <option value="">Selecciona una marca</option>
-            {brandsList.map((brand) => (
-              <option key={brand.id} value={brand.id}>
-                {brand.name}
+            {CONDITION_CHOICES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
               </option>
             ))}
           </select>
         </div>
 
-        <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-          <label>Categorías *</label>
+        <div className="form-group">
+          <label>Estado del Stock *</label>
           <select
-            name="categories"
-            multiple
-            value={formData.categories}
-            onChange={handleCategoriesChange}
-            required
-            className="multi-select"
+            name="stock_status"
+            value={formData.stock_status}
+            onChange={handleChange}
           >
-            {categoriesList.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
+            {STOCK_CHOICES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
               </option>
             ))}
           </select>
         </div>
-        
-        <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-          <label>Descripción *</label>
-          <textarea
-            name="long_description"
-            placeholder="Descripción del producto"
-            value={formData.long_description}
-            onChange={handleChange}
-            rows={3}
-          />
-        </div>
 
-        <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-          <label>Especificaciones (JSON o texto)</label>
-          <textarea
-            name="specs"
-            placeholder='{"ram": "16GB", "ssd": "512GB"}'
-            value={formData.specs}
+        <div className="form-group checkbox-group">
+          <label>Publicado</label>
+          <input
+            type="checkbox"
+            name="is_published"
+            checked={formData.is_published}
             onChange={handleChange}
-            rows={5}
           />
         </div>
       </div>
