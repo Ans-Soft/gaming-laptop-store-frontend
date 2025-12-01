@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "./../../styles/admin/dataTable.css";
-import "./../../styles/global.css";
+import "../../styles/admin/dataTable.css";
+import "../../styles/global.css";
 import { Package } from "lucide-react";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
 import DashboardHeader from "../../components/admin/DashboardHeader";
 import SearchBox from "../../components/admin/SearchBox";
@@ -12,65 +12,63 @@ import TitleCrud from "../../components/admin/TitleCrud";
 import ProductsForm from "../../components/admin/ProductsForm";
 
 import {
-  getBaseProducts,
-  createBaseProduct,
-  updateBaseProduct,
-  activateBaseProduct,
-  deactivateBaseProduct,
-} from "../../services/BaseProduct";
+  getProductVariants,
+  createProductVariant,
+  updateProductVariant,
+  activateProductVariant,
+  deactivateProductVariant,
+} from "../../services/ProductVariant";
 
 const Products = () => {
   const [showModal, setShowModal] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [variants, setVariants] = useState([]);
+  const [editingVariant, setEditingVariant] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
+    fetchVariants();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchVariants = async () => {
     try {
-      const data = await getBaseProducts();
-      setProducts(data);
+      const data = await getProductVariants();
+      setVariants(data);
     } catch (error) {
-      console.error("Error al obtener productos base:", error);
+      console.error("Error cargando variantes:", error);
     }
   };
 
-  const handleOpenModal = (product = null) => {
-    setEditingProduct(product);
+  const handleOpenModal = (variant = null) => {
+    setEditingVariant(variant);
     setSubmitError(null);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    setEditingProduct(null);
+    setEditingVariant(null);
     setSubmitError(null);
     setShowModal(false);
   };
 
-  const handleSubmitProduct = async (data, id) => {
+  const handleSubmitVariant = async (data, id) => {
     setIsSubmitting(true);
     setSubmitError(null);
+
     try {
-      if (id) {
-        await updateBaseProduct(id, data);
-      } else {
-        await createBaseProduct(data);
-      }
+      id
+        ? await updateProductVariant(id, data)
+        : await createProductVariant(data);
       handleCloseModal();
-      fetchProducts();
+      fetchVariants();
     } catch (error) {
-      console.error("❌ Error al guardar producto base:", error);
       const errors = error.response?.data;
+
       if (errors) {
-        // Formatear el mensaje de error para mostrarlo
-        const formattedError = Object.entries(errors)
-          .map(([key, value]) => `${key}: ${value.join(", ")}`)
+        const formatted = Object.entries(errors)
+          .map(([k, v]) => `${k}: ${v.join(", ")}`)
           .join("; ");
-        setSubmitError(formattedError);
+        setSubmitError(formatted);
       } else {
         setSubmitError("Ocurrió un error inesperado.");
       }
@@ -79,31 +77,51 @@ const Products = () => {
     }
   };
 
-  const handleActivate = async (product) => {
-    if (window.confirm(`¿Activar producto base ${product.model_name}?`)) {
-      await activateBaseProduct(product.id);
-      fetchProducts();
+  const handleActivate = async (variant) => {
+    if (window.confirm(`¿Activar variante ${variant.id}?`)) {
+      await activateProductVariant(variant.id);
+      fetchVariants();
     }
   };
 
-  const handleDeactivate = async (product) => {
-    if (window.confirm(`¿Desactivar producto base ${product.model_name}?`)) {
-      await deactivateBaseProduct(product.id);
-      fetchProducts();
+  const handleDeactivate = async (variant) => {
+    if (window.confirm(`¿Desactivar variante ${variant.id}?`)) {
+      await deactivateProductVariant(variant.id);
+      fetchVariants();
     }
   };
 
   const columns = [
-    { key: "model_name", label: "Modelo" },
-    { key: "description", label: "Descripción" },
-    { key: "brand", label: "Marca", render: (row) => row.brand?.name },
+    { key: "id", label: "ID" },
+    {
+      key: "base_product",
+      label: "Producto Base",
+      render: (row) => row.base_product?.model_name,
+    },
+    { key: "condition", label: "Condición" },
+    { key: "stock_status", label: "Stock" },
+    { key: "price", label: "Precio" },
+    {
+      key: "active",
+      label: "Estado",
+      render: (row) => (
+        <span className={row.active ? "status-active" : "status-inactive"}>
+          {row.active ? "Activo" : "Inactivo"}
+        </span>
+      ),
+    },
   ];
 
   const stats = [
     {
-      label: "Productos Base",
-      count: products.length,
+      label: "Variantes",
+      count: variants.length,
       icon: <Package className="icon-card" />,
+    },
+    {
+      label: "Productos Activas",
+      count: variants.filter((b) => b.active).length,
+      icon: <FaRegCheckCircle className="icon-card" />,
     },
   ];
 
@@ -113,34 +131,34 @@ const Products = () => {
 
       <div className="table-container">
         <TitleCrud
-          title="Productos Base"
+          title="Variantes de Producto"
           icon={Package}
-          description="Administra los productos base"
+          description="Administra las variantes de cada producto"
         />
 
         <SearchBox
           onRegisterClick={() => handleOpenModal()}
-          registerLabel="Nuevo Producto Base"
+          registerLabel="Nueva Variante"
         />
 
         <CountCard stats={stats} />
 
         <DataTable
           columns={columns}
-          data={products}
+          data={variants}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
             {
               icon: FaCheck,
               handler: handleActivate,
-              show: (row) => !row.active,
+              show: (row) => !row.is_published,
               title: "Activar",
             },
             {
               icon: FaTimes,
               handler: handleDeactivate,
-              show: (row) => row.active,
+              show: (row) => row.is_published,
               title: "Desactivar",
             },
           ]}
@@ -149,8 +167,8 @@ const Products = () => {
         {showModal && (
           <ProductsForm
             onClose={handleCloseModal}
-            onSubmit={handleSubmitProduct}
-            product={editingProduct}
+            onSubmit={handleSubmitVariant}
+            variant={editingVariant}
             isSubmitting={isSubmitting}
             submitError={submitError}
           />
