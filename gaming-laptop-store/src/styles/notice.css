@@ -16,18 +16,3 @@
   font-size: 1.5rem;
   color: var(--primary-color);
 }
-
-
-@media (max-width: 768px) {
-  .construction {
-        margin-top: 1rem;
-    }
-
-    .construction-text {
-        font-size: 1.5rem; 
-    }
-    
-    .bolt-icon {
-        font-size: 1.2rem;
-    }
-}
