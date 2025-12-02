@@ -44,3 +44,21 @@ a {
   color: var(--primary-color);
   font-weight: 600;
 }
+
+.two-column-layout {
+    display: flex; /* Habilita la disposición horizontal */
+    justify-content: center; /* Centra el bloque total en la página */
+    align-items: flex-start; /* Alinea los elementos a la parte superior */
+    gap: 50px; /* Espacio entre el Canva y las Features */
+    padding: 20px;
+    max-width: 1400px; /* Ancho máximo del layout completo */
+    margin: 20px auto; /* Centra el contenedor en el centro de la pantalla */
+}
+
+@media (max-width: 1024px) {
+  .two-column-layout {
+        flex-direction: column; /* Apila el Canva y las Features verticalmente */
+        align-items: center; /* Centra el contenido (Canva y Features) */
+        gap: 40px; /* Aumenta el espacio entre los bloques apilados */
+    }
+}
