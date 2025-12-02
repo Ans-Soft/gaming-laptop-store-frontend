@@ -1,0 +1,51 @@
+.admin-header {
+  position: sticy; /* pega en top para que se vea siempre */
+  top: 0;
+  background: var(--navbar-bg); 
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  --header-height: 100px; 
+
+}
+
+.admin-header-inner {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo-text {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+}
+
+.navbar-logo {
+  height: 5rem;
+  object-fit: contain; 
+}
+
+.admin-badge {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(1,175,253,0.15);
+  color: var(--primary-color);
+  font-weight: 600;
+  background: rgba(1,175,253,0.02);
+  text-decoration: none;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+.admin-badge:hover {
+  transform: translateY(-2px);
+  background: rgba(1,175,253,0.04);
+}

@@ -4,9 +4,13 @@
   --primary-color: #01AFFD;
   --secondary-color: #79E0F9;
   --third-color: #A9D8EF;
+  --fourth-color: #36707d;
   --card-bg: #091118;
   --icon-bg: #113C5E;
   --whatsapp-color: #08D85C;
+  --bg-login-card-color: #0E171E;
+  --navbar-bg: #060C13;
+  --subtitle-color: #818283;
 }
 
 body {
@@ -39,4 +43,22 @@ a {
 .subtitle .highlight {
   color: var(--primary-color);
   font-weight: 600;
+}
+
+.two-column-layout {
+    display: flex; /* Habilita la disposición horizontal */
+    justify-content: center; /* Centra el bloque total en la página */
+    align-items: flex-start; /* Alinea los elementos a la parte superior */
+    gap: 50px; /* Espacio entre el Canva y las Features */
+    padding: 20px;
+    max-width: 1400px; /* Ancho máximo del layout completo */
+    margin: 20px auto; /* Centra el contenedor en el centro de la pantalla */
+}
+
+@media (max-width: 1024px) {
+  .two-column-layout {
+        flex-direction: column; /* Apila el Canva y las Features verticalmente */
+        align-items: center; /* Centra el contenido (Canva y Features) */
+        gap: 40px; /* Aumenta el espacio entre los bloques apilados */
+    }
 }
