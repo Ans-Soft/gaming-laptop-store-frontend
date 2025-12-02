@@ -5,7 +5,6 @@ import "../../styles/admin/usersForm.css";
 
 import { getBaseProducts } from "../../services/BaseProduct";
 
-
 const CONDITION_CHOICES = [
   { value: "nuevo", label: "Nuevo" },
   { value: "open_box", label: "Open Box" },
@@ -14,11 +13,17 @@ const CONDITION_CHOICES = [
 ];
 
 const STOCK_CHOICES = [
-  { value: "en_stock", label: "En Stock" },
-  { value: "en_camino", label: "En Camino" },
-  { value: "por_importacion", label: "Por Importación" },
-  { value: "sin_stock", label: "Sin Stock" },
+  { value: "en_stock", label: "En stock" },
+  { value: "en_camino", label: "En camino" },
+  { value: "por_importacion", label: "Por importación" },
+  { value: "sin_stock", label: "Sin stock" },
 ];
+
+// 👉 Función que formatea valores tipo 4000000 → $4,000,000
+const formatCurrency = (value) => {
+  if (!value) return "";
+  return "$" + Number(value).toLocaleString("en-US");
+};
 
 const ProductsForm = ({
   onClose,
@@ -54,7 +59,7 @@ const ProductsForm = ({
     if (isEditMode) {
       setFormData({
         base_product: variant.base_product.id,
-        price: variant.price,
+        price: formatCurrency(variant.price), // 👉 formateado
         condition: variant.condition,
         stock_status: variant.stock_status,
         is_published: variant.is_published,
@@ -62,6 +67,13 @@ const ProductsForm = ({
     }
   }, [variant, isEditMode]);
 
+  // 👉 Manejo especial para formatear precio en tiempo real
+  const handlePriceChange = (e) => {
+    const raw = e.target.value.replace(/\D/g, ""); // deja solo números
+    setFormData((prev) => ({ ...prev, price: formatCurrency(raw) }));
+  };
+
+  // 👉 Manejo genérico para los demás campos
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -71,9 +83,11 @@ const ProductsForm = ({
   };
 
   const handleSubmit = () => {
+    const cleanPrice = Number(formData.price.replace(/\D/g, "")); // limpiar formato
+
     const cleanData = {
       base_product: Number(formData.base_product),
-      price: Number(formData.price),
+      price: cleanPrice,
       condition: formData.condition,
       stock_status: formData.stock_status,
       is_published: formData.is_published,
@@ -119,10 +133,10 @@ const ProductsForm = ({
           <label>Precio *</label>
           <input
             name="price"
-            type="number"
-            placeholder="Ej: 3500000"
+            type="text"
+            placeholder="Ej: $3,500,000"
             value={formData.price}
-            onChange={handleChange}
+            onChange={handlePriceChange} // 👉 aquí usamos formateo
             required
           />
         </div>

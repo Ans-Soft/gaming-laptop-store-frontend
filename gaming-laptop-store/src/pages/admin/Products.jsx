@@ -19,6 +19,16 @@ import {
   deactivateProductVariant,
 } from "../../services/ProductVariant";
 
+// ➤ Función para formatear dinero en COP
+const formatMoney = (value) => {
+  if (!value && value !== 0) return "";
+  return value.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  });
+};
+
 const Products = () => {
   const [showModal, setShowModal] = useState(false);
   const [variants, setVariants] = useState([]);
@@ -100,7 +110,14 @@ const Products = () => {
     },
     { key: "condition", label: "Condición" },
     { key: "stock_status", label: "Stock" },
-    { key: "price", label: "Precio" },
+
+    // ➤ Aquí aplicamos el formato de dinero
+    {
+      key: "price",
+      label: "Precio",
+      render: (row) => formatMoney(row.price),
+    },
+
     {
       key: "active",
       label: "Estado",
@@ -152,13 +169,13 @@ const Products = () => {
             {
               icon: FaCheck,
               handler: handleActivate,
-              show: (row) => !row.is_published,
+              show: (row) => !row.active,
               title: "Activar",
             },
             {
               icon: FaTimes,
               handler: handleDeactivate,
-              show: (row) => row.is_published,
+              show: (row) => row.active,
               title: "Desactivar",
             },
           ]}
