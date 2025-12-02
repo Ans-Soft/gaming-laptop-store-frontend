@@ -1,0 +1,28 @@
+.logo {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+}
+
+.logo-img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain; 
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+
+    .logo {
+        justify-content: center;
+        gap: 0.2rem; 
+        padding: 0 10px; 
+    }
+
+    .logo-img {
+        width: 60px; 
+        height: 60px;
+        margin-top: 0.5rem; 
+    }
+}
