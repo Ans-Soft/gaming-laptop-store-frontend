@@ -19,7 +19,7 @@ import {
   deactivateProductVariant,
 } from "../../services/ProductVariant";
 
-// ➤ Función para formatear dinero en COP
+//  Función para formatear dinero en COP
 const formatMoney = (value) => {
   if (!value && value !== 0) return "";
   return value.toLocaleString("es-CO", {
@@ -111,7 +111,7 @@ const Products = () => {
     { key: "condition", label: "Condición" },
     { key: "stock_status", label: "Stock" },
 
-    // ➤ Aquí aplicamos el formato de dinero
+    //  Formato de dinero
     {
       key: "price",
       label: "Precio",
