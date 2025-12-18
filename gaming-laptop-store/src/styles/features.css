@@ -1,29 +1,31 @@
 .features {
     display: flex;
-    flex-direction: column; 
-    align-items: flex-end; 
+    flex-direction: row;
+    justify-content: flex-end; 
+    align-items: stretch;
     gap: 1.5rem;
-    margin-top: 2.5rem;
+    flex-wrap: wrap; 
 }
 
+/* CARD */
 .feature-card {
     background-color: var(--card-bg);
     padding: 1.5rem;
     border-radius: 1.5rem;
-    border: 1px solid;
-    border-color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
     width: 300px;
     text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    align-self: flex-end;
 }
 
+/* HOVER */
 .feature-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
     border-color: var(--third-color);
 }
 
+/* ICONO */
 .feature-icon {
     font-size: 3rem;
     color: var(--secondary-color);
@@ -33,6 +35,7 @@
     border-radius: 1.2rem;
 }
 
+/* TITULO */
 .feature-title {
     font-size: 1.5rem;
     font-weight: 600;
@@ -40,40 +43,23 @@
     color: var(--text-color);
 }
 
+/* DESCRIPCIÓN */
 .feature-desc {
     font-size: 1rem;
     color: #b0b0b0;
     line-height: 1.4;
 }
 
+/* 📱 RESPONSIVE */
 @media (max-width: 1024px) {
-  .features {
-        /* Vuelve a la disposición horizontal para las tarjetas */
-        flex-direction: row; 
-        
-        /* Permite que las tarjetas se envuelvan a la siguiente fila si no caben */
-        flex-wrap: wrap; 
-        
-        /* Ocupa el ancho completo */
-        width: 100%; 
-        
-        /* CENTRADO: Centra las tarjetas horizontalmente dentro de este contenedor */
-        justify-content: center; 
-        
-        /* Alinea todo el grupo al centro */
-        align-items: center; 
-        
-        margin-top: 20px;
+    .features {
+        justify-content: center;
+        align-items: center;
         padding: 0 10px;
     }
 
-    /* 4. AJUSTE: La tarjeta individual se alinea al centro y ocupa el 100% del ancho móvil si es necesario */
     .feature-card {
-        /* Permite que la tarjeta se ajuste en una cuadrícula horizontal de features */
-        align-self: auto; 
-        
-        /* Asegura que la tarjeta no exceda el ancho del móvil, pero mantiene el mínimo */
+        width: 90%;
         max-width: 300px;
-        width: 90%; 
     }
 }

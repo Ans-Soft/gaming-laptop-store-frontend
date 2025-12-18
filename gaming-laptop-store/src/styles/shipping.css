@@ -1,0 +1,18 @@
+.shipping-section {
+  padding: 80px 20px;
+}
+
+.shipping-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.shipping-card {
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: 18px;
+  text-align: center;
+  border: 1px solid var(--fourth-color);
+}

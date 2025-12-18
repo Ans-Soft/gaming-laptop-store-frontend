@@ -5,17 +5,21 @@ import Footer from "../../components/Footer"
 import Whatsapp from "../../components/Whatsapp"
 import "../../styles/global.css"
 import CanvaEmbed from "../../components/CanvaEmbed.jsx"
-import Notice from "../../components/Notice.jsx"
+import About from "../about/About.jsx"
+import Shipping from "../shipping/Shipping.jsx"
+import LandingHeader from "../../components/LandingHeader.jsx"
 
 export default function Home() {
   return (
     <div className="homepage">
+      <LandingHeader/>
       <HeaderLogo />
-      <Notice />
       <div className="two-column-layout">
-          <CanvaEmbed /> 
+          {/*<CanvaEmbed />*/} 
           <Features />
       </div>
+      <About/>
+      <Shipping/>
       <Button />
       <Footer />
       <Whatsapp />
