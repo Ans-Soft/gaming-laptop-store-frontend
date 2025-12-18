@@ -5,9 +5,10 @@ import Home from "./pages/home/Home.jsx";
 import Login from "./pages/admin/Login.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import Users from "./pages/admin/Users.jsx";
-import Products from "./pages/admin/Products.jsx";
 import Categories from "./pages/admin/Categories.jsx";
 import Brands from "./pages/admin/Brands.jsx";
+import BaseProducts from "./pages/admin/BaseProducts.jsx";
+import Products from "./pages/admin/Products.jsx";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/users",
     element: <Users />,
+  },
+  {
+    path: "/admin/base_products",
+    element: <BaseProducts />,
   },
   {
     path: "/admin/products",

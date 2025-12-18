@@ -16,8 +16,8 @@ const CanvaEmbed = () => {
 
     // 2. Renderiza el HTML usando la propiedad 'dangerouslySetInnerHTML'
     return (
-        <div className="canva-embed-wrapper">
-
+        <div className="canva-embed-wrapper"> 
+          
             <div dangerouslySetInnerHTML={{ __html: canvaHtml }} />
         </div>
     );

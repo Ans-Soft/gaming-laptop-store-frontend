@@ -4,6 +4,7 @@
   background: var(--navbar-bg); 
   border-bottom: 1px solid rgba(255,255,255,0.03);
   --header-height: 100px; 
+
 }
 
 .admin-header-inner {
@@ -12,8 +13,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  max-width: 1300px;
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-logo {
