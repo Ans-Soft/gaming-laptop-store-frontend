@@ -1,22 +1,23 @@
 import "../styles/landingHeader.css"
 import logo from "../assets/logo.png"
+import { Link } from "react-router-dom";
 
 export default function LandingHeader() {
   return (
     <header className="navbar">
       <div className="navbar-container">
-        {/* LOGO */}
-        <div className="navbar-logo">
-          <img src={logo} alt="Patecnológicos Logo" />
-          <span>Patecnológicos</span>
-        </div>
+          <Link to="/" className="navbar-logo">
+            <img src={logo} alt="Patecnológicos Logo" />
+            <span>Patecnológicos</span>  
+          </Link>
+
 
         {/* LINKS */}
         <nav className="navbar-links">
-          <a href="#inicio">Inicio</a>
+          <Link to="/">Inicio</Link>
           <a href="#nosotros">Nosotros</a>
           <a href="#envios">Envíos</a>
-          <a href="#catalogo">Catálogo</a>
+          <Link to="/catalogo">Catálogo</Link>
         </nav>
       </div>
     </header>
