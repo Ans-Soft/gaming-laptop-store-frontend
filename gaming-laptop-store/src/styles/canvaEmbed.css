@@ -1,13 +1,12 @@
 .canva-embed-wrapper {
-    max-width: 780px;
-    width: 100%; 
-    
-    margin-top: 0rem; 
-    
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
-    border-radius: 12px;
+  max-width: 780px;
+  width: 100%;
+  margin: 0 auto; /* 👈 centra horizontalmente */
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
 }
+
 
 @media (max-width: 1024px) {
   .canva-embed-wrapper {

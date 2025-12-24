@@ -16,3 +16,63 @@
   text-align: center;
   border: 1px solid var(--fourth-color);
 }
+
+.shipping-icons {
+  font-size: 30px;
+  color: var(--secondary-color);
+  padding-bottom: 15px;
+  margin-bottom: 1rem;
+  background-color: var(--icon-bg);
+  padding: 1rem;
+  border-radius: 1.2rem;
+}
+
+.shipping-desc {
+  font-size: 13px;
+  color: #b0b0b0;
+  line-height: 1.4;
+}
+
+/* =========================
+   RESPONSIVE - SHIPPING
+========================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .shipping-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .shipping-section {
+    padding: 60px 20px;
+  }
+
+  .shipping-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .shipping-card {
+    padding: 30px 25px;
+  }
+
+  .shipping-desc {
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .shipping-card {
+    padding: 25px 20px;
+  }
+
+  .shipping-icons {
+    font-size: 26px;
+    padding: 0.8rem;
+  }
+}
