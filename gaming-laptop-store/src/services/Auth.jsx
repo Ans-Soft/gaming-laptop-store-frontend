@@ -15,12 +15,35 @@ export async function refreshToken() {
   const refresh = localStorage.getItem("refresh_token");
   if (!refresh) throw new Error("No refresh token available");
 
-  const response = await api.post(urls.refresh, { refresh });
-  localStorage.setItem("access_token", response.data.access);
-  return response.data;
+  try {
+    const response = await api.post(urls.refresh, { refresh });
+
+    localStorage.setItem("access_token", response.data.access);
+
+    // Si usas ROTATE_REFRESH_TOKENS
+    if (response.data.refresh) {
+      localStorage.setItem("refresh_token", response.data.refresh);
+    }
+
+    return response.data.access;
+  } catch (error) {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    throw error;
+  }
 }
 
-export function logout() {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
+export async function logout() {
+  const refresh = localStorage.getItem("refresh_token");
+
+  try {
+    if (refresh) {
+      await api.post(urls.logout, { refresh });
+    }
+  } catch (error) {
+    console.warn("Logout backend failed:", error);
+  } finally {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+  }
 }

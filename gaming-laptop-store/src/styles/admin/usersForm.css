@@ -21,12 +21,18 @@
   font-size: 0.9rem;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-goup textarea {
   background-color: #1a1f25;
   border: 1px solid #2b3038;
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   color: #e5e7eb;
+}
+
+.form-group textarea {
+  resize: vertical;
 }
 
 .form-group input:focus {

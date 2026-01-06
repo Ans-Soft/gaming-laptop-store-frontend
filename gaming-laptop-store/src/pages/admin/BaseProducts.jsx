@@ -10,6 +10,7 @@ import CountCard from "../../components/admin/CountCard";
 import TitleCrud from "../../components/admin/TitleCrud";
 
 import BaseProductsForm from "../../components/admin/BaseProductsForm";
+import ModalBase from "../../components/admin/ModalBase";
 
 import {
   getBaseProducts,
@@ -21,6 +22,8 @@ import {
 
 const BaseProducts = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showTypeSelection, setShowTypeSelection] = useState(false);
+  const [productType, setProductType] = useState(null);
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,13 +45,19 @@ const BaseProducts = () => {
   const handleOpenModal = (product = null) => {
     setEditingProduct(product);
     setSubmitError(null);
-    setShowModal(true);
+
+    if (product) {
+      setShowModal(true);
+    } else {
+      setShowTypeSelection(true);
+    }
   };
 
   const handleCloseModal = () => {
     setEditingProduct(null);
     setSubmitError(null);
     setShowModal(false);
+    setProductType(null);
   };
 
   const handleSubmitProduct = async (data, id) => {
@@ -84,6 +93,17 @@ const BaseProducts = () => {
       await activateBaseProduct(product.id);
       fetchProducts();
     }
+  };
+
+  const handleSelectProductType = (type) => {
+    setProductType(type);
+    setShowTypeSelection(false);
+    setShowModal(true);
+  };
+
+  const handleGoBack = () => {
+    setShowModal(false);
+    setShowTypeSelection(true);
   };
 
   const handleDeactivate = async (product) => {
@@ -146,11 +166,81 @@ const BaseProducts = () => {
           ]}
         />
 
+        {showTypeSelection && (
+          <ModalBase
+            title="Seleccionar Tipo de Producto"
+            onClose={() => setShowTypeSelection(false)}
+          >
+            <div
+              className="type-selection"
+              style={{
+                display: "flex",
+                gap: "20px",
+                justifyContent: "center",
+                marginTop: "20px",
+              }}
+            >
+              <button
+                className="type-selection-button"
+                onClick={() => handleSelectProductType("Tarjeta gráfica")}
+                style={{
+                  padding: "15px 30px",
+                  border: "2px solid #007bff",
+                  borderRadius: "8px",
+                  background: "#007bff",
+                  color: "white",
+                  fontSize: "1.1em",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  width: "200px", // Fixed width
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = "#0056b3";
+                  e.currentTarget.style.borderColor = "#0056b3";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = "#007bff";
+                  e.currentTarget.style.borderColor = "#007bff";
+                }}
+              >
+                Tarjeta gráfica
+              </button>
+              <button
+                className="type-selection-button"
+                onClick={() => handleSelectProductType("Laptop")}
+                style={{
+                  padding: "15px 30px",
+                  border: "2px solid #007bff", // Same border color
+                  borderRadius: "8px",
+                  background: "#007bff", // Same background color
+                  color: "white",
+                  fontSize: "1.1em",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  width: "200px", // Fixed width
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = "#0056b3"; // Same hover color
+                  e.currentTarget.style.borderColor = "#0056b3"; // Same hover color
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = "#007bff"; // Same normal color
+                  e.currentTarget.style.borderColor = "#007bff"; // Same normal color
+                }}
+              >
+                Laptop
+              </button>
+            </div>
+          </ModalBase>
+        )}
+
         {showModal && (
           <BaseProductsForm
             onClose={handleCloseModal}
             onSubmit={handleSubmitProduct}
             product={editingProduct}
+            productType={productType}
+            onBack={handleGoBack}
             isSubmitting={isSubmitting}
             submitError={submitError}
           />
