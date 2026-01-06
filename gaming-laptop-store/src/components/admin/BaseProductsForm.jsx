@@ -163,10 +163,13 @@ const BaseProductsForm = ({
   };
 
   const handleSubmit = () => {
+    // 💡 Determina el tipo de producto actual, ya sea en modo de edición o creación
+    const currentProductType = product?.product_type || productType;
+
     let specs = {};
-    if (productType === "Tarjeta gráfica") {
+    if (currentProductType === "Tarjeta gráfica") {
       specs = { ...graphicsCardSpecs };
-    } else if (productType === "Laptop") {
+    } else if (currentProductType === "Laptop") {
       specs = {
         ...laptopSpecs,
         connectivity: laptopSpecs.connectivity
