@@ -101,6 +101,7 @@ const BaseProductsForm = ({
         // Assume product.product_type exists to identify the product category
         // If not, a more complex inference from specs structure would be needed
         if (product.product_type === "Tarjeta gráfica") {
+          console.log(product.specs);
           setGraphicsCardSpecs(product.specs);
         } else if (product.product_type === "Laptop") {
           // Flatten connectivity array back to comma-separated string for input field
