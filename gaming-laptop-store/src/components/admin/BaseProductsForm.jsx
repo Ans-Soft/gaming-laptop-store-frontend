@@ -101,17 +101,35 @@ const BaseProductsForm = ({
         // Assume product.product_type exists to identify the product category
         // If not, a more complex inference from specs structure would be needed
         if (product.product_type === "Tarjeta gráfica") {
-          console.log(product.specs);
-          setGraphicsCardSpecs(product.specs);
+          setGraphicsCardSpecs((prevSpecs) => ({
+            ...prevSpecs,
+            ...product.specs,
+          }));
         } else if (product.product_type === "Laptop") {
-          // Flatten connectivity array back to comma-separated string for input field
           const laptopSpecsToSet = {
             ...product.specs,
             connectivity: Array.isArray(product.specs.connectivity)
               ? product.specs.connectivity.join(", ")
               : product.specs.connectivity,
           };
-          setLaptopSpecs(laptopSpecsToSet);
+          setLaptopSpecs((prevSpecs) => {
+            const updatedSpecs = { ...prevSpecs };
+            for (const key in laptopSpecsToSet) {
+              if (
+                typeof laptopSpecsToSet[key] === "object" &&
+                laptopSpecsToSet[key] !== null &&
+                !Array.isArray(laptopSpecsToSet[key])
+              ) {
+                updatedSpecs[key] = {
+                  ...(updatedSpecs[key] || {}),
+                  ...laptopSpecsToSet[key],
+                };
+              } else {
+                updatedSpecs[key] = laptopSpecsToSet[key];
+              }
+            }
+            return updatedSpecs;
+          });
         }
       }
     }
