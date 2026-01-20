@@ -10,6 +10,7 @@ import Brands from "./pages/admin/Brands.jsx";
 import BaseProducts from "./pages/admin/BaseProducts.jsx";
 import Products from "./pages/admin/Products.jsx";
 import Catalog from "./pages/catalog/Catalog.jsx";
+import PrivacyPolicy from "./pages/privacy/Privacy.jsx";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: "/catalogo",
     element: <Catalog />,
+  },
+  {
+    path: "/politica-de-privacidad",
+    element: <PrivacyPolicy />,
   },
   {
     path: "/login",

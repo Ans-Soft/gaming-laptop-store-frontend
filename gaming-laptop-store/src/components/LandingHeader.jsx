@@ -18,6 +18,7 @@ export default function LandingHeader() {
           <a href="#nosotros">Nosotros</a>
           <a href="#envios">Envíos</a>
           <Link to="/catalogo">Catálogo</Link>
+          <Link to="/politica-de-privacidad">Política de Privacidad</Link>
         </nav>
       </div>
     </header>
