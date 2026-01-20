@@ -1,60 +1,184 @@
-import React from 'react';
-import '../../styles/privacy.css';
+import React from "react";
+import LandingHeader from "../../components/LandingHeader.jsx";
+import Whatsapp from "../../components/Whatsapp";
+
+import "../../styles/global.css";
+import "../../styles/privacy.css";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="privacy-container">
-      <p><strong>POLÍTICA DE PRIVACIDAD</strong></p>
-      <p>El presente Política de Privacidad establece los términos en que Patecnologicos usa y protege la información que es
-          proporcionada por sus usuarios al momento de utilizar su sitio web. Esta compañía está comprometida con la seguridad
-          de los datos de sus usuarios. Cuando le pedimos llenar los campos de información personal con la cual usted pueda
-          ser identificado, lo hacemos asegurando que sólo se empleará de acuerdo con los términos de este documento. Sin
-          embargo esta Política de Privacidad puede cambiar con el tiempo o ser actualizada por lo que le recomendamos y
-          enfatizamos revisar continuamente esta página para asegurarse que está de acuerdo con dichos cambios.</p>
-      <p><strong>Información que es recogida</strong></p>
-      <p>Nuestro sitio web podrá recoger información personal por ejemplo: Nombre,&nbsp; información de contacto como&nbsp; su
-          dirección de correo electrónica e información demográfica. Así mismo cuando sea necesario podrá ser requerida
-          información específica para procesar algún pedido o realizar una entrega o facturación.</p>
-      <p><strong>Uso de la información recogida</strong></p>
-      <p>Nuestro sitio web emplea la información con el fin de proporcionar el mejor servicio posible, particularmente para
-          mantener un registro de usuarios, de pedidos en caso que aplique, y mejorar nuestros productos y servicios. &nbsp;Es
-          posible que sean enviados correos electrónicos periódicamente a través de nuestro sitio con ofertas especiales,
-          nuevos productos y otra información publicitaria que consideremos relevante para usted o que pueda brindarle algún
-          beneficio, estos correos electrónicos serán enviados a la dirección que usted proporcione y podrán ser cancelados en
-          cualquier momento.</p>
-      <p>Patecnologicos está altamente comprometido para cumplir con el compromiso de mantener su información segura. Usamos
-          los sistemas más avanzados y los actualizamos constantemente para asegurarnos que no exista ningún acceso no
-          autorizado.</p>
-      <p><strong>Cookies</strong></p>
-      <p>Una cookie se refiere a un fichero que es enviado con la finalidad de solicitar permiso para almacenarse en su
-          ordenador, al aceptar dicho fichero se crea y la cookie sirve entonces para tener información respecto al tráfico
-          web, y también facilita las futuras visitas a una web recurrente. Otra función que tienen las cookies es que con
-          ellas las web pueden reconocerte individualmente y por tanto brindarte el mejor servicio personalizado de su web.
-      </p>
-      <p>Nuestro sitio web emplea las cookies para poder identificar las páginas que son visitadas y su frecuencia. Esta
-          información es empleada únicamente para análisis estadístico y después la información se elimina de forma
-          permanente. Usted puede eliminar las cookies en cualquier momento desde su ordenador. Sin embargo las cookies ayudan
-          a proporcionar un mejor servicio de los sitios web, estás no dan acceso a información de su ordenador ni de usted, a
-          menos de que usted así lo quiera y la proporcione directamente noticias. Usted puede aceptar o negar el uso de cookies, sin embargo la mayoría de
-          navegadores aceptan cookies automáticamente pues sirve para tener un mejor servicio web. También usted puede cambiar
-          la configuración de su ordenador para declinar las cookies. Si se declinan es posible que no pueda utilizar algunos
-          de nuestros servicios.</p>
-      <p><strong>Enlaces a Terceros</strong></p>
-      <p>Este sitio web pudiera contener en laces a otros sitios que pudieran ser de su interés. Una vez que usted de clic en
-          estos enlaces y abandone nuestra página, ya no tenemos control sobre al sitio al que es redirigido y por lo tanto no
-          somos responsables de los términos
-              o privacidad ni de la protección de sus datos en esos otros sitios terceros. Dichos sitios están sujetos a
-          sus propias políticas de privacidad por lo cual es recomendable que los consulte para confirmar que usted está de
-          acuerdo con estas.</p>
-      <p><strong>Control de su información personal</strong></p>
-      <p>En cualquier momento usted puede restringir la recopilación o el uso de la información personal que es proporcionada
-          a nuestro sitio web.&nbsp; Cada vez que se le solicite rellenar un formulario, como el de alta de usuario, puede
-          marcar o desmarcar la opción de recibir información por correo electrónico. &nbsp;En caso de que haya marcado la
-          opción de recibir nuestro boletín o publicidad usted puede cancelarla en cualquier momento.</p>
-      <p>Esta compañía no venderá, cederá ni distribuirá la información personal que es recopilada sin su consentimiento,
-          salvo que sea requerido por un juez con un orden judicial.</p>
-      <p>Patecnologicos Se reserva el derecho de cambiar los términos de la presente Política de Privacidad en cualquier
-          momento.</p>
+    <div className="homepage">
+      <LandingHeader />
+
+      <main className="privacy-policy" role="main">
+        <section className="privacy-container">
+          <header>
+            <h1>Política de Privacidad</h1>
+            <p className="privacy-updated">
+              Última actualización: Enero 2026
+            </p>
+          </header>
+
+          <article>
+            <h2>1. Identidad del responsable</h2>
+            <p>
+              <strong>Patecnologicos</strong>, persona natural identificada con
+              documento <strong>1112388931-5</strong>, con domicilio en Colombia,
+              es responsable del tratamiento de los datos personales recopilados
+              a través de sus canales digitales.
+            </p>
+
+            <p>
+              Sitio web:{" "}
+              <a
+                href="https://patecnologicos.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://patecnologicos.com/
+              </a>
+            </p>
+
+            <p>
+              Correo de contacto:{" "}
+              <a href="mailto:partesyaccesoriostec@gmail.com">
+                partesyaccesoriostec@gmail.com
+              </a>
+            </p>
+
+            <p>WhatsApp de atención: +57 301 266 1811</p>
+          </article>
+
+          <article>
+            <h2>2. Alcance de esta política</h2>
+            <p>
+              Esta Política de Privacidad aplica al tratamiento de datos
+              personales realizado a través del sitio web de Patecnologicos y
+              del canal de atención por WhatsApp Business Platform (Cloud API de
+              Meta).
+            </p>
+          </article>
+
+          <article>
+            <h2>3. Información que recopilamos</h2>
+            <p>
+              El sitio web funciona como una landing page informativa y no
+              recopila datos personales de forma automática.
+            </p>
+
+            <p>
+              Los datos personales solo se recopilan cuando el usuario inicia
+              voluntariamente una conversación por WhatsApp, y de manera manual,
+              durante procesos de atención o compra.
+            </p>
+
+            <ul>
+              <li>Nombre</li>
+              <li>Número de teléfono</li>
+              <li>Información relacionada con pedidos</li>
+            </ul>
+          </article>
+
+          <article>
+            <h2>4. Uso de la información</h2>
+            <p>
+              La información recopilada se utiliza exclusivamente para:
+            </p>
+
+            <ul>
+              <li>Procesar pedidos</li>
+              <li>Gestionar la comunicación solicitada por el usuario</li>
+              <li>Atención al cliente</li>
+            </ul>
+
+            <p>
+              Patecnologicos no envía mensajes promocionales automáticos ni
+              realiza campañas de marketing sin consentimiento previo y
+              explícito.
+            </p>
+          </article>
+
+          <article>
+            <h2>5. Uso de WhatsApp Business Platform (Meta)</h2>
+            <p>
+              Patecnologicos utiliza WhatsApp Business Platform (Cloud API)
+              proporcionada por Meta Platforms, Inc.
+            </p>
+
+            <ul>
+              <li>El usuario inicia siempre la conversación</li>
+              <li>El chatbot responde únicamente mensajes básicos de saludo</li>
+              <li>No se envían mensajes no solicitados</li>
+            </ul>
+
+            <p>
+              El tratamiento de datos a través de WhatsApp también está sujeto a
+              las políticas de privacidad de Meta Platforms, Inc.
+            </p>
+          </article>
+
+          <article>
+            <h2>6. Conservación de la información</h2>
+            <p>
+              Los datos personales se conservarán únicamente durante el tiempo
+              necesario para cumplir la finalidad para la cual fueron
+              recopilados y hasta que el usuario solicite su eliminación.
+            </p>
+          </article>
+
+          <article>
+            <h2>7. Compartición de información con terceros</h2>
+            <p>
+              Patecnologicos no vende, cede ni comparte datos personales con
+              terceros.
+            </p>
+
+            <p>
+              Los datos pueden ser procesados únicamente por Meta Platforms,
+              Inc., como proveedor de WhatsApp Business Platform.
+            </p>
+          </article>
+
+          <article>
+            <h2>8. Derechos del titular de los datos</h2>
+            <p>El usuario tiene derecho a:</p>
+
+            <ul>
+              <li>Acceder a sus datos personales</li>
+              <li>Solicitar corrección</li>
+              <li>Solicitar eliminación</li>
+              <li>Revocar su consentimiento</li>
+            </ul>
+
+            <p>
+              Para ejercer estos derechos, puede escribir a{" "}
+              <a href="mailto:partesyaccesoriostec@gmail.com">
+                partesyaccesoriostec@gmail.com
+              </a>
+              .
+            </p>
+          </article>
+
+          <article>
+            <h2>9. Seguridad de la información</h2>
+            <p>
+              Patecnologicos adopta medidas razonables de seguridad para proteger
+              la información personal y evitar accesos no autorizados.
+            </p>
+          </article>
+
+          <article>
+            <h2>10. Cambios en la política de privacidad</h2>
+            <p>
+              Patecnologicos se reserva el derecho de modificar esta Política de
+              Privacidad en cualquier momento. Los cambios serán publicados en
+              esta página.
+            </p>
+          </article>
+        </section>
+      </main>
+
+      <Whatsapp />
     </div>
   );
 };
