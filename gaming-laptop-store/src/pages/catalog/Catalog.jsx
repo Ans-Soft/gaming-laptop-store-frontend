@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import LandingHeader from "../../components/LandingHeader.jsx";
 import { getCatalogProducts } from "../../services/CatalogService.jsx";
 import ProductCard from "../../components/ProductCard.jsx";
 import "../../styles/catalog.css";
@@ -26,7 +25,6 @@ const Catalog = () => {
 
   return (
     <>
-      <LandingHeader />
       <CanvaEmbed />
 {/* 
       <section className="catalog-container">

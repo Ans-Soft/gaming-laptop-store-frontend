@@ -115,7 +115,7 @@
   }
 
   .about-cards {
-    grid-template-columns: 0,5fr;
+    grid-template-columns: 1fr;
   }
 
   .about-stats {

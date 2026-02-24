@@ -1,0 +1,385 @@
+/* ================================================
+   ENVIOS PAGE  (/envios)
+   Prefix: env-  (avoids conflicts with other styles)
+   ================================================ */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 130px;
+}
+
+.env-page {
+  width: 100%;
+  padding: 48px 24px 80px;
+  box-sizing: border-box;
+}
+
+/* ── LAYOUT: sidebar + content ── */
+
+.env-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ── SIDEBAR ── */
+
+.env-sidebar {
+  position: sticky;
+  top: 130px;
+}
+
+.env-sidebar-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--subtitle-color);
+  margin: 0 0 12px;
+  padding: 0 4px;
+}
+
+.env-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.env-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--subtitle-color);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.env-sidebar-link:hover {
+  color: var(--text-color);
+  background-color: var(--card-bg);
+}
+
+.env-sidebar-link.is-active {
+  color: var(--primary-color);
+  border-left-color: var(--primary-color);
+  background-color: var(--card-bg);
+  font-weight: 600;
+}
+
+.env-sidebar-icon {
+  display: none;
+}
+
+.env-sidebar-link.is-active .env-sidebar-icon {
+  opacity: 1;
+}
+
+/* ── SIDEBAR HELP BOX ── */
+
+.env-sidebar-help {
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 12px;
+  padding: 18px 16px;
+  text-align: center;
+}
+
+.env-sidebar-help p {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 12px;
+}
+
+.env-sidebar-wap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background-color: var(--whatsapp-color);
+  color: #fff;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+
+.env-sidebar-wap:hover {
+  opacity: 0.85;
+}
+
+/* ── MAIN CONTENT ── */
+
+.env-main {
+  min-width: 0; /* prevent grid blowout */
+}
+
+/* ── SECTION ── */
+
+.env-section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--fourth-color);
+}
+
+.env-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.env-section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0 0 16px;
+}
+
+.env-section-lead {
+  font-size: 1rem;
+  color: var(--subtitle-color);
+  line-height: 1.7;
+  margin: 0 0 28px;
+  max-width: 640px;
+}
+
+/* ── PAYMENT BULLET LIST ── */
+
+.env-payment-list {
+  list-style: disc;
+  padding-left: 24px;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.env-payment-list li {
+  font-size: 1rem;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* ── NOTE BOX ── */
+
+.env-note-box {
+  background-color: #0c1820;
+  border-left: 3px solid var(--primary-color);
+  border-top: 1px solid var(--fourth-color);
+  border-right: 1px solid var(--fourth-color);
+  border-bottom: 1px solid var(--fourth-color);
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-size: 0.93rem;
+  color: var(--subtitle-color);
+  line-height: 1.65;
+  max-width: 600px;
+}
+
+.env-note-box strong {
+  color: var(--text-color);
+}
+
+/* ── STEPS LIST ── */
+
+.env-steps-list {
+  list-style: none;
+  padding-left: 14px;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.env-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 0.97rem;
+  color: var(--subtitle-color);
+  line-height: 1.6;
+  position: relative;
+  padding-bottom: 14px;
+}
+
+.env-step-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--fourth-color);
+}
+
+.env-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #01060c;
+  font-weight: 700;
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── DUAL CARDS (2 side by side) ── */
+
+.env-dual-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── CARDS GRID (2×2) ── */
+
+.env-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* ── INFO CARD ── */
+
+.env-info-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: var(--subtitle-color);
+  line-height: 1.65;
+}
+
+/* ── RESPONSIVE — tablet (≤ 900px) ── */
+
+@media (max-width: 900px) {
+  .env-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Sidebar becomes a sticky horizontal tab bar */
+  .env-sidebar {
+    position: sticky;
+    top: 130px;
+    z-index: 100;
+    background-color: var(--navbar-bg);
+    border-bottom: 1px solid #0c1a24;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    padding: 0 16px;
+    scrollbar-width: none;
+    margin-bottom: 0;
+  }
+
+  .env-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .env-sidebar-title {
+    display: none;
+  }
+
+  .env-sidebar-nav {
+    flex-direction: row;
+    gap: 0;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .env-sidebar-link {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    white-space: nowrap;
+    padding: 14px 16px;
+    background-color: transparent !important;
+  }
+
+  .env-sidebar-link.is-active {
+    border-left-color: transparent;
+    border-bottom-color: var(--primary-color);
+  }
+
+  .env-sidebar-icon {
+    display: none;
+  }
+
+  .env-sidebar-help {
+    margin-left: auto;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 8px 0 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .env-sidebar-help p {
+    margin: 0;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .env-sidebar-wap {
+    width: auto;
+    padding: 8px 14px;
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  .env-section {
+    padding: 40px 0;
+  }
+}
+
+/* ── RESPONSIVE — navbar collapses to single row (≤ 768px) ── */
+
+@media (max-width: 768px) {
+  /* Bottom nav row hides → navbar is only ~77px tall */
+  html {
+    scroll-padding-top: 80px;
+  }
+
+  .env-sidebar {
+    top: 80px;
+  }
+}
+
+/* ── RESPONSIVE — mobile (≤ 600px) ── */
+
+@media (max-width: 600px) {
+  .env-page {
+    padding: 32px 16px 60px;
+  }
+
+  .env-section-title {
+    font-size: 1.6rem;
+  }
+
+  .env-dual-cards,
+  .env-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
