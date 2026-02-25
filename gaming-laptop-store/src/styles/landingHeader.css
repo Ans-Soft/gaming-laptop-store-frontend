@@ -1,5 +1,5 @@
 /* ================================================
-   NAVBAR — two-row, sticky, responsive
+   NAVBAR — two-row, sticky, dark corporate
    ================================================ */
 
 .navbar {
@@ -8,12 +8,13 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
 }
 
 /* ── TOP ROW ── */
 
 .navbar-top {
-  border-bottom: 1px solid rgba(12, 26, 36, 0.9);
+  border-bottom: 1px solid var(--navbar-divider);
 }
 
 .navbar-top-inner {
@@ -33,7 +34,7 @@
   font-size: 2rem;
   font-weight: 600;
   flex-shrink: 0;
-  color: var(--text-color);
+  color: var(--navbar-text-hover);
 }
 
 .navbar-logo img {
@@ -57,12 +58,12 @@
   height: 42px;
   border-radius: 8px;
   font-size: 2rem;
-  color: var(--text-color);
+  color: var(--navbar-text);
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .navbar-social-link:hover {
-  background-color: var(--icon-bg);
+  background-color: rgba(26, 171, 245, 0.12);
 }
 
 .navbar-social-link.instagram:hover {
@@ -76,7 +77,7 @@
 /* ── BOTTOM ROW ── */
 
 .navbar-bottom {
-  border-bottom: 3px solid #0c1a24;
+  border-bottom: 3px solid var(--navbar-active);
   position: relative; /* anchor for the absolute dropdown panel */
 }
 
@@ -92,7 +93,7 @@
 
 /* Individual link items */
 .navbar-links > a {
-  color: var(--text-color);
+  color: var(--navbar-text);
   font-size: 0.95rem;
   font-weight: 500;
   padding: 13px 18px;
@@ -104,7 +105,7 @@
 }
 
 .navbar-links > a:hover {
-  color: var(--primary-color);
+  color: var(--navbar-text-hover);
 }
 
 /* Sliding underline on hover */
@@ -114,13 +115,22 @@
   bottom: 0;
   left: 18px;
   right: 18px;
-  height: 2px;
-  background-color: var(--primary-color);
+  height: 3px;
+  background-color: var(--navbar-active);
   transform: scaleX(0);
   transition: transform 0.25s ease;
 }
 
 .navbar-links > a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Active route state */
+.navbar-links > a.active {
+  color: var(--navbar-text-hover);
+}
+
+.navbar-links > a.active::after {
   transform: scaleX(1);
 }
 
@@ -139,7 +149,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  color: var(--text-color);
+  color: var(--navbar-text);
   font-size: 0.95rem;
   font-weight: 500;
   font-family: inherit;
@@ -149,7 +159,7 @@
 }
 
 .navbar-dropdown-trigger:hover {
-  color: var(--primary-color);
+  color: var(--navbar-text-hover);
 }
 
 .navbar-dropdown-arrow {
@@ -170,11 +180,11 @@
   left: 50%;
   transform: translateX(-50%);
   min-width: 220px;
-  background-color: var(--navbar-bg);
-  border: 1px solid #0c1a24;
+  background-color: var(--navbar-dropdown-bg);
+  border: 1px solid rgba(26, 171, 245, 0.15);
   border-top: none;
   border-radius: 0 0 8px 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   flex-direction: column;
   overflow: hidden;
   z-index: 100;
@@ -185,7 +195,7 @@
 }
 
 .navbar-dropdown-menu a {
-  color: var(--text-color);
+  color: var(--navbar-text);
   font-size: 0.9rem;
   padding: 13px 20px;
   white-space: nowrap;
@@ -193,8 +203,8 @@
 }
 
 .navbar-dropdown-menu a:hover {
-  background-color: var(--icon-bg);
-  color: var(--primary-color);
+  background-color: rgba(26, 171, 245, 0.10);
+  color: var(--navbar-text-hover);
 }
 
 /* ── HAMBURGER BUTTON ── */
@@ -217,12 +227,12 @@
   display: block;
   height: 2px;
   width: 100%;
-  background-color: var(--text-color);
+  background-color: var(--navbar-text);
   border-radius: 2px;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-/* Animate to ✕ */
+/* Animate to X */
 .navbar-hamburger.is-open span:nth-child(1) {
   transform: translateY(8px) rotate(45deg);
 }
@@ -265,6 +275,13 @@
     display: none;
   }
 
+  /* Active state on mobile — left border instead of underline */
+  .navbar-links > a.active {
+    color: var(--navbar-text-hover);
+    background-color: rgba(26, 171, 245, 0.08);
+    border-left: 3px solid var(--navbar-active);
+  }
+
   /* Dropdown full-width on mobile */
   .navbar-dropdown {
     flex-direction: column;
@@ -284,7 +301,7 @@
     box-shadow: none;
     border: none;
     border-radius: 0;
-    background-color: #060e16;
+    background-color: var(--navbar-dropdown-bg);
     min-width: unset;
   }
 

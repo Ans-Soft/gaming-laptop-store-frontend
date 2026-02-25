@@ -3,9 +3,10 @@
    ================================================ */
 
 .footer {
-  background-color: var(--navbar-bg);
-  border-top: 3px solid #0c1a24;
+  background-color: #0A1628;
+  border-top: 3px solid var(--primary-bright, #1AABF5);
   margin-top: 60px;
+  color: #f0f0f0;
 }
 
 /* ── INNER GRID ── */
@@ -50,13 +51,13 @@
   height: 38px;
   border-radius: 8px;
   font-size: 1.2rem;
-  color: var(--text-color);
+  color: #f0f0f0;
   background-color: transparent;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .footer-social-link:hover {
-  background-color: var(--icon-bg);
+  background-color: rgba(26, 171, 245, 0.15);
 }
 
 .footer-social-link.whatsapp:hover  { color: var(--whatsapp-color); }
@@ -77,25 +78,25 @@
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--primary-color);
+  color: #1AABF5;
   margin: 0 0 6px;
 }
 
 .footer-col a {
-  color: var(--subtitle-color);
+  color: #7ED4F7;
   font-size: 0.88rem;
   line-height: 1.4;
   transition: color 0.2s ease;
 }
 
 .footer-col a:hover {
-  color: var(--text-color);
+  color: #FFFFFF;
 }
 
 /* ── BOTTOM BAR ── */
 
 .footer-bottom {
-  border-top: 1px solid #0c1a24;
+  border-top: 1px solid rgba(26, 171, 245, 0.2);
   padding: 16px 20px;
   text-align: center;
 }
@@ -103,7 +104,7 @@
 .footer-bottom p {
   margin: 0;
   font-size: 0.82rem;
-  color: var(--subtitle-color);
+  color: #4A6580;
 }
 
 /* ── RESPONSIVE — tablet ── */

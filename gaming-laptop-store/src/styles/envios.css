@@ -174,7 +174,7 @@ html {
 /* ── NOTE BOX ── */
 
 .env-note-box {
-  background-color: #0c1820;
+  background-color: var(--card-bg);
   border-left: 3px solid var(--primary-color);
   border-top: 1px solid var(--fourth-color);
   border-right: 1px solid var(--fourth-color);
@@ -231,8 +231,8 @@ html {
   height: 28px;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: var(--primary-color);
-  color: #01060c;
+  background-color: var(--cta-bg);
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 0.85rem;
   position: relative;
@@ -280,8 +280,8 @@ html {
     position: sticky;
     top: 130px;
     z-index: 100;
-    background-color: var(--navbar-bg);
-    border-bottom: 1px solid #0c1a24;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--fourth-color);
     display: flex;
     flex-direction: row;
     align-items: center;

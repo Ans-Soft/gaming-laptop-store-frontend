@@ -5,34 +5,39 @@
 }
 
 .stat-card {
-  background-color: var(--card-bg);
+  background-color: var(--bg-color);
   padding: 1rem 1.5rem;
   border-radius: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
   flex: 1;
-  border: 1px solid;
-  border-color: var(--fourth-color);
+  border: 1px solid var(--fourth-color);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
 
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .stat-card p {
-  color: #9ca3af;
+  color: var(--subtitle-color);
   font-size: 0.9rem;
   margin-top: 0;
 }
 
 .stat-card h3 {
-  color: #fff;
+  color: var(--text-color);
   font-size: 1.5rem;
 }
 
 .icon-card {
   width: 2rem;
   height: 2rem;
-  stroke: var(--secondary-color); /* define color de línea */
-  color: var(--secondary-color);
+  stroke: var(--primary-color);
+  color: var(--primary-color);
   background-color: var(--icon-bg);
   padding: 1rem;
   border-radius: 1rem;

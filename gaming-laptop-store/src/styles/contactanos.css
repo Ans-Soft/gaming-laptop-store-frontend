@@ -30,8 +30,7 @@
 /* ── 1. HERO ── */
 
 .ct-hero {
-  background: linear-gradient(180deg, #060C13 0%, var(--bg-color) 100%);
-  border-bottom: 1px solid #0c1a24;
+  background-color: var(--card-bg);
   padding: 80px 24px 72px;
   text-align: center;
 }
@@ -73,7 +72,7 @@
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #0c1a24;
+  border: 1px solid var(--fourth-color);
   height: 440px;
 }
 
@@ -137,13 +136,14 @@
 }
 
 .ct-info-card {
-  background-color: var(--card-bg);
+  background-color: var(--card-bg-elevated);
   border: 1px solid var(--fourth-color);
   border-radius: 14px;
   padding: 20px;
   display: flex;
   align-items: flex-start;
   gap: 14px;
+  box-shadow: var(--shadow-sm);
 }
 
 .ct-info-icon {
@@ -191,7 +191,7 @@
 }
 
 .ct-social-card {
-  background-color: var(--card-bg);
+  background-color: var(--card-bg-elevated);
   border: 1px solid var(--fourth-color);
   border-radius: 14px;
   padding: 32px 20px 28px;
@@ -200,12 +200,13 @@
   align-items: center;
   gap: 8px;
   text-align: center;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
 }
 
 .ct-social-card:hover {
-  background-color: #0c1820;
+  background-color: var(--icon-bg);
 }
 
 .ct-social-icon {

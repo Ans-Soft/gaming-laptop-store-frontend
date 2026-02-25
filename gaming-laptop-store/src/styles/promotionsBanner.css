@@ -4,8 +4,6 @@
   width: 100%;
   padding: 80px 24px;
   background-color: var(--card-bg);
-  border-top: 1px solid var(--fourth-color);
-  border-bottom: 1px solid var(--fourth-color);
   box-sizing: border-box;
 
   /* Fade-in initial state */
@@ -60,8 +58,8 @@
 
 .promo-cta {
   display: inline-block;
-  background-color: var(--primary-color);
-  color: #01060C;
+  background-color: var(--cta-bg);
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
@@ -70,13 +68,21 @@
   padding: 14px 32px;
   cursor: pointer;
   text-decoration: none;
-  transition: box-shadow 0.25s ease, filter 0.25s ease;
+  box-shadow: 0 2px 8px rgba(13, 127, 191, 0.25);
+  transition: background-color 0.2s ease, box-shadow 0.25s ease, transform 0.15s ease;
   line-height: 1;
 }
 
 .promo-cta:hover {
-  box-shadow: 0 0 20px rgba(1, 175, 253, 0.4);
-  filter: brightness(1.1);
+  background-color: var(--cta-hover);
+  box-shadow: 0 4px 20px rgba(13, 127, 191, 0.35);
+  transform: translateY(-1px);
+}
+
+.promo-cta:active {
+  background-color: var(--cta-active);
+  box-shadow: 0 1px 4px rgba(13, 127, 191, 0.20);
+  transform: translateY(0);
 }
 
 /* Responsive */

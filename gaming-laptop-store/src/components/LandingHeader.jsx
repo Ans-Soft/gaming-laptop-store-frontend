@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "../styles/landingHeader.css";
 import logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 export default function LandingHeader() {
@@ -76,10 +76,10 @@ export default function LandingHeader() {
       {/* ── BOTTOM ROW: centered nav links ── */}
       <div className={`navbar-bottom${menuOpen ? " is-open" : ""}`}>
         <nav className="navbar-links">
-          <Link to="/" onClick={closeMenu}>Inicio</Link>
-          <Link to="/catalogo" onClick={closeMenu}>Productos</Link>
-          <Link to="/conocenos" onClick={closeMenu}>Nosotros</Link>
-          <Link to="/envios" onClick={closeMenu}>Envíos</Link>
+          <NavLink to="/" end onClick={closeMenu}>Inicio</NavLink>
+          <NavLink to="/catalogo" onClick={closeMenu}>Productos</NavLink>
+          <NavLink to="/conocenos" onClick={closeMenu}>Nosotros</NavLink>
+          <NavLink to="/envios" onClick={closeMenu}>Envíos</NavLink>
 
           {/* Policies dropdown — click-based, outside-click closes */}
           <div

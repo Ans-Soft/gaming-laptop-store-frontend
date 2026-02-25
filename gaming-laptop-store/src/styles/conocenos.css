@@ -65,14 +65,14 @@
 }
 
 .cn-btn--primary {
-  background-color: var(--primary-color);
-  color: #01060c;
-  border: 2px solid var(--primary-color);
+  background-color: var(--cta-bg);
+  color: #FFFFFF;
+  border: 2px solid var(--cta-bg);
 }
 
 .cn-btn--primary:hover {
-  background-color: var(--secondary-color);
-  border-color: var(--secondary-color);
+  background-color: var(--cta-hover);
+  border-color: var(--cta-hover);
 }
 
 .cn-btn--outline {
@@ -112,8 +112,7 @@
 /* ── 1. HERO ── */
 
 .cn-hero {
-  background-color: var(--navbar-bg);
-  border-bottom: 1px solid #0c1a24;
+  background-color: var(--card-bg);
   padding: 90px 24px 80px;
 }
 
@@ -176,9 +175,7 @@
 /* ── 3. NUESTRA RAZÓN DE SER ── */
 
 .cn-razon {
-  background-color: var(--navbar-bg);
-  border-top: 1px solid #0c1a24;
-  border-bottom: 1px solid #0c1a24;
+  background-color: var(--card-bg);
   padding: 80px 24px;
 }
 
@@ -220,17 +217,19 @@
 }
 
 .cn-feature-card {
-  background-color: var(--card-bg);
+  background-color: var(--card-bg-elevated);
   border: 1px solid var(--fourth-color);
   border-radius: 12px;
   padding: 24px 20px;
   text-align: center;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cn-feature-card:hover {
   border-color: var(--primary-color);
   transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
 .cn-feature-title {

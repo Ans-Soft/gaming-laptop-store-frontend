@@ -1,16 +1,44 @@
 :root {
-  --bg-color: #01060C;
-  --text-color: #f0f0f0;
-  --primary-color: #01AFFD;
-  --secondary-color: #79E0F9;
-  --third-color: #A9D8EF;
-  --fourth-color: #36707d;
-  --card-bg: #091118;
-  --icon-bg: #113C5E;
-  --whatsapp-color: #08D85C;
-  --bg-login-card-color: #0E171E;
-  --navbar-bg: #060C13;
-  --subtitle-color: #818283;
+  /* ── BACKGROUNDS ── */
+  --bg-color:            #FFFFFF;
+  --card-bg:             #F0F7FF;
+  --card-bg-elevated:    #E8F1FA;
+  --bg-login-card-color: #E8F3FC;
+
+  /* ── NAVBAR (dark corporate) ── */
+  --navbar-bg:           #0A1628;
+  --navbar-text:         #C8DAE8;
+  --navbar-text-hover:   #FFFFFF;
+  --navbar-active:       #1AABF5;
+  --navbar-divider:      rgba(26, 171, 245, 0.18);
+  --navbar-dropdown-bg:  #0E1D33;
+
+  /* ── BRAND BLUES (logo-derived) ── */
+  --primary-color:       #2979C8;
+  --primary-bright:      #1AABF5;
+  --secondary-color:     #2979C8;
+  --third-color:         #7ED4F7;
+  --fourth-color:        #D4E5F2;
+
+  /* ── CTAs ── */
+  --cta-bg:              #0D7FBF;
+  --cta-hover:           #0A6FA8;
+  --cta-active:          #08608F;
+
+  /* ── SURFACES ── */
+  --icon-bg:             #E0F0FC;
+
+  /* ── SHADOWS ── */
+  --shadow-sm:  0 1px 3px rgba(10, 22, 40, 0.06), 0 1px 2px rgba(10, 22, 40, 0.04);
+  --shadow-md:  0 4px 16px rgba(10, 22, 40, 0.10), 0 2px 6px rgba(10, 22, 40, 0.06);
+  --shadow-lg:  0 12px 40px rgba(10, 22, 40, 0.16), 0 4px 12px rgba(10, 22, 40, 0.08);
+
+  /* ── TYPOGRAPHY ── */
+  --text-color:          #0A1628;
+  --subtitle-color:      #4A6580;
+
+  /* ── UTILITY ── */
+  --whatsapp-color:      #08D85C;
 }
 
 body {
@@ -33,7 +61,7 @@ a {
   text-align: center;
   margin-top: 1rem;
   font-size: 1.4rem;
-  color: #b0b0b0;
+  color: var(--subtitle-color);
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
