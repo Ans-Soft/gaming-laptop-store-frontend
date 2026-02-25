@@ -1,0 +1,190 @@
+/* FilterPanel — all selectors prefixed .fp- */
+/* MultiSelect — all selectors prefixed .ms- */
+
+.fp-panel {
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fp-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.fp-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fp-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--subtitle-color);
+}
+
+/* Price row — two inputs side by side */
+.fp-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fp-price-sep {
+  color: var(--subtitle-color);
+  flex-shrink: 0;
+}
+
+/* Text / number inputs */
+.fp-input {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--fourth-color);
+  border-radius: 10px;
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  min-height: 44px;
+}
+
+.fp-input::placeholder {
+  color: var(--subtitle-color);
+}
+
+.fp-input:focus {
+  border-color: var(--primary-color);
+}
+
+/* Hide native number spinners */
+.fp-input[type="number"]::-webkit-inner-spin-button,
+.fp-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.fp-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Apply / filter button */
+.fp-apply-btn {
+  width: 100%;
+  padding: 13px 0;
+  background-color: var(--primary-color);
+  color: #01060C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.25s ease, filter 0.25s ease;
+  min-height: 44px;
+}
+
+.fp-apply-btn:hover {
+  box-shadow: 0 0 20px rgba(1, 175, 253, 0.4);
+  filter: brightness(1.1);
+}
+
+/* ---------------------------------------------------------------------------
+   MultiSelect custom dropdown
+--------------------------------------------------------------------------- */
+
+.ms-wrapper {
+  position: relative;
+}
+
+/* Trigger button */
+.ms-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--fourth-color);
+  border-radius: 10px;
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-height: 44px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  text-align: left;
+}
+
+.ms-trigger:hover,
+.ms-trigger:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* Chevron arrow indicator */
+.ms-arrow {
+  font-size: 0.75rem;
+  color: var(--subtitle-color);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ms-arrow--open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown list */
+.ms-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 10px;
+  padding: 8px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Individual option row */
+.ms-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  min-height: 36px;
+  user-select: none;
+}
+
+.ms-option:hover {
+  background-color: var(--icon-bg);
+}
+
+.ms-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}

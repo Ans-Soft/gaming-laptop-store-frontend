@@ -14,7 +14,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem("access_token");
 
  
-    const publicEndpoints = [urls.login];
+    const publicEndpoints = [urls.login, urls.productVariantsList];
 
     if (
       !publicEndpoints.some((endpoint) => config.url.includes(endpoint)) &&

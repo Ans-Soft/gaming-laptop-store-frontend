@@ -1,11 +1,19 @@
-.catalog-container {
+/* Catalog page — all selectors prefixed .cat- */
+
+.cat-page {
+  min-height: 100vh;
+  padding: 32px 24px 80px;
   max-width: 1400px;
-  margin: auto;
-  padding: 2rem;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.catalog-container h1 {
-  margin-bottom: 2rem;
+/* ---------------------------------------------------------------------------
+   Search bar — full-width strip, max-width constrained (F-pattern)
+--------------------------------------------------------------------------- */
+
+.cat-search-bar {
+  margin-bottom: 32px;
 }
 
 .catalog-grid {
@@ -22,17 +30,12 @@
   box-shadow: var(--shadow-sm);
 }
 
-.product-image {
+.cat-search-inner {
   position: relative;
+  max-width: 640px;
 }
 
-.product-image img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
-
-.price-badge {
+.cat-search-icon {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -48,9 +51,13 @@
 }
 
 .tags {
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--subtitle-color);
   display: flex;
-  gap: 8px;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  pointer-events: none;
 }
 
 .tag {
@@ -77,7 +84,198 @@
   transition: background-color 0.2s ease;
 }
 
-.primary-btn:hover {
-  background: var(--cta-hover);
+
+.cat-search-input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 12px;
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.cat-search-input::placeholder {
+  color: var(--subtitle-color);
+}
+
+.cat-search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(1, 175, 253, 0.15);
+}
+
+/* ---------------------------------------------------------------------------
+   Body — sidebar (left) + main content (right)
+--------------------------------------------------------------------------- */
+
+.cat-body {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* Mobile filter toggle — hidden on desktop */
+.cat-filters-toggle {
+  display: none;
+}
+
+/* Sidebar — sticky on desktop */
+.cat-sidebar {
+  flex-shrink: 0;
+  width: 280px;
+  position: sticky;
+  top: 24px;
+}
+
+/* Main content area */
+.cat-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Product grid — 3 cols desktop, 2 tablet, 1 mobile
+--------------------------------------------------------------------------- */
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* ---------------------------------------------------------------------------
+   Loading state
+--------------------------------------------------------------------------- */
+
+.cat-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 0;
+  color: var(--subtitle-color);
+}
+
+.cat-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--fourth-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: cat-spin 0.8s linear infinite;
+}
+
+@keyframes cat-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------------------------
+   Error state
+--------------------------------------------------------------------------- */
+
+.cat-error {
+  text-align: center;
+  padding: 80px 0;
+  color: #ef4444;
+}
+
+/* ---------------------------------------------------------------------------
+   Empty state
+--------------------------------------------------------------------------- */
+
+.cat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: var(--subtitle-color);
+  text-align: center;
+}
+
+.cat-empty-icon {
+  font-size: 3rem;
+}
+
+.cat-empty h3 {
+  font-size: 1.25rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.cat-empty p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive — tablet (<=1024px): 2 column grid
+--------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive — mobile (<=768px): stacked layout, collapsible sidebar
+--------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .cat-page {
+    padding: 24px 16px 60px;
+  }
+
+  .cat-body {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Show mobile toggle button */
+  .cat-filters-toggle {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--fourth-color);
+    border-radius: 12px;
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    text-align: left;
+    transition: border-color 0.2s ease;
+    min-height: 44px;
+  }
+
+  .cat-filters-toggle:hover {
+    border-color: var(--primary-color);
+  }
+
+  /* Sidebar: collapsed by default, expands via --open modifier */
+  .cat-sidebar {
+    width: 100%;
+    position: static;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .cat-sidebar--open {
+    max-height: 1000px;
+    margin-bottom: 24px;
+  }
+
+  /* Single column on mobile */
+  .cat-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
