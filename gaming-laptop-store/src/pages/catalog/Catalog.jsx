@@ -238,9 +238,7 @@ const Catalog = () => {
 
           {loading && <LoadingState />}
 
-          {!loading && error && <ErrorState message={error} />}
-
-          {!loading && !error && allVariants.length === 0 && <CanvaEmbed />}
+          {!loading && (error || allVariants.length === 0) && <CanvaEmbed />}
 
           {!loading && !error && allVariants.length > 0 && displayed.length === 0 && <EmptyState />}
 
