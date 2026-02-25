@@ -6,30 +6,44 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--primary-color);
-  color: #0d0f12;
+  background-color: var(--cta-bg);
+  color: #FFFFFF;
   padding: 0.8rem 1.5rem;
   border-radius: 0.8rem;
   font-weight: 700;
   font-size: 1.3rem;
-  transition: background 0.3s ease;
+  box-shadow: 0 2px 8px rgba(13, 127, 191, 0.25);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .catalog-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--icon-bg);
-  color: #ffffff;
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--fourth-color);
   padding: 0.8rem 1.5rem;
   border-radius: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.3rem;
-  transition: background 0.3s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.catalog-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: rgba(41, 121, 200, 0.05);
 }
 
 .instagram-btn:hover {
-  background-color: var(--secondary-color);
+  background-color: var(--cta-hover);
+  transform: translateY(-1px);
+}
+
+.instagram-btn:active {
+  background-color: var(--cta-active);
+  transform: translateY(0);
 }
 
 .instagram-icon {
@@ -39,7 +53,7 @@
 .instagram-text {
   margin-top: 1.5rem;
   font-size: 1rem;
-  color: #b0b0b0;
+  color: var(--subtitle-color);
 }
 
 @media (max-width: 768px) {

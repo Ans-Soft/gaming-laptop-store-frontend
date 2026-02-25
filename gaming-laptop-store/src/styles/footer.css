@@ -1,19 +1,141 @@
-.footer-notice {
+/* ================================================
+   FOOTER — dark, multi-column, responsive
+   ================================================ */
+
+.footer {
+  background-color: #0A1628;
+  border-top: 3px solid var(--primary-bright, #1AABF5);
+  margin-top: 60px;
+  color: #f0f0f0;
+}
+
+/* ── INNER GRID ── */
+
+.footer-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 48px 20px 40px;
+  display: grid;
+  grid-template-columns: 200px repeat(3, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+/* ── BRAND COLUMN ── */
+
+.footer-brand {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center; 
+  gap: 16px;
+  text-align: center;
+}
+
+.footer-logo {
+  height: 100px;
+  width: auto;
+  display: block;
+}
+
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer-social-link {
+  display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin: 3rem 0;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  color: #f0f0f0;
+  background-color: transparent;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.footer-text {
-  font-size: 0.95rem;
-  color: var(--primary-color);
+.footer-social-link:hover {
+  background-color: rgba(26, 171, 245, 0.15);
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  background-color: var(--primary-color);
-  border-radius: 50%;
+.footer-social-link.whatsapp:hover  { color: var(--whatsapp-color); }
+.footer-social-link.instagram:hover { color: #e1306c; }
+.footer-social-link.facebook:hover  { color: #1877f2; }
+.footer-social-link.tiktok:hover    { color: var(--primary-color); }
+
+/* ── NAV COLUMNS ── */
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-col-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #1AABF5;
+  margin: 0 0 6px;
+}
+
+.footer-col a {
+  color: #7ED4F7;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.footer-col a:hover {
+  color: #FFFFFF;
+}
+
+/* ── BOTTOM BAR ── */
+
+.footer-bottom {
+  border-top: 1px solid rgba(26, 171, 245, 0.2);
+  padding: 16px 20px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #4A6580;
+}
+
+/* ── RESPONSIVE — tablet ── */
+
+@media (max-width: 900px) {
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  /* Brand spans full width on tablet */
+  .footer-brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+}
+
+/* ── RESPONSIVE — mobile ── */
+
+@media (max-width: 560px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+    padding: 36px 20px 28px;
+    gap: 28px;
+  }
+
+  .footer-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    grid-column: auto;
+  }
 }

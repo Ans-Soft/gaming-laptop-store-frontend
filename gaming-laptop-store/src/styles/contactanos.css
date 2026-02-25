@@ -1,0 +1,299 @@
+/* ================================================
+   CONTACTANOS PAGE  (/contactanos)
+   Prefix: ct-  (avoids conflicts with other styles)
+   ================================================ */
+
+.ct-page {
+  width: 100%;
+}
+
+/* ── SHARED ── */
+
+.ct-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.ct-section-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0 0 24px;
+  line-height: 1.25;
+}
+
+.ct-centered {
+  text-align: center;
+}
+
+/* ── 1. HERO ── */
+
+.ct-hero {
+  background-color: var(--card-bg);
+  padding: 80px 24px 72px;
+  text-align: center;
+}
+
+.ct-hero-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.ct-hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0 0 14px;
+}
+
+.ct-hero-subtitle {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin: 0 0 16px;
+}
+
+.ct-hero-desc {
+  font-size: 1rem;
+  color: var(--subtitle-color);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── 2. GOOGLE MAP ── */
+
+.ct-map-section {
+  padding: 48px 24px 0;
+}
+
+.ct-map-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--fourth-color);
+  height: 440px;
+}
+
+.ct-map-inner iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── 3. TWO-COLUMN: FORM (left) + CONTACT INFO (right) ── */
+
+.ct-split {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Left column — form */
+
+.ct-form-note {
+  font-size: 0.85rem;
+  color: var(--subtitle-color);
+  margin: -16px 0 20px;
+}
+
+.ct-form-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid var(--fourth-color);
+}
+
+.ct-form-wrapper::before {
+  content: 'Formulario de contacto';
+  display: block;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--fourth-color);
+  color: var(--subtitle-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+}
+
+.ct-form-wrapper iframe {
+  width: 100%;
+  height: 580px;
+  border: none;
+  display: block;
+}
+
+/* Right column — contact info */
+
+.ct-info-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ct-info-card {
+  background-color: var(--card-bg-elevated);
+  border: 1px solid var(--fourth-color);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ct-info-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.ct-info-icon--whatsapp { color: var(--whatsapp-color); }
+.ct-info-icon--location { color: var(--primary-color); }
+.ct-info-icon--schedule { color: var(--secondary-color); }
+
+.ct-info-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--subtitle-color);
+  margin-bottom: 5px;
+}
+
+.ct-info-value {
+  display: block;
+  font-size: 0.93rem;
+  color: var(--text-color);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.ct-info-link:hover {
+  color: var(--primary-color);
+}
+
+/* ── 4. SOCIAL CARDS ── */
+
+.ct-social-section {
+  padding-top: 0;
+}
+
+.ct-social-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.ct-social-card {
+  background-color: var(--card-bg-elevated);
+  border: 1px solid var(--fourth-color);
+  border-radius: 14px;
+  padding: 32px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.ct-social-card:hover {
+  background-color: var(--icon-bg);
+}
+
+.ct-social-icon {
+  font-size: 2.2rem;
+  transition: color 0.2s ease;
+  margin-bottom: 4px;
+}
+
+.ct-social-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.ct-social-handle {
+  font-size: 0.82rem;
+  color: var(--subtitle-color);
+}
+
+/* Per-brand icon colors + hover border */
+.ct-social-card--whatsapp .ct-social-icon  { color: var(--whatsapp-color); }
+.ct-social-card--whatsapp:hover            { border-color: var(--whatsapp-color); }
+
+.ct-social-card--instagram .ct-social-icon { color: #e1306c; }
+.ct-social-card--instagram:hover           { border-color: #e1306c; }
+
+.ct-social-card--facebook .ct-social-icon  { color: #1877f2; }
+.ct-social-card--facebook:hover            { border-color: #1877f2; }
+
+.ct-social-card--tiktok .ct-social-icon    { color: var(--text-color); }
+.ct-social-card--tiktok:hover              { border-color: var(--primary-color); }
+.ct-social-card--tiktok:hover .ct-social-icon { color: var(--primary-color); }
+
+/* ── RESPONSIVE — tablet (≤ 960px) ── */
+
+@media (max-width: 960px) {
+  .ct-split {
+    grid-template-columns: 1fr;
+  }
+
+  /* On tablet, right column (info) goes above form */
+  .ct-split-right {
+    order: -1;
+  }
+
+  .ct-social-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ct-map-inner {
+    height: 360px;
+  }
+}
+
+/* ── RESPONSIVE — mobile (≤ 600px) ── */
+
+@media (max-width: 600px) {
+  .ct-hero {
+    padding: 56px 18px 48px;
+  }
+
+  .ct-hero-title {
+    font-size: 2.2rem;
+  }
+
+  .ct-hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .ct-section {
+    padding: 48px 18px;
+  }
+
+  .ct-section-title {
+    font-size: 1.45rem;
+  }
+
+  .ct-map-section {
+    padding: 36px 18px 0;
+  }
+
+  .ct-map-inner {
+    height: 260px;
+    border-radius: 12px;
+  }
+
+  .ct-social-grid {
+    grid-template-columns: 1fr;
+  }
+}

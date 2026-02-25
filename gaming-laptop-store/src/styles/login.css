@@ -3,25 +3,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--bg-color);
+  background-color: var(--card-bg);
 }
 
 .login-card {
-  background: var(--bg-login-card-color);
+  background: var(--bg-color);
   padding: 2.5rem;
-  border-radius: 0.8rem;
+  border-radius: 12px;
   width: 360px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  box-shadow: var(--shadow-lg);
   text-align: center;
-  border: 1px solid;
-  border-color: var(--secondary-color);
+  border: 1px solid var(--fourth-color);
 }
 
 .login-icon {
   font-size: 2rem;
   color: var(--primary-color);
   margin-bottom: 1rem;
-  padding: 0,5rem;
+  padding: 0.5rem;
   border-radius: 1.2rem;
 }
 
@@ -33,7 +32,7 @@
 
 .login-subtitle {
   font-size: 0.95rem;
-  color: #b0b0b0;
+  color: var(--subtitle-color);
   margin-bottom: 1.5rem;
 }
 
@@ -43,21 +42,28 @@
   font-size: 0.9rem;
   margin: 0.8rem 0 0.4rem;
   font-weight: 600;
+  color: var(--text-color);
 }
 
 .input-group {
   display: flex;
   align-items: center;
-  background: #0d0f12;
-  border: 1px solid #222;
+  background: var(--card-bg);
+  border: 1px solid var(--fourth-color);
   padding: 0.6rem;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(41, 121, 200, 0.12);
 }
 
 .input-icon {
   margin-right: 0.5rem;
-  color: #888;
+  color: var(--subtitle-color);
 }
 
 .input-group input {
@@ -66,23 +72,34 @@
   background: transparent;
   flex: 1;
   color: var(--text-color);
+  font-family: inherit;
 }
 
+.input-group input::placeholder {
+  color: var(--subtitle-color);
+}
 
 .login-btn {
   width: 100%;
   margin-top: 1rem;
   padding: 0.8rem;
-  background: var(--primary-color);
-  color: #0d0f12;
+  background: var(--cta-bg);
+  color: #FFFFFF;
   font-weight: 600;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  box-shadow: 0 2px 8px rgba(13, 127, 191, 0.25);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .login-btn:hover {
-  background: var(--secondary-color);
+  background: var(--cta-hover);
+  box-shadow: 0 4px 16px rgba(13, 127, 191, 0.30);
+  transform: translateY(-1px);
 }
 
+.login-btn:active {
+  background: var(--cta-active);
+  transform: translateY(0);
+}

@@ -18,32 +18,64 @@
 
 .form-group label {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--text-color);
 }
 
 .form-group input,
 .form-group select,
-.form-goup textarea {
-  background-color: #1a1f25;
-  border: 1px solid #2b3038;
+.form-group textarea {
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
-  color: #e5e7eb;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--subtitle-color);
+}
+
+.form-group input:hover:not(:focus),
+.form-group select:hover:not(:focus),
+.form-group textarea:hover:not(:focus) {
+  border-color: var(--third-color);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(41, 121, 200, 0.12);
+  background-color: var(--bg-color);
+  outline: none;
 }
 
 .form-group textarea {
   resize: vertical;
-}
-
-.form-group input:focus {
-  border-color: var(--secondary-color);
-  outline: none;
+  min-height: 80px;
 }
 
 .required {
-  color: var(--secondary-color);
+  color: #c0392b;
 }
 
 .multi-select {
-  min-height: 80px; 
+  min-height: 80px;
+}
+
+.form-error-banner {
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  color: #c0392b;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 }

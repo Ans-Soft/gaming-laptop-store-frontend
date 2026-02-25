@@ -4,17 +4,18 @@
 
 .shipping-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 3fr);
   gap: 30px;
   margin-top: 50px;
 }
 
 .shipping-card {
-  background: var(--card-bg);
-  padding: 40px;
+  background: var(--card-bg-elevated);
+  padding: 20px;
   border-radius: 18px;
   text-align: center;
   border: 1px solid var(--fourth-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .shipping-icons {
@@ -29,7 +30,7 @@
 
 .shipping-desc {
   font-size: 13px;
-  color: #b0b0b0;
+  color: var(--subtitle-color);
   line-height: 1.4;
 }
 

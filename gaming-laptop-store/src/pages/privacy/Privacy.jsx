@@ -1,15 +1,9 @@
 import React from "react";
-import LandingHeader from "../../components/LandingHeader.jsx";
-import Whatsapp from "../../components/Whatsapp";
-
-import "../../styles/global.css";
 import "../../styles/privacy.css";
 
 const PrivacyPolicy = () => {
   return (
     <div className="homepage">
-      <LandingHeader />
-
       <main className="privacy-policy" role="main">
         <section className="privacy-container">
           <header>
@@ -178,7 +172,6 @@ const PrivacyPolicy = () => {
         </section>
       </main>
 
-      <Whatsapp />
     </div>
   );
 };

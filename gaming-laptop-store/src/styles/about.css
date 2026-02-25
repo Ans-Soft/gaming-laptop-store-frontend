@@ -68,7 +68,7 @@
 
 .about-desc {
     font-size: 13px;
-    color: #b0b0b0;
+    color: var(--subtitle-color);
     line-height: 1.4;
 
 }
@@ -115,7 +115,7 @@
   }
 
   .about-cards {
-    grid-template-columns: 0,5fr;
+    grid-template-columns: 1fr;
   }
 
   .about-stats {

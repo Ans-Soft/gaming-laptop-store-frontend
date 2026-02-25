@@ -1,10 +1,11 @@
 .admin-header {
-  position: sticy; /* pega en top para que se vea siempre */
+  position: sticky;
   top: 0;
-  background: var(--navbar-bg); 
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  --header-height: 100px; 
-
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-divider);
+  --header-height: 100px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+  z-index: 100;
 }
 
 .admin-header-inner {
@@ -26,26 +27,26 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-
 }
 
 .navbar-logo {
   height: 5rem;
-  object-fit: contain; 
+  object-fit: contain;
 }
 
 .admin-badge {
   display: inline-block;
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(1,175,253,0.15);
-  color: var(--primary-color);
+  border: 1px solid rgba(26, 171, 245, 0.25);
+  color: var(--navbar-active);
   font-weight: 600;
-  background: rgba(1,175,253,0.02);
+  background: rgba(26, 171, 245, 0.08);
   text-decoration: none;
   transition: background 0.18s ease, transform 0.12s ease;
 }
+
 .admin-badge:hover {
   transform: translateY(-2px);
-  background: rgba(1,175,253,0.04);
+  background: rgba(26, 171, 245, 0.14);
 }

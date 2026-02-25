@@ -1,33 +1,40 @@
 .whatsapp-btn {
-  position:fixed;
-  width:60px;
-  height:60px;
-  bottom:50px;
-  right:50px;
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 50px;
+  right: 50px;
   background-color: var(--whatsapp-color);
-  color:#FFF;
-  border-radius:50px;
-  text-align:center;
+  color: #FFF;
+  border-radius: 50px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(8, 216, 92, 0.30), 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(8, 216, 92, 0.40), 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .whatsapp-icon {
   font-size: 2.5rem;
-  color: var(--text-color);
+  color: #FFFFFF;
   margin-top: 10px;
   margin-left: 3px;
 }
 
 @media (max-width: 768px) {
   .whatsapp-btn {
-        width: 50px;
-        height: 50px;
-        bottom: 20px; 
-        right: 20px; 
-    }
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+  }
 
-    .whatsapp-icon {
-        font-size: 2rem; 
-        margin-top: 8px; 
-        margin-left: 2px;
-    }
+  .whatsapp-icon {
+    font-size: 2rem;
+    margin-top: 8px;
+    margin-left: 2px;
+  }
 }

@@ -15,10 +15,11 @@
 }
 
 .product-card {
-  background: var(--card-bg);
+  background: var(--card-bg-elevated);
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid #0f2535;
+  border: 1px solid var(--fourth-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .product-image {
@@ -35,8 +36,8 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: var(--primary-color);
-  color: #000;
+  background: var(--cta-bg);
+  color: #FFFFFF;
   padding: 6px 12px;
   border-radius: 999px;
   font-weight: 600;
@@ -60,17 +61,23 @@
 }
 
 .tag.muted {
-  background: #1c2b36;
+  background: var(--icon-bg);
 }
 
 .primary-btn {
   width: 100%;
   margin-top: 1rem;
-  background: var(--primary-color);
+  background: var(--cta-bg);
+  color: #FFFFFF;
   border: none;
   padding: 0.7rem;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: var(--cta-hover);
 }
 

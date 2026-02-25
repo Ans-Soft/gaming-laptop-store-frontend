@@ -1,38 +1,48 @@
 .table-container {
-  color: #e5e7eb;
+  color: var(--text-color);
   padding: 2rem;
-  background-color: var(--bg-color);
+  background-color: var(--card-bg);
   min-height: 100vh;
 }
-
-
 
 .search-box input {
   background: none;
   border: none;
   outline: none;
-  color: #fff;
+  color: var(--text-color);
   margin-left: 8px;
   width: 100%;
+  font-family: inherit;
+}
+
+.search-box input::placeholder {
+  color: var(--subtitle-color);
 }
 
 select {
-  background-color: #0f1115;
-  color: #e5e7eb;
-  border: none;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--fourth-color);
   border-radius: 8px;
   padding: 0.6rem 1rem;
   cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
 }
 
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(41, 121, 200, 0.12);
+}
 
 .table {
   margin-top: 2rem;
-  background-color: var(--card-bg);
+  background-color: var(--bg-color);
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid;
-  border-color: var(--fourth-color);
+  border: 1px solid var(--fourth-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .table table {
@@ -48,11 +58,22 @@ select {
 
 .table thead {
   background-color: var(--card-bg);
-  color: #9ca3af;
+  color: var(--subtitle-color);
   font-size: 0.9rem;
-  border: 1px solid;
-  border-color: lid;
-  border-color: #0D181F;
+  border-bottom: 1px solid var(--fourth-color);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--fourth-color);
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: var(--card-bg);
 }
 
 .product-info {
@@ -60,7 +81,7 @@ select {
   align-items: center;
   gap: 12px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .product-info img {
@@ -69,10 +90,10 @@ select {
 }
 
 .brand-tag {
-  background-color: #0f1115;
+  background-color: var(--icon-bg);
   padding: 0.3rem 0.7rem;
   border-radius: 6px;
-  color: #00b894;
+  color: var(--primary-color);
   font-weight: 600;
   font-size: 0.8rem;
 }
@@ -85,29 +106,28 @@ select {
 }
 
 .stock-badge.high {
-  background-color: rgba(0, 184, 148, 0.2);
-  color: #00b894;
+  background-color: rgba(0, 184, 148, 0.12);
+  color: #057a5b;
 }
 
 .stock-badge.medium {
-  background-color: rgba(156, 163, 175, 0.2);
-  color: #9ca3af;
+  background-color: var(--icon-bg);
+  color: var(--subtitle-color);
 }
 
 .stock-badge.low {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.10);
+  color: #c0392b;
 }
 
 .actions {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #9ca3af;
+  color: var(--subtitle-color);
   cursor: pointer;
   background: none;
 }
-
 
 .actions button {
   background: none;
@@ -115,13 +135,17 @@ select {
   padding: 0;
   margin: 0;
   cursor: pointer;
-  color: #9ca3af;
+  color: var(--subtitle-color);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.2s ease;
 }
 
+.actions button:hover {
+  color: var(--primary-color);
+}
+
 .actions svg:hover {
-  color: #00b894;
+  color: var(--primary-color);
 }

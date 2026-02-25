@@ -1,0 +1,163 @@
+/* Section */
+.pl-section {
+  width: 100%;
+  padding: 80px 0;
+  box-sizing: border-box;
+  /* fade-in initial state */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.pl-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Inner container — max-width + side padding for the titles only */
+.pl-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* Group: title + track */
+.pl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Group title — left-padded to align with page content */
+.pl-group-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0 24px;
+}
+
+/* Scrollable track — full viewport width, no side padding clipping */
+.pl-track {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 8px 24px 28px;
+  /* visible styled scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--card-bg);
+  /* prevent content from wrapping */
+  flex-wrap: nowrap;
+  /* prevent vertical scroll bleed */
+  overscroll-behavior-x: contain;
+}
+
+.pl-track::-webkit-scrollbar {
+  height: 6px;
+}
+.pl-track::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+.pl-track::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+.pl-track::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+  opacity: 0.85;
+}
+
+/* Card */
+.pl-card {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 160px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-color);
+  text-decoration: none;
+  white-space: normal;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.3;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  will-change: transform;
+}
+
+.pl-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  color: var(--primary-color);
+}
+
+/* Image card variant */
+.pl-card--img {
+  width: 220px;
+  height: 260px;
+  padding: 0;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  border-radius: 16px;
+}
+
+.pl-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.pl-card--img:hover .pl-card-image {
+  transform: scale(1.05);
+}
+
+
+/* Responsive — mobile */
+@media (max-width: 600px) {
+  .pl-section {
+    padding: 56px 0;
+  }
+
+  .pl-group-title {
+    font-size: 1.15rem;
+    padding: 0 16px;
+  }
+
+  .pl-track {
+    padding: 8px 16px 22px;
+    gap: 10px;
+  }
+
+  .pl-card {
+    width: 130px;
+    height: 130px;
+    font-size: 0.78rem;
+    border-radius: 12px;
+  }
+}
