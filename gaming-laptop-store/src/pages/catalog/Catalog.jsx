@@ -3,6 +3,7 @@ import { Search } from "lucide-react"
 import { getPublicVariants } from "../../services/CatalogService.jsx"
 import FilterPanel from "../../components/catalog/FilterPanel.jsx"
 import CatalogCard from "../../components/catalog/CatalogCard.jsx"
+import CanvaEmbed from "../../components/CanvaEmbed.jsx"
 import "../../styles/catalog.css"
 
 // ---------------------------------------------------------------------------
@@ -190,23 +191,6 @@ const Catalog = () => {
 
   return (
     <div className="cat-page">
-      {/* Full-width search bar — live client-side filtering */}
-      <div className="cat-search-bar">
-        <div className="cat-search-inner">
-          <span className="cat-search-icon" aria-hidden="true">
-            <Search size={18} />
-          </span>
-          <input
-            type="search"
-            className="cat-search-input"
-            placeholder="Buscar productos..."
-            value={pendingFilters.search}
-            onChange={(e) => handleFilterChange("search", e.target.value)}
-            aria-label="Buscar productos"
-          />
-        </div>
-      </div>
-
       {/* Body: mobile toggle + sidebar + main */}
       <div className="cat-body">
         {/* Mobile-only filter toggle button */}
@@ -235,11 +219,30 @@ const Catalog = () => {
 
         {/* Main product area */}
         <main className="cat-main" aria-label="Listado de productos">
+          {/* Search bar — inside cat-main so it aligns with the card columns */}
+          <div className="cat-search-bar">
+            <div className="cat-search-inner">
+              <span className="cat-search-icon" aria-hidden="true">
+                <Search size={18} />
+              </span>
+              <input
+                type="search"
+                className="cat-search-input"
+                placeholder="Buscar productos..."
+                value={pendingFilters.search}
+                onChange={(e) => handleFilterChange("search", e.target.value)}
+                aria-label="Buscar productos"
+              />
+            </div>
+          </div>
+
           {loading && <LoadingState />}
 
           {!loading && error && <ErrorState message={error} />}
 
-          {!loading && !error && displayed.length === 0 && <EmptyState />}
+          {!loading && !error && allVariants.length === 0 && <CanvaEmbed />}
+
+          {!loading && !error && allVariants.length > 0 && displayed.length === 0 && <EmptyState />}
 
           {!loading && !error && displayed.length > 0 && (
             <div className="cat-grid">
