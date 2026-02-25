@@ -1,0 +1,134 @@
+/* CatalogCard — all selectors prefixed .cc- */
+
+.cc-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  will-change: transform;
+}
+
+.cc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(1, 175, 253, 0.2);
+  border-color: rgba(1, 175, 253, 0.4);
+}
+
+/* Image */
+.cc-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background-color: #0d1a24;
+  flex-shrink: 0;
+}
+
+.cc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.cc-card:hover .cc-image {
+  transform: scale(1.03);
+}
+
+.cc-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--subtitle-color);
+  font-size: 0.85rem;
+}
+
+/* Price badge — absolute top-right over image */
+.cc-price-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: var(--primary-color);
+  color: #01060C;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Body */
+.cc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  flex: 1;
+}
+
+/* Category badge */
+.cc-category {
+  display: inline-block;
+  background-color: var(--icon-bg);
+  color: var(--primary-color);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  line-height: 1;
+  align-self: flex-start;
+}
+
+/* Product name */
+.cc-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Stock status */
+.cc-stock {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cc-stock--en_stock        { color: #08D85C; }
+.cc-stock--en_camino       { color: #f59e0b; }
+.cc-stock--por_importacion { color: #a78bfa; }
+.cc-stock--sin_stock       { color: #ef4444; }
+
+/* Buy button — primary color CTA linking to WhatsApp */
+.cc-buy-btn {
+  margin-top: auto;
+  padding: 12px 0;
+  background-color: var(--primary-color);
+  color: #01060C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: box-shadow 0.25s ease, filter 0.25s ease;
+  min-height: 44px; /* Minimum touch target — Fitts's Law */
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-buy-btn:hover {
+  box-shadow: 0 0 20px rgba(1, 175, 253, 0.4);
+  filter: brightness(1.1);
+}
