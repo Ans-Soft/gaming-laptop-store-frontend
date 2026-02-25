@@ -1,0 +1,43 @@
+/* OpinionsSection — all selectors prefixed with .op- */
+
+.op-section {
+  width: 100%;
+  padding: 80px 24px;
+  border-top: 1px solid var(--fourth-color);
+  box-sizing: border-box;
+
+  /* Fade-in initial state */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.op-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.op-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.op-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0 0 40px 0;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .op-section {
+    padding: 60px 18px;
+  }
+
+  .op-title {
+    font-size: 1.5rem;
+    margin-bottom: 28px;
+  }
+}
