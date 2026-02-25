@@ -17,7 +17,11 @@ const LAPTOP_LINES = [
 ]
 
 const OTHER_PRODUCTS = [
-  "HARDWARE", "TARJETAS GRÁFICAS", "CONSOLAS", "PC DE MESA", "APPLE",
+  { name: "HARDWARE",          img: "HARDWARE.png" },
+  { name: "TARJETAS GRÁFICAS", img: "TARJETAS GRAFICAS.jpg" },
+  { name: "CONSOLAS",          img: "CONSOLAS.jpg" },
+  { name: "PC DE MESA",        img: "PC.jpg" },
+  { name: "APPLE",             img: "APPLE.jpg" },
 ]
 
 function buildWaUrl(name) {
@@ -117,15 +121,26 @@ export default function ProductLinesSection() {
         <div className="pl-group">
           <h2 className="pl-group-title">Otros productos</h2>
           <div className="pl-track" ref={otherTrackRef}>
-            {OTHER_PRODUCTS.map((name) => (
+            {OTHER_PRODUCTS.map(({ name, img }) => (
               <a
                 key={name}
-                className="pl-card"
+                className={`pl-card${img ? " pl-card--img" : ""}`}
                 href={buildWaUrl(name)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {name}
+                {img ? (
+                  <img
+                    src={`/assets/home/otros-productos/${img}`}
+                    alt={name}
+                    className="pl-card-image"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                ) : (
+                  name
+                )}
               </a>
             ))}
           </div>
