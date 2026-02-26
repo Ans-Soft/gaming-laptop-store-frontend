@@ -2,13 +2,23 @@ import "../styles/login.css";
 import { login } from "../services/Auth";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  // Detectar si la sesión expiró y limpiar el flag inmediatamente para que
+  // el aviso solo se muestre una vez.
+  useEffect(() => {
+    if (localStorage.getItem("session_expired") === "1") {
+      setSessionExpired(true);
+      localStorage.removeItem("session_expired");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +26,15 @@ export default function LoginForm() {
       const data = await login(email, password);
       console.log("Tokens recibidos:", data);
 
-      navigate("/admin"); 
+      // Redirigir al usuario a la página donde estaba antes de que la sesión
+      // expirara, o al dashboard si no hay ninguna ruta guardada.
+      const redirectTo = localStorage.getItem("redirect_after_login");
+      if (redirectTo) {
+        localStorage.removeItem("redirect_after_login");
+        navigate(redirectTo);
+      } else {
+        navigate("/admin");
+      }
     } catch (error) {
       setError("Credenciales incorrectas o error en el servidor");
     }
@@ -33,6 +51,12 @@ export default function LoginForm() {
         <p className="login-subtitle">
           Ingresa tus credenciales para continuar
         </p>
+
+        {sessionExpired && (
+          <div className="session-expired-banner">
+            Tu sesión ha expirado. Por favor inicia sesión nuevamente.
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <label className="login-label">Correo electrónico</label>
@@ -56,6 +80,8 @@ export default function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+
+          {error && <p className="login-error">{error}</p>}
 
           <button type="submit" className="login-btn">
             Iniciar Sesión →

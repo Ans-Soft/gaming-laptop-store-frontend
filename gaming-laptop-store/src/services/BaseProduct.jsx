@@ -9,13 +9,17 @@ export async function getBaseProducts() {
 
 // Crear un producto base
 export async function createBaseProduct(data) {
-  const response = await api.post(urls.baseProductCreate, data);
+  const response = await api.post(urls.baseProductCreate, data, {
+    headers: { 'Content-Type': undefined },
+  });
   return response.data;
 }
 
 // Actualizar un producto base
 export async function updateBaseProduct(id, data) {
-  const response = await api.put(`${urls.baseProductUpdate}${id}/`, data);
+  const response = await api.put(`${urls.baseProductUpdate}${id}/`, data, {
+    headers: { 'Content-Type': undefined },
+  });
   return response.data;
 }
 

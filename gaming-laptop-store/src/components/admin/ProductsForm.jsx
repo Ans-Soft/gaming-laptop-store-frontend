@@ -19,7 +19,6 @@ const STOCK_CHOICES = [
   { value: "sin_stock", label: "Sin stock" },
 ];
 
-// 👉 Función que formatea valores tipo 4000000 → $4,000,000
 const formatCurrency = (value) => {
   if (!value) return "";
   return "$" + Number(value).toLocaleString("en-US");
@@ -31,9 +30,10 @@ const ProductsForm = ({
   variant,
   isSubmitting,
   submitError,
+  lockedBaseProduct = null,
 }) => {
   const [formData, setFormData] = useState({
-    base_product: "",
+    base_product: lockedBaseProduct?.id || "",
     price: "",
     condition: "nuevo",
     stock_status: "en_stock",
@@ -45,35 +45,35 @@ const ProductsForm = ({
   const isEditMode = Boolean(variant);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const baseProducts = await getBaseProducts();
-        setProductsList(baseProducts);
-      } catch (error) {
-        console.error("Error cargando productos base:", error);
-      }
-    };
-
-    fetchData();
+    // Only fetch the full list when there is no locked base product
+    if (!lockedBaseProduct) {
+      const fetchData = async () => {
+        try {
+          const baseProducts = await getBaseProducts();
+          setProductsList(baseProducts);
+        } catch (error) {
+          console.error("Error cargando productos base:", error);
+        }
+      };
+      fetchData();
+    }
 
     if (isEditMode) {
       setFormData({
         base_product: variant.base_product.id,
-        price: formatCurrency(variant.price), // 👉 formateado
+        price: formatCurrency(variant.price),
         condition: variant.condition,
         stock_status: variant.stock_status,
         is_published: variant.is_published,
       });
     }
-  }, [variant, isEditMode]);
+  }, [variant, isEditMode, lockedBaseProduct]);
 
-  // 👉 Manejo especial para formatear precio en tiempo real
   const handlePriceChange = (e) => {
-    const raw = e.target.value.replace(/\D/g, ""); // deja solo números
+    const raw = e.target.value.replace(/\D/g, "");
     setFormData((prev) => ({ ...prev, price: formatCurrency(raw) }));
   };
 
-  // 👉 Manejo genérico para los demás campos
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -83,10 +83,10 @@ const ProductsForm = ({
   };
 
   const handleSubmit = () => {
-    const cleanPrice = Number(formData.price.replace(/\D/g, "")); // limpiar formato
+    const cleanPrice = Number(formData.price.replace(/\D/g, ""));
 
     const cleanData = {
-      base_product: Number(formData.base_product),
+      base_product: lockedBaseProduct ? lockedBaseProduct.id : Number(formData.base_product),
       price: cleanPrice,
       condition: formData.condition,
       stock_status: formData.stock_status,
@@ -96,38 +96,51 @@ const ProductsForm = ({
     if (onSubmit) onSubmit(cleanData, variant?.id);
   };
 
+  const subtitle = lockedBaseProduct
+    ? `Nueva variante para ${lockedBaseProduct.model_name}`
+    : isEditMode
+    ? "Actualiza la información de la variante"
+    : "Completa la información para crear una variante";
+
   return (
     <ModalBase
-      title={isEditMode ? "Editar Variante" : "Crear Variante"}
+      title={isEditMode ? "Editar Variante" : "Agregar Variante"}
       icon={isEditMode ? <Edit size={24} /> : <PackagePlus size={24} />}
-      subtitle={
-        isEditMode
-          ? "Actualiza la información de la variante"
-          : "Completa la información para crear una variante"
-      }
+      subtitle={subtitle}
       onClose={onClose}
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
     >
       {submitError && <div className="form-error-banner">{submitError}</div>}
 
-      <div className="form-grid">
-        <div className="form-group">
-          <label>Producto Base *</label>
-          <select
-            name="base_product"
-            value={formData.base_product}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Selecciona un producto base</option>
-            {productsList.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.model_name}
-              </option>
-            ))}
-          </select>
+      {/* Context banner when base product is locked */}
+      {lockedBaseProduct && (
+        <div className="context-banner">
+          <span className="context-banner-label">Producto base</span>
+          <span className="context-banner-value">{lockedBaseProduct.model_name}</span>
         </div>
+      )}
+
+      <div className="form-grid">
+        {/* Base product selector — only shown when NOT locked */}
+        {!lockedBaseProduct && (
+          <div className="form-group">
+            <label>Producto Base *</label>
+            <select
+              name="base_product"
+              value={formData.base_product}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona un producto base</option>
+              {productsList.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.model_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="form-group">
           <label>Precio *</label>
@@ -136,7 +149,7 @@ const ProductsForm = ({
             type="text"
             placeholder="Ej: $3,500,000"
             value={formData.price}
-            onChange={handlePriceChange} // 👉 aquí usamos formateo
+            onChange={handlePriceChange}
             required
           />
         </div>
