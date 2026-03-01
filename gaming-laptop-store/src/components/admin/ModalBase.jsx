@@ -5,6 +5,7 @@ import "../../styles/admin/modalBase.css";
 const ModalBase = ({
   title,
   icon,
+  badge,
   subtitle,
   onClose,
   children,
@@ -38,6 +39,7 @@ const ModalBase = ({
           <div className="modal-title">
             {icon && <span className="modal-icon">{icon}</span>}
             <h2>{title}</h2>
+            {badge && <span className="modal-badge">{badge}</span>}
           </div>
           <button
             className="close-btn"
@@ -68,13 +70,15 @@ const ModalBase = ({
             >
               {cancelLabel || "Cancelar"}
             </button>
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Guardando..." : "+ Guardar"}
-            </button>
+            {onSubmit && (
+              <button
+                type="submit"
+                className="btn-submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Guardando..." : "+ Guardar"}
+              </button>
+            )}
           </div>
         </form>
       </div>

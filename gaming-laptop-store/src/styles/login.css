@@ -103,3 +103,21 @@
   background: var(--cta-active);
   transform: translateY(0);
 }
+
+.session-expired-banner {
+  background-color: rgba(243, 156, 18, 0.1);
+  border: 1px solid rgba(243, 156, 18, 0.5);
+  color: #a67000;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.login-error {
+  font-size: 0.85rem;
+  color: #c0392b;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}

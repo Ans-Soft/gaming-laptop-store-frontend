@@ -1,0 +1,21 @@
+# Claude / Gemini
+CLAUDE.md
+GEMINI.md
+.claude/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules
+dist
+dist-ssr
+*.log
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

@@ -69,6 +69,34 @@
   min-height: 80px;
 }
 
+/* Context banner — shows a locked/pre-filled field as read-only info */
+.context-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background-color: var(--card-bg-elevated);
+  border: 1px solid var(--fourth-color);
+  border-left: 3px solid var(--primary-color);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.context-banner-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--subtitle-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.context-banner-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
 .form-error-banner {
   background-color: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(192, 57, 43, 0.35);
