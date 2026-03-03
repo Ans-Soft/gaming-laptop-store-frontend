@@ -34,13 +34,22 @@ const urls = {
   productVariantPublish: `${BASE_URL}/products/variants/publish/`,
   productVariantUnpublish: `${BASE_URL}/products/variants/unpublish/`,
 
-  // CATEGORIES 
+  // CATEGORIES
   categoriesList: `${BASE_URL}/products/categories/list/`,
   categoryCreate: `${BASE_URL}/products/categories/create/`,
   categoryUpdate: `${BASE_URL}/products/categories/update/`,
   categoryActivate: `${BASE_URL}/products/categories/activate/`,
   categoryDeactivate: `${BASE_URL}/products/categories/deactivate/`,
-  
+
+  // INVOICES
+  invoicesList: `${BASE_URL}/sales/invoices/list/`,
+  invoicesCreate: `${BASE_URL}/sales/invoices/create/`,
+  invoiceDetail: (id) => `${BASE_URL}/sales/invoices/detail/${id}/`,
+  invoiceUpdate: (id) => `${BASE_URL}/sales/invoices/update/${id}/`,
+  invoiceDelete: (id) => `${BASE_URL}/sales/invoices/delete/${id}/`,
+  invoiceDownload: (id) => `${BASE_URL}/sales/invoices/${id}/download/`,
+  invoiceResendEmail: (id) => `${BASE_URL}/sales/invoices/${id}/resend_email/`,
+  invoiceParseNL: `${BASE_URL}/sales/invoices/parse_natural_language/`,
 };
 
 export default urls;
