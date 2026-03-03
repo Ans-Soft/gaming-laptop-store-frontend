@@ -1,0 +1,289 @@
+/* ===================================================
+   Invoice Form, Detail Modal & Page Styles — .inv- prefix
+   =================================================== */
+
+/* Alert banners */
+.inv-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.inv-alert--success {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.inv-alert--warn {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+}
+
+/* Search bar for invoices page */
+.inv-search-bar {
+  margin-bottom: 0.75rem;
+}
+
+.inv-search-input {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.inv-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.inv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Section */
+.inv-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.inv-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin: 0 0 0.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Grid */
+.inv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+@media (max-width: 600px) {
+  .inv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Field */
+.inv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inv-field--full {
+  grid-column: 1 / -1;
+}
+
+.inv-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.inv-required {
+  color: #dc2626;
+}
+
+.inv-field input,
+.inv-field select {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background: #fff;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inv-field input:focus,
+.inv-field select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.inv-error {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+/* Bill ID Preview */
+.inv-bill-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.inv-bill-label {
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.inv-bill-value {
+  font-family: monospace;
+  color: #1e40af;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* AI section */
+.inv-ai-section {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.inv-ai-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #f1f5f9;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  text-align: left;
+}
+
+.inv-ai-toggle:hover {
+  background: #e2e8f0;
+}
+
+.inv-ai-arrow {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.inv-ai-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inv-ai-textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: #1e293b;
+}
+
+.inv-ai-btn {
+  align-self: flex-start;
+  padding: 0.45rem 1rem;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.inv-ai-btn:hover {
+  background: #4f46e5;
+}
+
+.inv-ai-toast {
+  font-size: 0.8rem;
+  color: #7c3aed;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Detail modal */
+.inv-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inv-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+}
+
+.inv-detail-row:last-child {
+  border-bottom: none;
+}
+
+.inv-detail-label {
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 130px;
+}
+
+.inv-detail-value {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Download button */
+.inv-download-section {
+  padding-top: 0.5rem;
+}
+
+.inv-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: #0A1628;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.inv-download-btn:hover {
+  background: #1e40af;
+}

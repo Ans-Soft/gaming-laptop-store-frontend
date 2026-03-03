@@ -1,5 +1,5 @@
 import DashboardCard from "../../components/admin/DashboardCard";
-import { Package, Tag, Users, Grid } from "lucide-react";
+import { Package, Tag, Users, Grid, FileText } from "lucide-react";
 import "../../styles/admin/dashboard.css";
 import DashboardHeader from "../../components/admin/DashboardHeader";
 
@@ -40,6 +40,13 @@ export default function Dashboard() {
       description: "Administra categorías de productos",
       color: "#ff9f2e",
       to: "/admin/categories",
+    },
+    {
+      icon: <FileText size={32} />,
+      title: "Gestión de Facturas",
+      description: "Genera y administra facturas de ventas y separaciones",
+      color: "#1e40af",
+      to: "/admin/facturas",
     },
   ];
 

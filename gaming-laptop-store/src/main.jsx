@@ -15,6 +15,7 @@ import Categories from "./pages/admin/Categories.jsx";
 import Brands from "./pages/admin/Brands.jsx";
 import BaseProducts from "./pages/admin/BaseProducts.jsx";
 import Products from "./pages/admin/Products.jsx";
+import Invoices from "./pages/admin/Invoices.jsx";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
   { path: "/admin/products", element: <Products /> },
   { path: "/admin/categories", element: <Categories /> },
   { path: "/admin/brands", element: <Brands /> },
+  { path: "/admin/facturas", element: <Invoices /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
