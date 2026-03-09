@@ -41,6 +41,10 @@ const urls = {
   categoryActivate: `${BASE_URL}/products/categories/activate/`,
   categoryDeactivate: `${BASE_URL}/products/categories/deactivate/`,
 
+  // TRM
+  trmToday: `${BASE_URL}/core/trm/today/`,
+  trmByDate: (date) => `${BASE_URL}/core/trm/?date=${date}`,
+
   // INVOICES
   invoicesList: `${BASE_URL}/sales/invoices/list/`,
   invoicesCreate: `${BASE_URL}/sales/invoices/create/`,

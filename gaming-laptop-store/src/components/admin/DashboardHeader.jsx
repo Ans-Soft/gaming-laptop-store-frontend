@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/admin/dashboardHeader.css";
 import logo from "../../assets/logo.png";
 import { refreshToken, logout } from "../../services/Auth";
+import TRMBadge from "./TRMBadge";
 
 const AdminHeader = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const AdminHeader = () => {
         </div>
 
         <nav className="admin-header-right" aria-label="admin actions">
+          <TRMBadge />
           <a className="admin-badge" href="/admin">
             Panel Admin
           </a>

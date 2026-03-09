@@ -4,7 +4,6 @@ import "./../../styles/global.css";
 import { Package } from "lucide-react";
 import { FaCheck, FaTimes, FaPlus, FaRegEye } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
-import DashboardHeader from "../../components/admin/DashboardHeader";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
 import TitleCrud from "../../components/admin/TitleCrud";
@@ -195,8 +194,6 @@ const BaseProducts = () => {
 
   return (
     <section>
-      <DashboardHeader />
-
       <div className="table-container">
         <TitleCrud
           title="Productos Base"

@@ -34,6 +34,12 @@
   object-fit: contain;
 }
 
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .admin-badge {
   display: inline-block;
   padding: 8px 12px;
@@ -43,10 +49,22 @@
   font-weight: 600;
   background: rgba(26, 171, 245, 0.08);
   text-decoration: none;
-  transition: background 0.18s ease, transform 0.12s ease;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease, color 0.18s ease;
+  font-size: 0.875rem;
+  white-space: nowrap;
 }
 
 .admin-badge:hover {
   transform: translateY(-2px);
   background: rgba(26, 171, 245, 0.14);
+}
+
+.admin-badge:active {
+  transform: translateY(0px);
+  background: rgba(26, 171, 245, 0.2);
+}
+
+button.admin-badge {
+  padding: 8px 14px;
 }

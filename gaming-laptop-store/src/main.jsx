@@ -9,6 +9,7 @@ import Conocenos from "./pages/conocenos/Conocenos.jsx";
 import Contactanos from "./pages/contactanos/Contactanos.jsx";
 import Envios from "./pages/envios/Envios.jsx";
 import Login from "./pages/admin/Login.jsx";
+import AdminLayout from "./components/admin/AdminLayout.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import Users from "./pages/admin/Users.jsx";
 import Categories from "./pages/admin/Categories.jsx";
@@ -30,15 +31,22 @@ const router = createBrowserRouter([
       { path: "/envios", element: <Envios /> },
     ],
   },
-  // Admin pages are independent — no public layout
+  // Login page standalone
   { path: "/login", element: <Login /> },
-  { path: "/admin", element: <Dashboard /> },
-  { path: "/admin/users", element: <Users /> },
-  { path: "/admin/base_products", element: <BaseProducts /> },
-  { path: "/admin/products", element: <Products /> },
-  { path: "/admin/categories", element: <Categories /> },
-  { path: "/admin/brands", element: <Brands /> },
-  { path: "/admin/facturas", element: <Invoices /> },
+  // Admin pages with persistent layout
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "users", element: <Users /> },
+      { path: "base_products", element: <BaseProducts /> },
+      { path: "products", element: <Products /> },
+      { path: "categories", element: <Categories /> },
+      { path: "brands", element: <Brands /> },
+      { path: "facturas", element: <Invoices /> },
+    ],
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(

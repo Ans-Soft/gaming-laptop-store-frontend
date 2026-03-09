@@ -1,0 +1,24 @@
+/* Mobile backdrop styling */
+.admin-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 150;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Logo icon styling */
+.admin-sidebar__logo-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}

@@ -1,6 +1,6 @@
 .dashboard-container {
   text-align: center;
-  min-height: calc(100vh - var(--header-height, 100px));
+  min-height: 100%;
   background-color: var(--card-bg);
   padding-bottom: 4rem;
 }

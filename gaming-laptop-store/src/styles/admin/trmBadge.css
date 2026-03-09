@@ -1,0 +1,140 @@
+/* ── TRMBadge — prefijo .trm- ── */
+
+/* Contenedor del badge con tooltip */
+.trm-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Badge base — extiende visualmente el .admin-badge del header */
+.trm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(26, 171, 245, 0.25);
+  color: var(--navbar-active);
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: rgba(26, 171, 245, 0.08);
+  cursor: default;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.trm-badge:hover {
+  background: rgba(26, 171, 245, 0.14);
+}
+
+/* Estado error: no disponible */
+.trm-badge--error {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.trm-badge--error:hover {
+  background: rgba(239, 68, 68, 0.14);
+}
+
+/* Icono de alerta dentro del badge en estado error */
+.trm-badge__alert-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Skeleton de carga */
+.trm-skeleton {
+  width: 130px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(26, 171, 245, 0.08) 25%,
+    rgba(26, 171, 245, 0.18) 50%,
+    rgba(26, 171, 245, 0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: trm-shimmer 1.4s ease infinite;
+  border: 1px solid rgba(26, 171, 245, 0.15);
+}
+
+@keyframes trm-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Tooltip */
+.trm-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  min-width: 220px;
+  max-width: 280px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--navbar-dropdown-bg, #0e1d33);
+  border: 1px solid rgba(26, 171, 245, 0.20);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
+
+  /* Oculto por defecto */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+
+/* Mostrar tooltip al hacer hover sobre el wrapper */
+.trm-wrapper:hover .trm-tooltip {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Flechita del tooltip */
+.trm-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 10px;
+  height: 10px;
+  background: var(--navbar-dropdown-bg, #0e1d33);
+  border-left: 1px solid rgba(26, 171, 245, 0.20);
+  border-top: 1px solid rgba(26, 171, 245, 0.20);
+  transform: rotate(45deg);
+}
+
+.trm-tooltip__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--navbar-text, #c8dae8);
+}
+
+.trm-tooltip__label {
+  color: var(--navbar-text, #c8dae8);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.trm-tooltip__value {
+  color: var(--navbar-active, #1aabf5);
+  font-weight: 600;
+  text-align: right;
+}
+
+.trm-tooltip__divider {
+  border: none;
+  border-top: 1px solid rgba(26, 171, 245, 0.12);
+  margin: 6px 0;
+}
