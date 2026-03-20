@@ -3,7 +3,6 @@ import "./../../styles/admin/dataTable.css";
 import "./../../styles/global.css";
 import { Package } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
-import DashboardHeader from "../../components/admin/DashboardHeader";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
 import { FaRegCheckCircle, FaRegUser, FaCheck, FaTimes } from "react-icons/fa";
@@ -113,7 +112,6 @@ const Users = () => {
 
   return (
     <section>
-      <DashboardHeader />
       <div className="table-container ">
         <TitleCrud
           title="Gestión de Usuarios"

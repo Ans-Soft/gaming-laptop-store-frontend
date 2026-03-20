@@ -1,0 +1,317 @@
+.sd-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.sd-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sd-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.sd-back-btn:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.sd-header h1 {
+  margin: 0;
+  font-size: 1.875rem;
+  color: #1f2937;
+}
+
+.sd-info-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.sd-info-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sd-info-header svg {
+  color: #4f46e5;
+  flex-shrink: 0;
+}
+
+.sd-info-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.sd-info-content h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1f2937;
+}
+
+.sd-status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.sd-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.sd-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.sd-info-item label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sd-info-item p {
+  margin: 0;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.sd-amount {
+  font-size: 1.25rem !important;
+  font-weight: 600;
+  color: #4f46e5 !important;
+}
+
+.sd-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.sd-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.sd-btn-primary {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.sd-btn-primary:hover {
+  background-color: #4338ca;
+}
+
+.sd-btn-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.sd-btn-success:hover {
+  background-color: #059669;
+}
+
+.sd-btn-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.sd-btn-warning:hover {
+  background-color: #d97706;
+}
+
+.sd-btn-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.sd-btn-danger:hover {
+  background-color: #dc2626;
+}
+
+.sd-btn-secondary {
+  background-color: #6b7280;
+  color: white;
+}
+
+.sd-btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+/* Modal styles */
+.sd-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sd-modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+}
+
+.sd-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sd-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1f2937;
+}
+
+.sd-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sd-modal-close:hover {
+  color: #1f2937;
+}
+
+.sd-modal-body {
+  padding: 1.5rem;
+}
+
+.sd-modal-body p {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.sd-modal-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.sd-modal-field label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.sd-modal-field textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.sd-modal-field textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.sd-modal-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.sd-modal-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.sd-modal-cancel {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.sd-modal-cancel:hover {
+  background-color: #d1d5db;
+}
+
+.sd-modal-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sd-modal-confirm {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.sd-modal-confirm:hover {
+  background-color: #4338ca;
+}
+
+.sd-modal-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

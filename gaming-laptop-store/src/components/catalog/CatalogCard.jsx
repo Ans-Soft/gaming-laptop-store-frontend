@@ -28,13 +28,17 @@ function buildWhatsAppUrl(modelName) {
 }
 
 /**
- * Map a stock_status key to a BEM modifier class name.
- * @param {string} status - Raw stock_status value from the API
- * @returns {string} CSS class string
+ * Map a disponibilidad key to availability display text and BEM modifier class.
+ * @param {string} disponibilidad - "en_stock", "bajo_pedido", or "sin_existencias"
+ * @returns {{ text: string, className: string }}
  */
-function stockStatusClass(status) {
-  const valid = ["en_stock", "en_camino", "por_importacion", "sin_stock"]
-  return valid.includes(status) ? `cc-stock cc-stock--${status}` : "cc-stock"
+function getAvailabilityDisplay(disponibilidad) {
+  const map = {
+    en_stock: { text: "Disponible", className: "cc-stock cc-stock--en_stock" },
+    bajo_pedido: { text: "Bajo Pedido", className: "cc-stock cc-stock--bajo_pedido" },
+    sin_existencias: { text: "Sin existencias", className: "cc-stock cc-stock--sin_existencias" },
+  }
+  return map[disponibilidad] || { text: "No disponible", className: "cc-stock" }
 }
 
 /**
@@ -49,19 +53,21 @@ function formatPrice(price) {
 }
 
 /**
- * CatalogCard component — displays a single product variant in the catalog grid.
+ * CatalogCard component — displays a single producto in the catalog grid.
  * Props:
- *   variant {Object} - A ProductVariant object from the API
+ *   producto {Object} - A merged ProductoCatalogo object from CatalogService
  */
-const CatalogCard = ({ variant }) => {
-  const { base_product, price, stock_status, stock_status_display } = variant
+const CatalogCard = ({ producto }) => {
+  const { imagenes, precio, disponibilidad, nombre, categorias } = producto
 
-  const firstImage = base_product?.images?.[0]
-  const imageSrc = firstImage ? resolveImageUrl(firstImage.imagen) : null
-  const imageAlt = firstImage?.alt_text || base_product?.model_name || "Producto"
+  const firstImage = imagenes?.[0]
+  const imageSrc = firstImage ? resolveImageUrl(firstImage.url) : null
+  const imageAlt = firstImage?.alt_text || nombre || "Producto"
 
-  const categoryName = base_product?.categories?.[0]?.name ?? null
-  const modelName = base_product?.model_name ?? "Producto"
+  const categoryName = categorias?.[0]?.nombre ?? null
+  const productName = nombre ?? "Producto"
+
+  const availabilityDisplay = getAvailabilityDisplay(disponibilidad)
 
   return (
     <article className="cc-card">
@@ -81,9 +87,11 @@ const CatalogCard = ({ variant }) => {
         )}
 
         {/* Price badge — absolute top-right over the image */}
-        <span className="cc-price-badge" aria-label={`Precio: ${formatPrice(price)}`}>
-          {formatPrice(price)}
-        </span>
+        {precio !== null && (
+          <span className="cc-price-badge" aria-label={`Precio: ${formatPrice(precio)}`}>
+            {formatPrice(precio)}
+          </span>
+        )}
       </div>
 
       {/* Card body */}
@@ -94,20 +102,20 @@ const CatalogCard = ({ variant }) => {
         )}
 
         {/* Product name */}
-        <h3 className="cc-name">{modelName}</h3>
+        <h3 className="cc-name">{productName}</h3>
 
         {/* Stock status */}
-        <span className={stockStatusClass(stock_status)}>
-          {stock_status_display}
+        <span className={availabilityDisplay.className}>
+          {availabilityDisplay.text}
         </span>
 
         {/* WhatsApp CTA button */}
         <a
           className="cc-buy-btn"
-          href={buildWhatsAppUrl(modelName)}
+          href={buildWhatsAppUrl(productName)}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Comprar ${modelName} por WhatsApp`}
+          aria-label={`Comprar ${productName} por WhatsApp`}
         >
           Comprar
         </a>

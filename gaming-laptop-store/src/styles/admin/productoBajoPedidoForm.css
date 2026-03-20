@@ -1,0 +1,43 @@
+.pbp-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pbp-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.pbp-form-group.pbp-full {
+  grid-column: 1 / -1;
+}
+
+.pbp-form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.pbp-form-group input,
+.pbp-form-group select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.pbp-form-group input:focus,
+.pbp-form-group select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.required {
+  color: #ef4444;
+}

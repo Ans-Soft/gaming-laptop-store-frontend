@@ -1,0 +1,88 @@
+/* =========================================================
+   unidadForm.css — scoped to .uf- prefix
+   Styles for the UnidadProductoForm create/edit modal.
+   Two-column grid layout with a variant context banner.
+   ========================================================= */
+
+/* ── Variant context banner ─────────────────────────────── */
+
+.uf-variant-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--fourth-color, #f0f4ff);
+  border: 1px solid var(--third-color, #c7d2fe);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.uf-variant-banner-label {
+  font-size: 0.75rem;
+  color: var(--text-light, #6b7280);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.uf-variant-banner-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-color, #4f46e5);
+  word-break: break-word;
+}
+
+/* ── Sync info notice ───────────────────────────────────── */
+
+.uf-sync-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.73rem;
+  color: #92400e;
+  line-height: 1.5;
+  margin-bottom: 0.25rem;
+}
+
+/* ── Form grid — two columns ────────────────────────────── */
+
+.uf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+.uf-grid .form-group {
+  margin: 0;
+}
+
+.uf-grid .form-group--full {
+  grid-column: 1 / -1;
+}
+
+/* ── Field error ────────────────────────────────────────── */
+
+.uf-field-error {
+  display: block;
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.2rem;
+}
+
+/* ── Price hint ─────────────────────────────────────────── */
+
+.uf-price-hint {
+  font-size: 0.72rem;
+  color: var(--text-light, #6b7280);
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .uf-grid {
+    grid-template-columns: 1fr;
+  }
+}

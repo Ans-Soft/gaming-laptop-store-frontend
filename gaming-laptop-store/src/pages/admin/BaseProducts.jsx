@@ -4,14 +4,12 @@ import "./../../styles/global.css";
 import { Package } from "lucide-react";
 import { FaCheck, FaTimes, FaPlus, FaRegEye } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
-import DashboardHeader from "../../components/admin/DashboardHeader";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
 import TitleCrud from "../../components/admin/TitleCrud";
 
 import BaseProductsForm from "../../components/admin/BaseProductsForm";
 import ProductsForm from "../../components/admin/ProductsForm";
-import VariantsList from "../../components/admin/VariantsList";
 import ModalBase from "../../components/admin/ModalBase";
 
 import {
@@ -39,10 +37,6 @@ const BaseProducts = () => {
   const [selectedProductForVariant, setSelectedProductForVariant] = useState(null);
   const [isVariantSubmitting, setIsVariantSubmitting] = useState(false);
   const [variantSubmitError, setVariantSubmitError] = useState(null);
-
-  // ── View variants list state ────────────────────────────────────────────────
-  const [showVariantsListModal, setShowVariantsListModal] = useState(false);
-  const [selectedProductForList, setSelectedProductForList] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -165,18 +159,6 @@ const BaseProducts = () => {
     }
   };
 
-  // ── View variants list handlers ─────────────────────────────────────────────
-
-  const handleViewVariants = (product) => {
-    setSelectedProductForList(product);
-    setShowVariantsListModal(true);
-  };
-
-  const handleCloseVariantsList = () => {
-    setShowVariantsListModal(false);
-    setSelectedProductForList(null);
-  };
-
   // ── Table config ────────────────────────────────────────────────────────────
 
   const columns = [
@@ -195,8 +177,6 @@ const BaseProducts = () => {
 
   return (
     <section>
-      <DashboardHeader />
-
       <div className="table-container">
         <TitleCrud
           title="Productos Base"
@@ -222,12 +202,6 @@ const BaseProducts = () => {
               handler: handleQuickCreateVariant,
               show: (row) => row.active,
               title: "Agregar variante",
-            },
-            {
-              icon: FaRegEye,
-              handler: handleViewVariants,
-              show: () => true,
-              title: "Ver variantes",
             },
             {
               icon: FaCheck,
@@ -331,14 +305,6 @@ const BaseProducts = () => {
             isSubmitting={isVariantSubmitting}
             submitError={variantSubmitError}
             lockedBaseProduct={selectedProductForVariant}
-          />
-        )}
-
-        {/* View variants list */}
-        {showVariantsListModal && selectedProductForList && (
-          <VariantsList
-            baseProduct={selectedProductForList}
-            onClose={handleCloseVariantsList}
           />
         )}
       </div>

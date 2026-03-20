@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { Search } from "lucide-react"
-import { getPublicVariants } from "../../services/CatalogService.jsx"
+import { getPublicProductos } from "../../services/CatalogService.jsx"
 import FilterPanel from "../../components/catalog/FilterPanel.jsx"
 import CatalogCard from "../../components/catalog/CatalogCard.jsx"
 import CanvaEmbed from "../../components/CanvaEmbed.jsx"
@@ -26,42 +26,38 @@ const DEFAULT_FILTERS = {
 // ---------------------------------------------------------------------------
 
 /**
- * Apply client-side filters to an array of product variants.
- * @param {Array}  variants - Raw variants from the API
- * @param {Object} filters  - Current applied filter state
- * @returns {Array} Filtered subset of variants
+ * Apply client-side filters to an array of catalog productos.
+ * @param {Array}  productos - Raw productos from the API (merged data)
+ * @param {Object} filters   - Current applied filter state
+ * @returns {Array} Filtered subset of productos
  */
-function applyClientFilters(variants, filters) {
-  let result = variants
+function applyClientFilters(productos, filters) {
+  let result = productos
 
-  // Search — case-insensitive substring match on model name
+  // Search — case-insensitive substring match on nombre
   if (filters.search.trim()) {
     const query = filters.search.trim().toLowerCase()
-    result = result.filter((v) =>
-      v.base_product?.model_name?.toLowerCase().includes(query)
+    result = result.filter((p) =>
+      p.nombre?.toLowerCase().includes(query)
     )
   }
 
-  // Brand — exact slug match against base_product.brand.slug
+  // Brand — exact slug match against marca.slug
   if (filters.brands.length > 0) {
-    result = result.filter((v) =>
-      filters.brands.includes(v.base_product?.brand?.slug)
+    result = result.filter((p) =>
+      filters.brands.includes(p.marca?.slug)
     )
   }
 
-  // GPU — contains match on specs.graphics.model
-  if (filters.gpus.length > 0) {
-    result = result.filter((v) => {
-      const gpu = v.base_product?.specs?.graphics?.model ?? ""
-      return filters.gpus.some((g) => gpu.toLowerCase().includes(g.toLowerCase()))
-    })
-  }
-
-  // RAM — contains match on specs.memory.size
-  if (filters.rams.length > 0) {
-    result = result.filter((v) => {
-      const ram = v.base_product?.specs?.memory?.size ?? ""
-      return filters.rams.some((r) => ram.toLowerCase().includes(r.toLowerCase()))
+  // Price filter — client-side on merged price
+  if (filters.price_min !== "" || filters.price_max !== "") {
+    result = result.filter((p) => {
+      if (p.precio === null) return false
+      if (filters.price_min !== "" && p.precio < parseFloat(filters.price_min))
+        return false
+      if (filters.price_max !== "" && p.precio > parseFloat(filters.price_max))
+        return false
+      return true
     })
   }
 
@@ -98,8 +94,8 @@ const EmptyState = () => (
 // ---------------------------------------------------------------------------
 
 const Catalog = () => {
-  // All variants fetched from the API (after server-side price filter)
-  const [allVariants, setAllVariants] = useState([])
+  // All productos fetched from the merged API data
+  const [allProductos, setAllProductos] = useState([])
   // Subset after client-side filters are applied
   const [displayed, setDisplayed] = useState([])
 
@@ -117,18 +113,18 @@ const Catalog = () => {
   // ---------------------------------------------------------------------------
 
   /**
-   * Fetch variants from the API with optional server-side price bounds.
-   * Stores result in allVariants, then re-applies client-side filters.
+   * Fetch productos from the merged API sources.
+   * Stores result in allProductos, then re-applies client-side filters.
    */
-  const fetchVariants = useCallback(async (priceParams, clientFilters) => {
+  const fetchProductos = useCallback(async (priceParams, clientFilters) => {
     setLoading(true)
     setError(null)
     try {
-      const data = await getPublicVariants(priceParams)
-      setAllVariants(data)
+      const data = await getPublicProductos(priceParams)
+      setAllProductos(data)
       setDisplayed(applyClientFilters(data, clientFilters))
     } catch (err) {
-      console.error("Error fetching catalog variants:", err)
+      console.error("Error fetching catalog productos:", err)
       setError("Error al cargar los productos. Intenta de nuevo más tarde.")
     } finally {
       setLoading(false)
@@ -137,8 +133,8 @@ const Catalog = () => {
 
   // Initial fetch on mount — no price bounds, no filters
   useEffect(() => {
-    fetchVariants({}, DEFAULT_FILTERS)
-  }, [fetchVariants])
+    fetchProductos({}, DEFAULT_FILTERS)
+  }, [fetchProductos])
 
   // ---------------------------------------------------------------------------
   // Filter handlers
@@ -153,7 +149,7 @@ const Catalog = () => {
       const next = { ...prev, [key]: value }
       // Live search: apply client-side filter immediately without re-fetching
       if (key === "search") {
-        setDisplayed(applyClientFilters(allVariants, { ...appliedFilters, search: value }))
+        setDisplayed(applyClientFilters(allProductos, { ...appliedFilters, search: value }))
       }
       return next
     })
@@ -161,25 +157,12 @@ const Catalog = () => {
 
   /**
    * "Filtrar" button handler.
-   * - If price bounds changed → re-fetch from API with new price params.
-   * - Always apply client-side filters (brand, GPU, RAM, search) afterward.
+   * - Apply all client-side filters (price now done client-side).
    */
   const handleApplyFilters = () => {
-    const priceChanged =
-      pendingFilters.price_min !== appliedFilters.price_min ||
-      pendingFilters.price_max !== appliedFilters.price_max
-
     setAppliedFilters(pendingFilters)
-
-    if (priceChanged) {
-      const priceParams = {}
-      if (pendingFilters.price_min !== "") priceParams.price_min = pendingFilters.price_min
-      if (pendingFilters.price_max !== "") priceParams.price_max = pendingFilters.price_max
-      fetchVariants(priceParams, pendingFilters)
-    } else {
-      // No price change — only re-run client-side filter on existing data
-      setDisplayed(applyClientFilters(allVariants, pendingFilters))
-    }
+    // Apply all filters client-side on merged data
+    setDisplayed(applyClientFilters(allProductos, pendingFilters))
 
     // Collapse mobile filters panel after applying
     setMobileFiltersOpen(false)
@@ -210,11 +193,25 @@ const Catalog = () => {
           className={`cat-sidebar${mobileFiltersOpen ? " cat-sidebar--open" : ""}`}
           aria-label="Filtros de productos"
         >
-          <FilterPanel
-            filters={pendingFilters}
-            onChange={handleFilterChange}
-            onApply={handleApplyFilters}
-          />
+          {(() => {
+            // Build dynamic brand options from available productos
+            const brandSet = new Set()
+            allProductos.forEach((p) => {
+              if (p.marca?.slug && p.marca?.nombre) {
+                brandSet.add(JSON.stringify({ label: p.marca.nombre, value: p.marca.slug }))
+              }
+            })
+            const brandOptions = Array.from(brandSet).map((s) => JSON.parse(s))
+
+            return (
+              <FilterPanel
+                filters={pendingFilters}
+                onChange={handleFilterChange}
+                onApply={handleApplyFilters}
+                brandOptions={brandOptions}
+              />
+            )
+          })()}
         </aside>
 
         {/* Main product area */}
@@ -238,14 +235,14 @@ const Catalog = () => {
 
           {loading && <LoadingState />}
 
-          {!loading && (error || allVariants.length === 0) && <CanvaEmbed />}
+          {!loading && (error || allProductos.length === 0) && <CanvaEmbed />}
 
-          {!loading && !error && allVariants.length > 0 && displayed.length === 0 && <EmptyState />}
+          {!loading && !error && allProductos.length > 0 && displayed.length === 0 && <EmptyState />}
 
           {!loading && !error && displayed.length > 0 && (
             <div className="cat-grid">
-              {displayed.map((variant) => (
-                <CatalogCard key={variant.id} variant={variant} />
+              {displayed.map((producto) => (
+                <CatalogCard key={producto.id} producto={producto} />
               ))}
             </div>
           )}

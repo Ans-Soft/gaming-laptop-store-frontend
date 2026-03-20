@@ -1,0 +1,53 @@
+.ocf-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ocf-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ocf-form-group.ocf-full {
+  grid-column: 1 / -1;
+}
+
+.ocf-form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.ocf-form-group input,
+.ocf-form-group select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.ocf-form-group input:focus,
+.ocf-form-group select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.ocf-preview {
+  padding: 0.75rem;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.required {
+  color: #ef4444;
+}

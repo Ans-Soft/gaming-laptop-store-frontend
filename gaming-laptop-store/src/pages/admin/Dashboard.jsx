@@ -1,7 +1,6 @@
 import DashboardCard from "../../components/admin/DashboardCard";
 import { Package, Tag, Users, Grid, FileText } from "lucide-react";
 import "../../styles/admin/dashboard.css";
-import DashboardHeader from "../../components/admin/DashboardHeader";
 
 export default function Dashboard() {
   const modules = [
@@ -52,7 +51,6 @@ export default function Dashboard() {
 
   return (
     <section className="dashboard-container">
-      <DashboardHeader />
       <h1 className="dashboard-title">
         Panel de <span>Administración</span>
       </h1>

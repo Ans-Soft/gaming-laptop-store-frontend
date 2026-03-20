@@ -103,7 +103,9 @@
   font-weight: 600;
 }
 
-.cc-stock--en_stock        { color: #08D85C; }
+.cc-stock--en_stock       { color: #08D85C; }
+.cc-stock--bajo_pedido     { color: #3b82f6; }
+.cc-stock--sin_existencias { color: #ef4444; }
 .cc-stock--en_camino       { color: #f59e0b; }
 .cc-stock--por_importacion { color: #a78bfa; }
 .cc-stock--sin_stock       { color: #ef4444; }
