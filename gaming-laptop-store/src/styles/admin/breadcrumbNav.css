@@ -1,0 +1,42 @@
+/* Breadcrumb Navigation Component */
+
+.bn-breadcrumb {
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--fourth-color);
+}
+
+.bn-breadcrumb-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bn-segment {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  transition: color 0.2s ease;
+}
+
+.bn-segment--link {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.bn-segment--link:hover {
+  color: var(--primary-bright);
+  text-decoration: underline;
+}
+
+.bn-segment--current {
+  color: var(--subtitle-color);
+  font-weight: 500;
+}
+
+.bn-divider {
+  color: var(--fourth-color);
+  flex-shrink: 0;
+}

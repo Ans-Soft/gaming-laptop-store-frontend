@@ -2,29 +2,6 @@ import React, { useState, useRef, useEffect } from "react"
 import "../../styles/filterPanel.css"
 
 // ---------------------------------------------------------------------------
-// Static option definitions
-// ---------------------------------------------------------------------------
-
-const BRAND_OPTIONS = [
-  { label: "Acer",   value: "acer" },
-  { label: "MSI",    value: "msi" },
-  { label: "Asus",   value: "asus" },
-  { label: "Lenovo", value: "lenovo" },
-]
-
-const GPU_OPTIONS = [
-  { label: "RTX 3060", value: "3060" },
-  { label: "RTX 4050", value: "4050" },
-  { label: "RTX 5050", value: "5050" },
-]
-
-const RAM_OPTIONS = [
-  { label: "8GB",  value: "8GB" },
-  { label: "16GB", value: "16GB" },
-  { label: "32GB", value: "32GB" },
-]
-
-// ---------------------------------------------------------------------------
 // MultiSelect — custom dropdown with checkboxes (no external libraries)
 // ---------------------------------------------------------------------------
 
@@ -81,7 +58,7 @@ const MultiSelect = ({ label, options, selected, onChange, placeholder }) => {
           </span>
         </button>
 
-        {open && (
+        {open && options.length > 0 && (
           <div className="ms-dropdown" role="listbox" aria-multiselectable="true">
             {options.map((opt) => {
               const checked = selected.includes(opt.value)
@@ -119,8 +96,9 @@ const MultiSelect = ({ label, options, selected, onChange, placeholder }) => {
  *   filters  {{ search, price_min, price_max, brands: string[], gpus: string[], rams: string[] }}
  *   onChange {(key: string, value: any) => void}
  *   onApply  {() => void}
+ *   brandOptions {Array} - Dynamic list of [{ label, value }] from available productos
  */
-const FilterPanel = ({ filters, onChange, onApply }) => {
+const FilterPanel = ({ filters, onChange, onApply, brandOptions = [] }) => {
   const handlePriceMin = (e) => onChange("price_min", e.target.value)
   const handlePriceMax = (e) => onChange("price_max", e.target.value)
 
@@ -154,34 +132,18 @@ const FilterPanel = ({ filters, onChange, onApply }) => {
         </div>
       </div>
 
-      {/* Brand multi-select — client-side filter against base_product.brand.slug */}
-      <MultiSelect
-        label="Marca"
-        options={BRAND_OPTIONS}
-        selected={filters.brands}
-        onChange={(val) => onChange("brands", val)}
-        placeholder="Todas las marcas"
-      />
+      {/* Brand multi-select — dynamic options from available productos */}
+      {brandOptions.length > 0 && (
+        <MultiSelect
+          label="Marca"
+          options={brandOptions}
+          selected={filters.brands}
+          onChange={(val) => onChange("brands", val)}
+          placeholder="Todas las marcas"
+        />
+      )}
 
-      {/* GPU multi-select — client-side contains match on specs.graphics.model */}
-      <MultiSelect
-        label="GPU"
-        options={GPU_OPTIONS}
-        selected={filters.gpus}
-        onChange={(val) => onChange("gpus", val)}
-        placeholder="Todas las GPU"
-      />
-
-      {/* RAM multi-select — client-side contains match on specs.memory.size */}
-      <MultiSelect
-        label="RAM"
-        options={RAM_OPTIONS}
-        selected={filters.rams}
-        onChange={(val) => onChange("rams", val)}
-        placeholder="Toda la RAM"
-      />
-
-      {/* Apply button — triggers re-fetch for price and client-side for the rest */}
+      {/* Apply button */}
       <button
         type="button"
         className="fp-apply-btn"

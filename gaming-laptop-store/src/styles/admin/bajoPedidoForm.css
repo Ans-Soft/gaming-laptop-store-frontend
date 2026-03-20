@@ -1,0 +1,67 @@
+.bpf-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.bpf-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.bpf-form-group.bpf-full {
+  grid-column: 1 / -1;
+}
+
+.bpf-form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.bpf-form-group label .required {
+  color: #dc2626;
+  margin-left: 4px;
+}
+
+.bpf-form-group input,
+.bpf-form-group select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.bpf-form-group input:focus,
+.bpf-form-group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.bpf-form-group input:disabled,
+.bpf-form-group select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.bpf-form-group small {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.bpf-preview {
+  padding: 12px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-weight: 500;
+  color: #374151;
+  font-family: "Courier New", monospace;
+}

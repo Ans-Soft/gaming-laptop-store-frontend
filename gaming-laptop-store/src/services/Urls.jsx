@@ -25,21 +25,103 @@ const urls = {
   baseProductDeactivate: `${BASE_URL}/products/base-products/deactivate/`,
 
 
-  // PRODUCT VARIANTS
-  productVariantsList: `${BASE_URL}/products/variants/list/`,
-  productVariantCreate: `${BASE_URL}/products/variants/create/`,
-  productVariantUpdate: `${BASE_URL}/products/variants/update/`,
-  productVariantActivate: `${BASE_URL}/products/variants/activate/`,
-  productVariantDeactivate: `${BASE_URL}/products/variants/deactivate/`,
-  productVariantPublish: `${BASE_URL}/products/variants/publish/`,
-  productVariantUnpublish: `${BASE_URL}/products/variants/unpublish/`,
-
   // CATEGORIES
   categoriesList: `${BASE_URL}/products/categories/list/`,
   categoryCreate: `${BASE_URL}/products/categories/create/`,
   categoryUpdate: `${BASE_URL}/products/categories/update/`,
   categoryActivate: `${BASE_URL}/products/categories/activate/`,
   categoryDeactivate: `${BASE_URL}/products/categories/deactivate/`,
+
+  // PRODUCT TYPES
+  productTypesList: `${BASE_URL}/products/product-types/list/`,
+  productTypesCreate: `${BASE_URL}/products/product-types/create/`,
+  productTypesUpdate: `${BASE_URL}/products/product-types/update/`,
+  productTypesActivate: `${BASE_URL}/products/product-types/activate/`,
+  productTypesDeactivate: `${BASE_URL}/products/product-types/deactivate/`,
+  productTypesDetail: (id) => `${BASE_URL}/products/product-types/${id}/detail/`,
+
+  // PRODUCT FIELDS
+  productFieldsList: `${BASE_URL}/products/product-fields/list/`,
+  productFieldsCreate: `${BASE_URL}/products/product-fields/create/`,
+  productFieldsUpdate: `${BASE_URL}/products/product-fields/update/`,
+  productFieldsActivate: `${BASE_URL}/products/product-fields/activate/`,
+  productFieldsDeactivate: `${BASE_URL}/products/product-fields/deactivate/`,
+
+  // SUPPLIERS
+  suppliersList: `${BASE_URL}/products/suppliers/list/`,
+  suppliersCreate: `${BASE_URL}/products/suppliers/create/`,
+  suppliersUpdate: `${BASE_URL}/products/suppliers/update/`,
+  suppliersActivate: `${BASE_URL}/products/suppliers/activate/`,
+  suppliersDeactivate: `${BASE_URL}/products/suppliers/deactivate/`,
+
+  // BAJO PEDIDO (ON-DEMAND SOURCING)
+  bajoPedidoList: `${BASE_URL}/products/variantes/list/`,
+  bajoPedidoCreate: `${BASE_URL}/products/variantes/create/`,
+  bajoPedidoUpdate: (id) => `${BASE_URL}/products/variantes/update/${id}/`,
+  bajoPedidoActivate: (id) => `${BASE_URL}/products/variantes/activate/${id}/`,
+  bajoPedidoDeactivate: (id) => `${BASE_URL}/products/variantes/deactivate/${id}/`,
+  bajoPedidoDetail: (id) => `${BASE_URL}/products/variantes/${id}/detail/`,
+
+  // DESCUENTOS
+  descuentosActivate: (id) => `${BASE_URL}/products/descuentos/activate/${id}/`,
+  descuentosDeactivate: (id) => `${BASE_URL}/products/descuentos/deactivate/${id}/`,
+  descuentosDelete: (id) => `${BASE_URL}/products/descuentos/delete/${id}/`,
+
+  // PRODUCTOS (new domain model)
+  productosList: `${BASE_URL}/products/productos/list/`,
+  productosCreate: `${BASE_URL}/products/productos/create/`,
+  productosUpdate: (id) => `${BASE_URL}/products/productos/update/${id}/`,
+  productosActivate: (id) => `${BASE_URL}/products/productos/activate/${id}/`,
+  productosDeactivate: (id) => `${BASE_URL}/products/productos/deactivate/${id}/`,
+  productosDetail: (id) => `${BASE_URL}/products/productos/${id}/detail/`,
+
+  // UNIDADES DE PRODUCTO
+  unidadesList: `${BASE_URL}/products/unidades/list/`,
+  unidadesCreate: `${BASE_URL}/products/unidades/create/`,
+  unidadesUpdate: (id) => `${BASE_URL}/products/unidades/update/${id}/`,
+  unidadesActivate: (id) => `${BASE_URL}/products/unidades/activate/${id}/`,
+  unidadesDeactivate: (id) => `${BASE_URL}/products/unidades/deactivate/${id}/`,
+  unidadesDetail: (id) => `${BASE_URL}/products/unidades/${id}/detail/`,
+
+  // DEPARTAMENTOS Y CIUDADES
+  departamentosList: `${BASE_URL}/sales/departamentos/list/`,
+  ciudadesList: `${BASE_URL}/sales/ciudades/list/`,
+
+  // CLIENTES
+  clientesList: `${BASE_URL}/sales/clientes/list/`,
+  clientesCreate: `${BASE_URL}/sales/clientes/create/`,
+  clientesUpdate: (id) => `${BASE_URL}/sales/clientes/update/${id}/`,
+  clientesActivate: (id) => `${BASE_URL}/sales/clientes/activate/${id}/`,
+  clientesDeactivate: (id) => `${BASE_URL}/sales/clientes/deactivate/${id}/`,
+  clientesDetail: (id) => `${BASE_URL}/sales/clientes/detail/${id}/`,
+
+  // PRODUCTOS BAJO PEDIDO
+  productosBajoPedidoList: `${BASE_URL}/sales/productos-bajo-pedido/list/`,
+  productosBajoPedidoCreate: `${BASE_URL}/sales/productos-bajo-pedido/create/`,
+  productosBajoPedidoUpdate: (id) => `${BASE_URL}/sales/productos-bajo-pedido/update/${id}/`,
+  productosBajoPedidoActivate: (id) => `${BASE_URL}/sales/productos-bajo-pedido/activate/${id}/`,
+  productosBajoPedidoDeactivate: (id) => `${BASE_URL}/sales/productos-bajo-pedido/deactivate/${id}/`,
+  productosBajoPedidoDetail: (id) => `${BASE_URL}/sales/productos-bajo-pedido/detail/${id}/`,
+
+  // SEPARACIONES
+  separacionesList: `${BASE_URL}/sales/separaciones/list/`,
+  separacionesCreate: `${BASE_URL}/sales/separaciones/create/`,
+  separacionesUpdate: (id) => `${BASE_URL}/sales/separaciones/update/${id}/`,
+  separacionesActivate: (id) => `${BASE_URL}/sales/separaciones/activate/${id}/`,
+  separacionesDeactivate: (id) => `${BASE_URL}/sales/separaciones/deactivate/${id}/`,
+  separacionesDetail: (id) => `${BASE_URL}/sales/separaciones/detail/${id}/`,
+
+  // VENTAS
+  ventasList: `${BASE_URL}/sales/ventas/list/`,
+  ventasCreate: `${BASE_URL}/sales/ventas/create/`,
+  ventasUpdate: (id) => `${BASE_URL}/sales/ventas/update/${id}/`,
+  ventasDetail: (id) => `${BASE_URL}/sales/ventas/detail/${id}/`,
+
+  // RECIBOS
+  recibosList: `${BASE_URL}/sales/recibos/list/`,
+  recibosCreate: `${BASE_URL}/sales/recibos/create/`,
+  recibosUpdate: (id) => `${BASE_URL}/sales/recibos/update/${id}/`,
+  recibosDetail: (id) => `${BASE_URL}/sales/recibos/detail/${id}/`,
 
   // INVOICES
   invoicesList: `${BASE_URL}/sales/invoices/list/`,
@@ -50,6 +132,18 @@ const urls = {
   invoiceDownload: (id) => `${BASE_URL}/sales/invoices/${id}/download/`,
   invoiceResendEmail: (id) => `${BASE_URL}/sales/invoices/${id}/resend_email/`,
   invoiceParseNL: `${BASE_URL}/sales/invoices/parse_natural_language/`,
+
+  // ORDENES DE COMPRA
+  ordenesCompraList: `${BASE_URL}/purchases/ordenes-compra/list/`,
+  ordenesCompraCreate: `${BASE_URL}/purchases/ordenes-compra/create/`,
+  ordenesCompraUpdate: (id) => `${BASE_URL}/purchases/ordenes-compra/update/${id}/`,
+  ordenesCompraActivate: (id) => `${BASE_URL}/purchases/ordenes-compra/activate/${id}/`,
+  ordenesCompraDeactivate: (id) => `${BASE_URL}/purchases/ordenes-compra/deactivate/${id}/`,
+  ordenesCompraDetail: (id) => `${BASE_URL}/purchases/ordenes-compra/detail/${id}/`,
+
+  // TRM
+  trmList: `${BASE_URL}/core/trm/list/`,
+  trmCreate: `${BASE_URL}/core/trm/create/`,
 };
 
 export default urls;

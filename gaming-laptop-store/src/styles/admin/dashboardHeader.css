@@ -27,6 +27,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  color: white;
 }
 
 .navbar-logo {
@@ -34,19 +35,6 @@
   object-fit: contain;
 }
 
-.admin-badge {
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(26, 171, 245, 0.25);
+.highlight {
   color: var(--navbar-active);
-  font-weight: 600;
-  background: rgba(26, 171, 245, 0.08);
-  text-decoration: none;
-  transition: background 0.18s ease, transform 0.12s ease;
-}
-
-.admin-badge:hover {
-  transform: translateY(-2px);
-  background: rgba(26, 171, 245, 0.14);
 }

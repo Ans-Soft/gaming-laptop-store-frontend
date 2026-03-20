@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { FaRegEye, FaDownload, FaEnvelope, FaRegTrashAlt } from "react-icons/fa";
-import DashboardHeader from "../../components/admin/DashboardHeader";
 import TitleCrud from "../../components/admin/TitleCrud";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
@@ -225,7 +224,6 @@ const Invoices = () => {
 
   return (
     <section>
-      <DashboardHeader />
       <div className="table-container">
         <TitleCrud
           title="Gestión de Facturas"

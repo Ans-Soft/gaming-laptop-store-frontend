@@ -1,0 +1,657 @@
+/* =========================================================
+   productoForm.css — scoped to .pf- prefix
+   Styles for the ProductoForm create/edit modal.
+   Two-column progressive layout: left (base info) +
+   right (specifications + images).
+   ========================================================= */
+
+/* ── Modal container override for wider form ────────────── */
+
+.modal-container:has(.pf-container) {
+  width: min(1000px, 96vw);
+  min-height: 600px;
+  max-height: 90vh;
+  overflow-y: visible; /* columns manage their own scroll */
+}
+
+/* Allow the modal-form inside the wide modal to hold the
+   two-column layout without its own scroll; the right
+   column scrolls independently. */
+.modal-container:has(.pf-container) .modal-form {
+  overflow: visible;
+}
+
+/* ── Two-column container ───────────────────────────────── */
+
+.pf-container {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+/* ── Left column — sticky base information ──────────────── */
+
+.pf-column-left {
+  flex: 0 0 30%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  padding-right: 1.2rem;
+  border-right: 1px solid var(--fourth-color);
+}
+
+/* ── Right column — scrollable specifications ───────────── */
+
+.pf-column-right {
+  flex: 1 1 70%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: calc(90vh - 180px);
+  overflow-y: auto;
+  padding-right: 4px; /* thin scroll gutter */
+}
+
+/* Scrollbar styling for right column */
+.pf-column-right::-webkit-scrollbar {
+  width: 5px;
+}
+
+.pf-column-right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pf-column-right::-webkit-scrollbar-thumb {
+  background: var(--fourth-color);
+  border-radius: 4px;
+}
+
+/* ── Primary image preview (sticky) ─────────────────────── */
+
+.pf-image-preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0 1.25rem;
+  border-bottom: 1px solid var(--fourth-color);
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.pf-image-preview-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  border: 1px solid var(--fourth-color);
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pf-primary-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pf-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.02);
+  color: var(--subtitle-color);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.pf-preview-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--subtitle-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Specification section header ───────────────────────── */
+
+.pf-spec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--icon-bg);
+  flex-shrink: 0;
+}
+
+.pf-spec-header-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pf-spec-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--icon-bg);
+  border-radius: 12px;
+  padding: 0.2rem 0.6rem;
+}
+
+/* ── Specification sections container ───────────────────── */
+
+.pf-spec-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Individual specification section ────────────────────── */
+
+.pf-spec-section {
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+}
+
+.pf-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--icon-bg);
+}
+
+.pf-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pf-section-field-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--icon-bg);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* ── Specification fields grid (2-column) ────────────────── */
+
+.pf-section-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Each batch of ~3 fields — commented out; fields now render
+   in a flat single-column list one per row. Kept for reference
+   if type-based grouping is introduced in the future.
+.pf-spec-batch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+} */
+
+/* Empty state when no type selected yet */
+.pf-spec-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.pf-spec-empty p {
+  font-size: 0.88rem;
+  color: var(--subtitle-color);
+  margin: 0;
+}
+
+/* ── Divider between specs and images ───────────────────── */
+
+.pf-spec-divider {
+  height: 1px;
+  background: var(--fourth-color);
+  margin: 1.5rem 0 1rem;
+}
+
+/* ── Field validation error messages ────────────────────── */
+
+.pf-field-error {
+  display: block;
+  font-size: 0.78rem;
+  color: #c0392b;
+  margin-top: 2px;
+}
+
+/* ── Required mark ──────────────────────────────────────── */
+
+.pf-required-mark {
+  color: #c0392b;
+  margin-left: 2px;
+}
+
+/* ── Dynamic fields ─────────────────────────────────────── */
+
+.pf-dynamic-loading {
+  font-size: 0.85rem;
+  color: var(--subtitle-color);
+  padding: 0.5rem 0;
+}
+
+/* Boolean field row */
+.pf-bool-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0;
+}
+
+.pf-bool-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.pf-bool-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+/* ── Type-change warning banner ─────────────────────────── */
+
+.pf-type-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  background-color: rgba(230, 126, 34, 0.08);
+  border: 1px solid rgba(230, 126, 34, 0.4);
+  border-left: 3px solid #e67e22;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  color: #a04000;
+}
+
+/* ── Categories multi-select ────────────────────────────── */
+
+.pf-cat-count {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--subtitle-color);
+}
+
+/* Selected categories list */
+.pf-cat-selected-list {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pf-cat-selected-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.6rem;
+  background: rgba(41, 121, 200, 0.07);
+  border: 1px solid rgba(41, 121, 200, 0.25);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+.pf-cat-selected-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-cat-remove-btn {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--subtitle-color);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  margin-left: 0.4rem;
+}
+
+.pf-cat-remove-btn:hover {
+  background: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
+}
+
+/* Dropdown wrapper — relative anchor for the floating list */
+.pf-cat-dropdown-wrapper {
+  position: relative;
+}
+
+.pf-cat-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.75rem;
+  border: 1px dashed var(--primary-color);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--primary-color);
+  font-size: 0.83rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.pf-cat-add-btn:hover:not(:disabled) {
+  background: rgba(41, 121, 200, 0.07);
+}
+
+.pf-cat-add-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  border-style: solid;
+}
+
+.pf-cat-chevron {
+  transition: transform 0.2s ease;
+}
+
+.pf-cat-chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Floating dropdown list */
+.pf-cat-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-color);
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(0,0,0,0.12));
+  z-index: 50;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0.3rem;
+}
+
+.pf-cat-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pf-cat-dropdown::-webkit-scrollbar-thumb {
+  background: var(--fourth-color);
+  border-radius: 4px;
+}
+
+.pf-cat-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.65rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.pf-cat-dropdown-item:hover {
+  background: var(--card-bg);
+}
+
+.pf-cat-all-added {
+  font-size: 0.8rem;
+  color: var(--subtitle-color);
+  margin: 0.3rem 0 0;
+  padding: 0 0.1rem;
+}
+
+/* ── Image upload section ───────────────────────────────── */
+
+.pf-images-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 4px;
+}
+
+.pf-images-section > label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+.pf-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.65rem;
+}
+
+.pf-image-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  padding: 6px;
+  background: var(--card-bg);
+  transition: border-color 0.2s ease;
+}
+
+.pf-image-card:hover {
+  border-color: var(--third-color);
+}
+
+.pf-image-card.pf-image-removed {
+  opacity: 0.5;
+  border-color: #c0392b;
+  border-style: dashed;
+}
+
+.pf-image-preview {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 5px;
+  display: block;
+}
+
+.pf-image-removed .pf-image-preview {
+  filter: grayscale(80%);
+}
+
+.pf-removed-overlay {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  height: 80px;
+  background: rgba(192, 57, 43, 0.18);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #c0392b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.pf-image-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.pf-action-btn {
+  flex: 1;
+  padding: 3px 0;
+  font-size: 0.8rem;
+  border: 1px solid var(--fourth-color);
+  border-radius: 4px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  line-height: 1;
+}
+
+.pf-action-btn:hover:not(:disabled) {
+  background: var(--card-bg-elevated);
+  border-color: var(--third-color);
+}
+
+.pf-action-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pf-action-btn--remove {
+  color: #c0392b;
+  border-color: rgba(192, 57, 43, 0.4);
+}
+
+.pf-action-btn--remove:hover:not(:disabled) {
+  background: rgba(192, 57, 43, 0.08);
+  border-color: #c0392b;
+}
+
+.pf-action-btn--restore {
+  color: #27ae60;
+  border-color: rgba(39, 174, 96, 0.4);
+}
+
+.pf-action-btn--restore:hover:not(:disabled) {
+  background: rgba(39, 174, 96, 0.08);
+  border-color: #27ae60;
+}
+
+.pf-add-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pf-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 0.9rem;
+  border: 1px dashed var(--primary-color);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.pf-add-btn:hover:not(:disabled) {
+  background: rgba(41, 121, 200, 0.07);
+}
+
+.pf-add-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pf-file-input {
+  display: none;
+}
+
+.pf-counter {
+  font-size: 0.8rem;
+  color: var(--subtitle-color);
+}
+
+.pf-counter--warn {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+/* ── Responsive: single column on tablet/mobile ─────────── */
+
+@media (max-width: 950px) {
+  .modal-container:has(.pf-container) {
+    width: min(650px, 96vw);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-container:has(.pf-container) .modal-form {
+    overflow: visible;
+  }
+
+  .pf-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .pf-column-left {
+    flex: none;
+    width: 100%;
+    position: static;
+    padding-right: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--fourth-color);
+    padding-bottom: 1.25rem;
+  }
+
+  .pf-column-right {
+    flex: none;
+    width: 100%;
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+
+  /* Collapse 2-column spec grid to single column */
+  .pf-section-fields {
+    grid-template-columns: 1fr;
+  }
+}
