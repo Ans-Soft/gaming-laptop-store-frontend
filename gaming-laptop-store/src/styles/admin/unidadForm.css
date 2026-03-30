@@ -47,6 +47,19 @@
   margin-bottom: 0.25rem;
 }
 
+/* ── Locked unit banner ─────────────────────────────────── */
+
+.uf-locked-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.85rem;
+  color: #991b1b;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
 /* ── Form grid — two columns ────────────────────────────── */
 
 .uf-grid {

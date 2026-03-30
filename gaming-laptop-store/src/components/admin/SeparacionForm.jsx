@@ -27,7 +27,7 @@ const SeparacionForm = ({ onClose, onSubmit, separacion, preselectedUnidadId }) 
   const fetchData = async () => {
     try {
       const clientesData = await ClienteService.getClientes();
-      setClientes(clientesData.cliente || []);
+      setClientes(Array.isArray(clientesData) ? clientesData : (clientesData.clientes || []));
 
       const unidadesData = await UnidadService.getUnidades();
       setUnidades(unidadesData || []);

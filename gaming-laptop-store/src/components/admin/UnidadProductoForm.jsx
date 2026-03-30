@@ -3,15 +3,17 @@ import { Box, Edit } from "lucide-react";
 import ModalBase from "./ModalBase";
 import "../../styles/admin/unidadForm.css";
 
+// 'vendido' y 'separado' are auto-assigned by Venta/Separación — not manually selectable
 const ESTADO_VENTA_OPTIONS = [
   { value: "sin_vender", label: "Sin Vender" },
-  { value: "separado", label: "Separado" },
-  { value: "vendido", label: "Vendido" },
   { value: "por_encargo", label: "Por Encargo" },
   { value: "entregado_garantia", label: "Entregado en Garantía" },
   { value: "danado", label: "Dañado" },
   { value: "solicitud_metodo_aliado", label: "Solicitud Método Aliado" },
 ];
+
+const LOCKED_STATES = ["vendido", "separado"];
+const LOCKED_LABELS = { vendido: "Vendido", separado: "Separado" };
 
 const ESTADO_PRODUCTO_OPTIONS = [
   { value: "en_stock", label: "En Stock" },
@@ -62,6 +64,7 @@ const UnidadProductoForm = ({
   submitError,
 }) => {
   const isEditMode = Boolean(unidad);
+  const isLocked = isEditMode && LOCKED_STATES.includes(unidad?.estado_venta);
 
   const [formData, setFormData] = useState({ ...EMPTY_FORM, condicion: condicionDefault });
   const [errors, setErrors] = useState({});
@@ -140,10 +143,17 @@ const UnidadProductoForm = ({
           : "Completa la información para registrar una nueva unidad"
       }
       onClose={onClose}
-      onSubmit={handleSubmit}
+      onSubmit={isLocked ? undefined : handleSubmit}
       isSubmitting={isSubmitting}
     >
       {submitError && <div className="form-error-banner">{submitError}</div>}
+
+      {isLocked && (
+        <div className="uf-locked-banner">
+          Esta unidad está marcada como <strong>{LOCKED_LABELS[unidad.estado_venta]}</strong>.
+          Para editarla, primero elimine la venta o separación asociada.
+        </div>
+      )}
 
       {/* Product context banner */}
       <div className="uf-variant-banner">
@@ -165,7 +175,7 @@ const UnidadProductoForm = ({
             placeholder="Ej: SN-123456789"
             value={formData.serial}
             onChange={handleChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLocked}
             required
           />
           {errors.serial && <span className="uf-field-error">{errors.serial}</span>}
@@ -181,7 +191,7 @@ const UnidadProductoForm = ({
             name="condicion"
             value={formData.condicion}
             onChange={handleChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLocked}
             required
           >
             {CONDICION_OPTIONS.map((opt) => (
@@ -205,7 +215,7 @@ const UnidadProductoForm = ({
             placeholder="Ej: 4500000"
             value={formData.precio}
             onChange={handleChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLocked}
             required
           />
           {errors.precio && <span className="uf-field-error">{errors.precio}</span>}
@@ -221,12 +231,15 @@ const UnidadProductoForm = ({
             name="estado_venta"
             value={formData.estado_venta}
             onChange={handleChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLocked}
             required
           >
-            {ESTADO_VENTA_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
+            {isLocked
+              ? <option value={formData.estado_venta}>{LOCKED_LABELS[formData.estado_venta]}</option>
+              : ESTADO_VENTA_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))
+            }
           </select>
           {errors.estado_venta && <span className="uf-field-error">{errors.estado_venta}</span>}
         </div>
@@ -241,7 +254,7 @@ const UnidadProductoForm = ({
             name="estado_producto"
             value={formData.estado_producto}
             onChange={handleChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLocked}
             required
           >
             {ESTADO_PRODUCTO_OPTIONS.map((opt) => (

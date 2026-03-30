@@ -90,7 +90,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
       onSubmit={handleSubmit}
     >
       <div className="cf-form-grid">
-        <div className="cf-form-group">
+        <div className="form-group">
           <label htmlFor="nombre_completo">
             Nombre Completo <span className="required">*</span>
           </label>
@@ -105,7 +105,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
           />
         </div>
 
-        <div className="cf-form-group">
+        <div className="form-group">
           <label htmlFor="cedula">
             Cédula <span className="required">*</span>
           </label>
@@ -120,7 +120,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
           />
         </div>
 
-        <div className="cf-form-group">
+        <div className="form-group">
           <label htmlFor="celular">
             Celular <span className="required">*</span>
           </label>
@@ -135,7 +135,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
           />
         </div>
 
-        <div className="cf-form-group">
+        <div className="form-group">
           <label htmlFor="correo">
             Correo <span className="required">*</span>
           </label>
@@ -150,7 +150,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
           />
         </div>
 
-        <div className="cf-form-group cf-full">
+        <div className="form-group cf-full">
           <label htmlFor="direccion">
             Dirección <span className="required">*</span>
           </label>
@@ -165,7 +165,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
           />
         </div>
 
-        <div className="cf-form-group">
+        <div className="form-group">
           <label htmlFor="departamento">
             Departamento <span className="required">*</span>
           </label>
@@ -185,7 +185,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
           </select>
         </div>
 
-        <div className="cf-form-group">
+        <div className="form-group">
           <label htmlFor="ciudad">
             Ciudad <span className="required">*</span>
           </label>
