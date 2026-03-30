@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, FileText } from "lucide-react";
+import { ArrowLeft, ShoppingCart } from "lucide-react";
 import * as VentaService from "../../services/VentaService";
-import * as ReciboService from "../../services/ReciboService";
 import "../../styles/admin/ventaDetail.css";
 
 const VentaDetail = () => {
@@ -10,7 +9,6 @@ const VentaDetail = () => {
   const navigate = useNavigate();
 
   const [venta, setVenta] = useState(null);
-  const [recibo, setRecibo] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,14 +22,7 @@ const VentaDetail = () => {
       const ventaData = await VentaService.getVentaDetail(id);
       setVenta(ventaData.venta || ventaData);
 
-      // Load recibos and find one associated with this venta
-      const recibosData = await ReciboService.getRecibos();
-      const ventaRecibo = (Array.isArray(recibosData) ? recibosData : recibosData.recibos || []).find(
-        (r) => r.venta === parseInt(id)
-      );
-      if (ventaRecibo) {
-        setRecibo(ventaRecibo);
-      }
+
     } catch (error) {
       console.error("Error al cargar venta:", error);
     } finally {
@@ -127,28 +118,6 @@ const VentaDetail = () => {
         )}
       </div>
 
-      {recibo && (
-        <div className="vd-recibo-section">
-          <h3>
-            <FileText size={20} />
-            Recibo Adjunto
-          </h3>
-          <div className="vd-recibo-info">
-            <p>
-              <strong>Fecha del Documento:</strong>{" "}
-              {new Date(recibo.fecha_documento).toLocaleDateString("es-CO")}
-            </p>
-            <a
-              href={recibo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="vd-recibo-link"
-            >
-              Ver Recibo
-            </a>
-          </div>
-        </div>
-      )}
 
       <div className="vd-actions">
         <button className="vd-btn-back" onClick={() => navigate("/admin/ventas")}>

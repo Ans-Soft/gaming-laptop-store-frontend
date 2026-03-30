@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { PackagePlus, Edit, ChevronDown } from "lucide-react";
+import { PackagePlus, Edit } from "lucide-react";
 import ModalBase from "./ModalBase";
 import "../../styles/admin/usersForm.css";
 import "../../styles/admin/productoForm.css";
 
 import { getBrands } from "../../services/BrandService";
-import { getCategories } from "../../services/CategoryService";
 import { getProductTypes, getProductTypeDetail } from "../../services/ProductTypeService";
 
 const MAX_IMAGES = 10;
@@ -41,7 +40,6 @@ const ProductoForm = ({
     descripcion: "",
     marca: "",
     tipo_producto: "",
-    categorias: [], // array of numeric IDs
   });
 
   // ── Validation errors ──────────────────────────────────────────────────────
@@ -49,12 +47,7 @@ const ProductoForm = ({
 
   // ── Lookup lists ───────────────────────────────────────────────────────────
   const [brandsList, setBrandsList] = useState([]);
-  const [categoriesList, setCategoriesList] = useState([]);
   const [productTypesList, setProductTypesList] = useState([]);
-
-  // ── Categories multi-select state ─────────────────────────────────────────
-  const [catDropdownOpen, setCatDropdownOpen] = useState(false);
-  const catDropdownRef = useRef(null);
 
   // ── Dynamic fields state ───────────────────────────────────────────────────
   // campos: array from TipoProductoDetailSerializer campos[]
@@ -75,13 +68,11 @@ const ProductoForm = ({
   useEffect(() => {
     const loadLookups = async () => {
       try {
-        const [brands, cats, types] = await Promise.all([
+        const [brands, types] = await Promise.all([
           getBrands(),
-          getCategories(),
           getProductTypes(),
         ]);
         setBrandsList(brands);
-        setCategoriesList(cats);
         setProductTypesList(types);
       } catch (err) {
         console.error("Error cargando listas de referencia:", err);
@@ -98,7 +89,6 @@ const ProductoForm = ({
         descripcion: producto.descripcion || "",
         marca: String(producto.marca || ""),
         tipo_producto: String(tipoId || ""),
-        categorias: (producto.categorias_data || []).map((c) => c.id),
       });
 
       // Pre-load dynamic fields for the product's tipo_producto
@@ -121,18 +111,6 @@ const ProductoForm = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // ── Close category dropdown on outside click ───────────────────────────────
-  useEffect(() => {
-    if (!catDropdownOpen) return;
-    const handleOutside = (e) => {
-      if (catDropdownRef.current && !catDropdownRef.current.contains(e.target)) {
-        setCatDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleOutside);
-    return () => document.removeEventListener("mousedown", handleOutside);
-  }, [catDropdownOpen]);
 
   // ── Load campos when tipo_producto changes ─────────────────────────────────
   const loadCamposForTipo = async (tipoId, existingValues = []) => {
@@ -206,27 +184,6 @@ const ProductoForm = ({
     }
   };
 
-  // Category multi-select handlers
-  const handleCategoryAdd = (id) => {
-    const numId = Number(id);
-    setFormData((prev) => ({
-      ...prev,
-      categorias: prev.categorias.map(Number).includes(numId)
-        ? prev.categorias
-        : [...prev.categorias, numId],
-    }));
-    if (errors.categorias) setErrors((prev) => ({ ...prev, categorias: null }));
-    setCatDropdownOpen(false);
-  };
-
-  const handleCategoryRemove = (id) => {
-    const numId = Number(id);
-    setFormData((prev) => ({
-      ...prev,
-      categorias: prev.categorias.filter((c) => Number(c) !== numId),
-    }));
-  };
-
   const handleCampoChange = (campoId, value) => {
     setCampoValues((prev) => ({ ...prev, [campoId]: value }));
   };
@@ -297,7 +254,6 @@ const ProductoForm = ({
     if (!formData.descripcion.trim()) newErrors.descripcion = "La descripcion es obligatoria.";
     if (!formData.marca) newErrors.marca = "Selecciona una marca.";
     if (!formData.tipo_producto) newErrors.tipo_producto = "Selecciona un tipo de producto.";
-    if (formData.categorias.length === 0) newErrors.categorias = "Selecciona al menos una categoria.";
 
     // Validate required dynamic campos
     const missingRequired = campos.filter((c) => {
@@ -322,7 +278,6 @@ const ProductoForm = ({
     fd.append("descripcion", formData.descripcion.trim());
     fd.append("marca", String(Number(formData.marca)));
     fd.append("tipo_producto", String(Number(formData.tipo_producto)));
-    formData.categorias.forEach((id) => fd.append("categorias", String(Number(id))));
 
     // Build campo_valores array and serialize as JSON string
     const campoValoresPayload = campos.map((c) => {
@@ -359,18 +314,6 @@ const ProductoForm = ({
 
     if (onSubmit) onSubmit(fd, producto?.id);
   };
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
-  // Categories not yet selected — shown in the dropdown
-  const availableCategories = categoriesList.filter(
-    (cat) => !formData.categorias.map(Number).includes(cat.id)
-  );
-
-  // Resolved names for selected category IDs
-  const selectedCategoryObjects = formData.categorias
-    .map((id) => categoriesList.find((c) => c.id === Number(id)))
-    .filter(Boolean);
 
   // ── Product image preview (sticky header) ──────────────────────────────────
 
@@ -533,7 +476,7 @@ const ProductoForm = ({
 
   const renderImagesSection = () => (
     <div className="pf-images-section">
-      <label>Imagenes del Producto (max. {MAX_IMAGES})</label>
+      <label>Imágenes del Producto (max. {MAX_IMAGES})</label>
 
       {images.length > 0 && (
         <div className="pf-images-grid">
@@ -612,13 +555,13 @@ const ProductoForm = ({
           + Agregar imagenes
         </button>
         <span className={`pf-counter${atLimit ? " pf-counter--warn" : ""}`}>
-          {activeImageCount} / {MAX_IMAGES} imagenes
+          {activeImageCount} / {MAX_IMAGES} imágenes
         </span>
       </div>
 
       {atLimit && (
         <span className="pf-counter pf-counter--warn">
-          Limite de {MAX_IMAGES} imagenes alcanzado.
+          Limite de {MAX_IMAGES} imágenes alcanzado.
         </span>
       )}
     </div>
@@ -742,76 +685,6 @@ const ProductoForm = ({
             </div>
           )}
 
-          {/* Categorias multi-select */}
-          <div className="form-group">
-            <label>
-              Categorias <span className="pf-required-mark">*</span>
-              {formData.categorias.length > 0 && (
-                <span className="pf-cat-count">
-                  {" "}({formData.categorias.length} seleccionada
-                  {formData.categorias.length !== 1 ? "s" : ""})
-                </span>
-              )}
-            </label>
-
-            {/* Selected categories list */}
-            {selectedCategoryObjects.length > 0 && (
-              <ul className="pf-cat-selected-list">
-                {selectedCategoryObjects.map((cat) => (
-                  <li key={cat.id} className="pf-cat-selected-item">
-                    <span className="pf-cat-selected-name">{cat.name}</span>
-                    <button
-                      type="button"
-                      className="pf-cat-remove-btn"
-                      onClick={() => handleCategoryRemove(cat.id)}
-                      title="Quitar categoria"
-                    >
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* Add category dropdown */}
-            <div className="pf-cat-dropdown-wrapper" ref={catDropdownRef}>
-              <button
-                type="button"
-                className="pf-cat-add-btn"
-                onClick={() => setCatDropdownOpen((prev) => !prev)}
-                disabled={availableCategories.length === 0}
-              >
-                <span>+ Agregar Categoria</span>
-                <ChevronDown
-                  size={15}
-                  className={`pf-cat-chevron${catDropdownOpen ? " pf-cat-chevron--open" : ""}`}
-                />
-              </button>
-
-              {catDropdownOpen && availableCategories.length > 0 && (
-                <div className="pf-cat-dropdown">
-                  {availableCategories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      className="pf-cat-dropdown-item"
-                      onClick={() => handleCategoryAdd(cat.id)}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {availableCategories.length === 0 && categoriesList.length > 0 && (
-                <p className="pf-cat-all-added">Todas las categorias han sido agregadas.</p>
-              )}
-            </div>
-
-            {errors.categorias && (
-              <span className="pf-field-error">{errors.categorias}</span>
-            )}
-          </div>
         </div>
 
         {/* ── Right column: image preview + specifications + images ── */}

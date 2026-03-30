@@ -8,7 +8,7 @@ import urls from "./Urls";
  * @returns {Promise<Array>} Array of unidad objects.
  */
 export async function getUnidades(varianteId = null) {
-  const params = varianteId ? { variante_id: varianteId } : {};
+  const params = varianteId ? { producto_id: varianteId } : {};
   const response = await api.get(urls.unidadesList, { params });
   return response.data;
 }

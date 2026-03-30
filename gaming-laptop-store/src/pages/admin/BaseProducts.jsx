@@ -11,6 +11,7 @@ import TitleCrud from "../../components/admin/TitleCrud";
 import BaseProductsForm from "../../components/admin/BaseProductsForm";
 import ProductsForm from "../../components/admin/ProductsForm";
 import ModalBase from "../../components/admin/ModalBase";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 
 import {
   getBaseProducts,
@@ -31,6 +32,8 @@ const BaseProducts = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   // ── Quick-create variant state ──────────────────────────────────────────────
   const [showQuickVariantModal, setShowQuickVariantModal] = useState(false);
@@ -98,18 +101,42 @@ const BaseProducts = () => {
     }
   };
 
-  const handleActivate = async (product) => {
-    if (window.confirm(`¿Activar producto base ${product.model_name}?`)) {
-      await activateBaseProduct(product.id);
-      fetchProducts();
-    }
+  const handleActivate = (product) => {
+    setConfirmDialog({
+      title: `¿Activar producto base ${product.model_name}?`,
+      message: "El producto base volverá a estar disponible en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateBaseProduct(product.id);
+          fetchProducts();
+        } catch (error) {
+          console.error("Error al activar producto base:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (product) => {
-    if (window.confirm(`¿Desactivar producto base ${product.model_name}?`)) {
-      await deactivateBaseProduct(product.id);
-      fetchProducts();
-    }
+  const handleDeactivate = (product) => {
+    setConfirmDialog({
+      title: `¿Desactivar producto base ${product.model_name}?`,
+      message: "El producto base quedará inactivo en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateBaseProduct(product.id);
+          fetchProducts();
+        } catch (error) {
+          console.error("Error al desactivar producto base:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const handleSelectProductType = (type) => {
@@ -193,7 +220,7 @@ const BaseProducts = () => {
 
         <DataTable
           columns={columns}
-          data={products}
+          data={products.filter((p) => p.active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -305,6 +332,17 @@ const BaseProducts = () => {
             isSubmitting={isVariantSubmitting}
             submitError={variantSubmitError}
             lockedBaseProduct={selectedProductForVariant}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

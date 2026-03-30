@@ -37,8 +37,24 @@
   --text-color:          #0A1628;
   --subtitle-color:      #4A6580;
 
+  /* ── SEMANTIC ── */
+  --success-color:       #16A34A;
+  --success-bg:          #DCFCE7;
+  --warning-color:       #B45309;
+  --warning-bg:          #FEF3C7;
+  --error-color:         #DC2626;
+  --error-bg:            #FEE2E2;
+
   /* ── UTILITY ── */
   --whatsapp-color:      #08D85C;
+
+  /* ── TABLE CELL TYPOGRAPHY ── */
+  --cell-text-base:      0.875rem;
+  --cell-text-sm:        0.75rem;
+  --cell-text-badge:     0.72rem;
+  --cell-weight-normal:  400;
+  --cell-weight-strong:  600;
+  --font-mono:           'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 }
 
 body {

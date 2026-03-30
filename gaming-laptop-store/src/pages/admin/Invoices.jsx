@@ -7,6 +7,7 @@ import CountCard from "../../components/admin/CountCard";
 import DataTable from "../../components/admin/DataTable";
 import InvoiceFormModal from "../../components/invoices/InvoiceFormModal";
 import InvoiceDetailModal from "../../components/invoices/InvoiceDetailModal";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 import {
   getInvoices,
   createInvoice,
@@ -48,6 +49,7 @@ const Invoices = () => {
   const [warnMsg, setWarnMsg] = useState("");
 
   const [viewingInvoice, setViewingInvoice] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchInvoices();
@@ -62,7 +64,7 @@ const Invoices = () => {
         invoices.filter(
           (inv) =>
             inv.bill_id?.toLowerCase().includes(q) ||
-            inv.client_name?.toLowerCase().includes(q) ||
+            inv.cliente_nombre?.toLowerCase().includes(q) ||
             (CONCEPTO_DISPLAY[inv.concepto] || "").toLowerCase().includes(q)
         )
       );
@@ -116,7 +118,7 @@ const Invoices = () => {
           );
         } else {
           setSuccessMsg(
-            `Factura generada y enviada al correo del cliente (${data.client_email}).`
+            "Factura generada y enviada al correo del cliente."
           );
         }
       }
@@ -133,19 +135,23 @@ const Invoices = () => {
     }
   };
 
-  const handleDelete = async (invoice) => {
-    if (
-      !window.confirm(
-        `¿Eliminar la factura ${invoice.bill_id}? Esta acción no se puede deshacer.`
-      )
-    )
-      return;
-    try {
-      await deleteInvoice(invoice.id);
-      fetchInvoices();
-    } catch {
-      alert("Error al eliminar la factura.");
-    }
+  const handleDelete = (invoice) => {
+    setConfirmDialog({
+      title: `¿Eliminar la factura ${invoice.bill_id}?`,
+      message: "Esta acción no se puede deshacer.",
+      confirmLabel: "Sí, eliminar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deleteInvoice(invoice.id);
+          fetchInvoices();
+        } catch {
+          alert("Error al eliminar la factura.");
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const handleDownload = async (invoice) => {
@@ -156,25 +162,29 @@ const Invoices = () => {
     }
   };
 
-  const handleResendEmail = async (invoice) => {
-    if (
-      !window.confirm(
-        `¿Reenviar la factura a ${invoice.client_email}?`
-      )
-    )
-      return;
-    try {
-      await resendInvoiceEmail(invoice.id);
-      setSuccessMsg("Correo reenviado exitosamente.");
-      fetchInvoices();
-    } catch {
-      setWarnMsg("No se pudo reenviar el correo.");
-    }
+  const handleResendEmail = (invoice) => {
+    setConfirmDialog({
+      title: `¿Reenviar la factura ${invoice.bill_id}?`,
+      message: "Se enviará un correo electrónico con la factura al cliente.",
+      confirmLabel: "Sí, reenviar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await resendInvoiceEmail(invoice.id);
+          setSuccessMsg("Correo reenviado exitosamente.");
+          fetchInvoices();
+        } catch {
+          setWarnMsg("No se pudo reenviar el correo.");
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const columns = [
     { key: "bill_id", label: "Bill ID" },
-    { key: "client_name", label: "Cliente" },
+    { key: "cliente_nombre", label: "Cliente" },
     {
       key: "concepto",
       label: "Concepto",
@@ -307,6 +317,17 @@ const Invoices = () => {
           <InvoiceDetailModal
             invoice={viewingInvoice}
             onClose={() => setViewingInvoice(null)}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

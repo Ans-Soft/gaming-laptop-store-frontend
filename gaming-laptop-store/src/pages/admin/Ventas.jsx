@@ -4,6 +4,7 @@ import { ShoppingCart, Plus, Edit, Eye, Trash2 } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import CountCard from "../../components/admin/CountCard";
 import VentaForm from "../../components/admin/VentaForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 import * as VentaService from "../../services/VentaService";
 import "../../styles/admin/ventasPage.css";
 
@@ -13,6 +14,7 @@ const Ventas = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedVenta, setSelectedVenta] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     loadVentas();
@@ -44,14 +46,23 @@ const Ventas = () => {
     navigate(`/admin/ventas/${venta.id}`);
   };
 
-  const handleDelete = async (venta) => {
-    if (!window.confirm(`¿Eliminar venta #${venta.id}?`)) return;
-    try {
-      // Implement delete if API supports it
-      console.log("Eliminar venta:", venta.id);
-    } catch (error) {
-      console.error("Error al eliminar venta:", error);
-    }
+  const handleDelete = (venta) => {
+    setConfirmDialog({
+      title: `¿Eliminar venta #${venta.id}?`,
+      message: "Esta acción no se puede deshacer.",
+      confirmLabel: "Sí, eliminar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          // Implement delete if API supports it
+          console.log("Eliminar venta:", venta.id);
+        } catch (error) {
+          console.error("Error al eliminar venta:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const handleSubmit = async (formData, ventaId) => {
@@ -169,6 +180,17 @@ const Ventas = () => {
           onClose={() => setShowModal(false)}
           onSubmit={handleSubmit}
           venta={selectedVenta}
+        />
+      )}
+
+      {confirmDialog && (
+        <ConfirmModal
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          confirmLabel={confirmDialog.confirmLabel}
+          isDestructive={confirmDialog.isDestructive}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={() => setConfirmDialog(null)}
         />
       )}
     </div>

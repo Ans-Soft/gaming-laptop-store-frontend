@@ -1,0 +1,128 @@
+.cm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cm-container {
+  background: var(--bg-color);
+  color: var(--text-color);
+  width: 400px;
+  max-width: calc(100vw - 2rem);
+  border-radius: 14px;
+  padding: 2rem 2rem 1.5rem;
+  border: 1px solid var(--fourth-color);
+  box-shadow: var(--shadow-lg);
+  animation: cm-pop 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+@keyframes cm-pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Icon */
+.cm-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.cm-icon-danger {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+.cm-icon-warning {
+  background: rgba(255, 180, 0, 0.12);
+  color: var(--warning-color);
+}
+
+/* Text */
+.cm-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.cm-message {
+  font-size: 0.88rem;
+  color: var(--subtitle-color);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.cm-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.cm-btn-cancel,
+.cm-btn-confirm {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.cm-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--fourth-color);
+  color: var(--subtitle-color);
+}
+
+.cm-btn-cancel:hover {
+  background: var(--card-bg);
+  border-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.cm-btn-danger {
+  background: #dc3545;
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.25);
+}
+
+.cm-btn-danger:hover {
+  background: #b02a37;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(220, 53, 69, 0.35);
+}
+
+.cm-btn-danger:active {
+  transform: translateY(0);
+}
+
+.cm-btn-warning {
+  background: var(--warning-color);
+  border: none;
+  color: #fff;
+}
+
+.cm-btn-warning:hover {
+  background: #b88600;
+  transform: translateY(-1px);
+}

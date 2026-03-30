@@ -8,6 +8,7 @@ import CountCard from "../../components/admin/CountCard";
 import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import SuppliersForm from "../../components/admin/SuppliersForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 import {
   getSuppliers,
   createSupplier,
@@ -27,6 +28,7 @@ const Suppliers = () => {
   const [editingSupplier, setEditingSupplier] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchSuppliers();
@@ -74,43 +76,50 @@ const Suppliers = () => {
     }
   };
 
-  const handleActivate = async (supplier) => {
-    if (window.confirm(`¿Activar el proveedor "${supplier.nombre}"?`)) {
-      try {
-        await activateSupplier(supplier.id);
-        fetchSuppliers();
-      } catch (error) {
-        console.error("Error al activar proveedor:", error);
-      }
-    }
+  const handleActivate = (supplier) => {
+    setConfirmDialog({
+      title: `¿Activar el proveedor "${supplier.nombre}"?`,
+      message: "El proveedor volverá a estar disponible en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateSupplier(supplier.id);
+          fetchSuppliers();
+        } catch (error) {
+          console.error("Error al activar proveedor:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (supplier) => {
-    if (window.confirm(`¿Desactivar el proveedor "${supplier.nombre}"?`)) {
-      try {
-        await deactivateSupplier(supplier.id);
-        fetchSuppliers();
-      } catch (error) {
-        const errorMessage =
-          error.response?.data?.message || "No se pudo desactivar el proveedor.";
-        alert(errorMessage);
-        console.error("Error al desactivar proveedor:", error);
-      }
-    }
+  const handleDeactivate = (supplier) => {
+    setConfirmDialog({
+      title: `¿Desactivar el proveedor "${supplier.nombre}"?`,
+      message: "El proveedor quedará inactivo en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateSupplier(supplier.id);
+          fetchSuppliers();
+        } catch (error) {
+          const errorMessage =
+            error.response?.data?.message || "No se pudo desactivar el proveedor.";
+          alert(errorMessage);
+          console.error("Error al desactivar proveedor:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const columns = [
     { key: "nombre", label: "Nombre" },
     { key: "slug", label: "Slug" },
-    {
-      key: "active",
-      label: "Estado",
-      render: (row) => (
-        <span className={row.active ? "status-active" : "status-inactive"}>
-          {row.active ? "Activo" : "Inactivo"}
-        </span>
-      ),
-    },
   ];
 
   const stats = [
@@ -144,7 +153,7 @@ const Suppliers = () => {
 
         <DataTable
           columns={columns}
-          data={suppliers}
+          data={suppliers.filter((s) => s.active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -170,6 +179,17 @@ const Suppliers = () => {
             supplier={editingSupplier}
             isSubmitting={isSubmitting}
             submitError={submitError}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

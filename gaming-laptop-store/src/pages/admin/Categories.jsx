@@ -8,6 +8,7 @@ import CountCard from "../../components/admin/CountCard";
 import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import CategoriesForm from "../../components/admin/CategoriesForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 
 import {
   getCategories,
@@ -23,6 +24,7 @@ const Categories = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -70,40 +72,47 @@ const Categories = () => {
     }
   };
 
-  const handleActivate = async (category) => {
-    if (window.confirm(`¿Activar la categoría ${category.name}?`)) {
-      try {
-        await activateCategory(category.id);
-        fetchCategories();
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
+  const handleActivate = (category) => {
+    setConfirmDialog({
+      title: `¿Activar la categoría ${category.name}?`,
+      message: "La categoría volverá a estar disponible en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateCategory(category.id);
+          fetchCategories();
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (category) => {
-    if (window.confirm(`¿Desactivar la categoría ${category.name}?`)) {
-      try {
-        await deactivateCategory(category.id);
-        fetchCategories();
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
+  const handleDeactivate = (category) => {
+    setConfirmDialog({
+      title: `¿Desactivar la categoría ${category.name}?`,
+      message: "La categoría quedará inactiva en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateCategory(category.id);
+          fetchCategories();
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const columns = [
     { key: "name", label: "Nombre" },
     { key: "slug", label: "Slug" },
-    {
-      key: "active",
-      label: "Estado",
-      render: (row) => (
-        <span className={row.active ? "status-active" : "status-inactive"}>
-          {row.active ? "Activo" : "Inactivo"}
-        </span>
-      ),
-    },
   ];
 
   const stats = [
@@ -137,7 +146,7 @@ const Categories = () => {
 
         <DataTable
           columns={columns}
-          data={categories}
+          data={categories.filter((c) => c.active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -163,6 +172,17 @@ const Categories = () => {
             category={editingCategory}
             isSubmitting={isSubmitting}
             submitError={submitError}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

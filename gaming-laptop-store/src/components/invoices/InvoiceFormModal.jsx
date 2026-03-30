@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { FileText, Edit } from "lucide-react";
 import ModalBase from "../admin/ModalBase";
+import * as ClienteService from "../../services/ClienteService";
 import "../../styles/admin/invoiceForm.css";
 
 const EMPTY_FORM = {
-  client_name: "",
-  client_document: "",
-  client_phone: "",
-  client_address: "",
-  client_email: "",
+  cliente: "",
+  venta: "",
+  separacion: "",
   concepto: "",
   item: "",
   serial_item: "",
@@ -17,7 +16,7 @@ const EMPTY_FORM = {
   due_date: "",
 };
 
-const REQUIRED_FIELDS = Object.keys(EMPTY_FORM);
+const REQUIRED_FIELDS = ["cliente", "concepto", "item", "serial_item", "total_amount", "payment_method", "due_date"];
 
 function computeBillId(due_date, serial_item) {
   if (!due_date || !serial_item.trim()) return "";
@@ -29,6 +28,7 @@ function computeBillId(due_date, serial_item) {
 const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
+  const [clientes, setClientes] = useState([]);
   const [aiExpanded, setAiExpanded] = useState(false);
   const [aiText, setAiText] = useState("");
   const [aiToast, setAiToast] = useState(false);
@@ -36,13 +36,24 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
   const isEditMode = Boolean(invoice);
 
   useEffect(() => {
+    const loadClientes = async () => {
+      try {
+        const data = await ClienteService.getClientes();
+        const list = Array.isArray(data) ? data : (data.clientes || data.results || []);
+        setClientes(list);
+      } catch (e) {
+        console.error("Error loading clients:", e);
+      }
+    };
+    loadClientes();
+  }, []);
+
+  useEffect(() => {
     if (isEditMode && invoice) {
       setFormData({
-        client_name: invoice.client_name || "",
-        client_document: invoice.client_document || "",
-        client_phone: invoice.client_phone || "",
-        client_address: invoice.client_address || "",
-        client_email: invoice.client_email || "",
+        cliente: invoice.cliente || "",
+        venta: invoice.venta || "",
+        separacion: invoice.separacion || "",
         concepto: invoice.concepto || "",
         item: invoice.item || "",
         serial_item: invoice.serial_item || "",
@@ -68,6 +79,9 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
         newErrors[field] = "Este campo es requerido.";
       }
     });
+    if (formData.venta && formData.separacion) {
+      newErrors.separacion = "No puede estar vinculado a una venta y separación al mismo tiempo.";
+    }
     return newErrors;
   };
 
@@ -77,7 +91,10 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
       setErrors(validationErrors);
       return;
     }
-    if (onSubmit) onSubmit(formData, invoice?.id);
+    const payload = { ...formData };
+    if (!payload.venta) delete payload.venta;
+    if (!payload.separacion) delete payload.separacion;
+    if (onSubmit) onSubmit(payload, invoice?.id);
   };
 
   const handleAiClick = () => {
@@ -94,100 +111,38 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
       subtitle={
         isEditMode
           ? "Actualiza los datos de la factura"
-          : "Completa los datos del cliente y la venta para generar la factura"
+          : "Selecciona el cliente y completa los datos de la venta para generar la factura"
       }
       onClose={onClose}
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
     >
       <div className="inv-form">
-        {/* Section 1 — Client Data */}
+        {/* Section 1 — Cliente */}
         <div className="inv-section">
-          <h3 className="inv-section-title">Datos del Cliente</h3>
+          <h3 className="inv-section-title">Cliente</h3>
           <div className="inv-grid">
-            <div className="inv-field">
-              <label htmlFor="client_name">
-                Nombre <span className="inv-required">*</span>
-              </label>
-              <input
-                id="client_name"
-                name="client_name"
-                type="text"
-                placeholder="Ej: Juan Pérez"
-                value={formData.client_name}
-                onChange={handleChange}
-              />
-              {errors.client_name && (
-                <span className="inv-error">{errors.client_name}</span>
-              )}
-            </div>
-
-            <div className="inv-field">
-              <label htmlFor="client_document">
-                Cédula / NIT <span className="inv-required">*</span>
-              </label>
-              <input
-                id="client_document"
-                name="client_document"
-                type="text"
-                placeholder="Ej: 1234567890"
-                value={formData.client_document}
-                onChange={handleChange}
-              />
-              {errors.client_document && (
-                <span className="inv-error">{errors.client_document}</span>
-              )}
-            </div>
-
-            <div className="inv-field">
-              <label htmlFor="client_phone">
-                Teléfono <span className="inv-required">*</span>
-              </label>
-              <input
-                id="client_phone"
-                name="client_phone"
-                type="text"
-                placeholder="Ej: 3001234567"
-                value={formData.client_phone}
-                onChange={handleChange}
-              />
-              {errors.client_phone && (
-                <span className="inv-error">{errors.client_phone}</span>
-              )}
-            </div>
-
-            <div className="inv-field">
-              <label htmlFor="client_email">
-                Correo electrónico <span className="inv-required">*</span>
-              </label>
-              <input
-                id="client_email"
-                name="client_email"
-                type="email"
-                placeholder="Ej: juan@email.com"
-                value={formData.client_email}
-                onChange={handleChange}
-              />
-              {errors.client_email && (
-                <span className="inv-error">{errors.client_email}</span>
-              )}
-            </div>
-
             <div className="inv-field inv-field--full">
-              <label htmlFor="client_address">
-                Dirección <span className="inv-required">*</span>
+              <label htmlFor="cliente">
+                Cliente <span className="inv-required">*</span>
               </label>
-              <input
-                id="client_address"
-                name="client_address"
-                type="text"
-                placeholder="Ej: Cra 15 #23-45, Bogotá"
-                value={formData.client_address}
+              <select
+                id="cliente"
+                name="cliente"
+                value={formData.cliente}
                 onChange={handleChange}
-              />
-              {errors.client_address && (
-                <span className="inv-error">{errors.client_address}</span>
-              )}
+                disabled={clientes.length === 0}
+              >
+                <option value="">
+                  {clientes.length === 0 ? "Cargando clientes..." : "Seleccionar cliente..."}
+                </option>
+                {clientes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre_completo} — {c.cedula}
+                  </option>
+                ))}
+              </select>
+              {errors.cliente && <span className="inv-error">{errors.cliente}</span>}
             </div>
           </div>
         </div>
@@ -200,31 +155,19 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
               <label htmlFor="concepto">
                 Concepto <span className="inv-required">*</span>
               </label>
-              <select
-                id="concepto"
-                name="concepto"
-                value={formData.concepto}
-                onChange={handleChange}
-              >
+              <select id="concepto" name="concepto" value={formData.concepto} onChange={handleChange}>
                 <option value="">Seleccionar...</option>
                 <option value="venta">Venta</option>
                 <option value="separacion">Separación</option>
               </select>
-              {errors.concepto && (
-                <span className="inv-error">{errors.concepto}</span>
-              )}
+              {errors.concepto && <span className="inv-error">{errors.concepto}</span>}
             </div>
 
             <div className="inv-field">
               <label htmlFor="item">
                 Producto <span className="inv-required">*</span>
               </label>
-              <select
-                id="item"
-                name="item"
-                value={formData.item}
-                onChange={handleChange}
-              >
+              <select id="item" name="item" value={formData.item} onChange={handleChange}>
                 <option value="">Seleccionar...</option>
                 <option value="laptop">Laptop</option>
                 <option value="tarjeta_grafica">Tarjeta Gráfica</option>
@@ -246,9 +189,7 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
                 value={formData.serial_item}
                 onChange={handleChange}
               />
-              {errors.serial_item && (
-                <span className="inv-error">{errors.serial_item}</span>
-              )}
+              {errors.serial_item && <span className="inv-error">{errors.serial_item}</span>}
             </div>
 
             <div className="inv-field">
@@ -265,30 +206,21 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
                 value={formData.total_amount}
                 onChange={handleChange}
               />
-              {errors.total_amount && (
-                <span className="inv-error">{errors.total_amount}</span>
-              )}
+              {errors.total_amount && <span className="inv-error">{errors.total_amount}</span>}
             </div>
 
             <div className="inv-field">
               <label htmlFor="payment_method">
                 Método de pago <span className="inv-required">*</span>
               </label>
-              <select
-                id="payment_method"
-                name="payment_method"
-                value={formData.payment_method}
-                onChange={handleChange}
-              >
+              <select id="payment_method" name="payment_method" value={formData.payment_method} onChange={handleChange}>
                 <option value="">Seleccionar...</option>
                 <option value="efectivo">Efectivo</option>
                 <option value="tarjeta">Tarjeta</option>
                 <option value="transferencia">Transferencia</option>
                 <option value="otro">Otro</option>
               </select>
-              {errors.payment_method && (
-                <span className="inv-error">{errors.payment_method}</span>
-              )}
+              {errors.payment_method && <span className="inv-error">{errors.payment_method}</span>}
             </div>
 
             <div className="inv-field">
@@ -302,9 +234,40 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
                 value={formData.due_date}
                 onChange={handleChange}
               />
-              {errors.due_date && (
-                <span className="inv-error">{errors.due_date}</span>
-              )}
+              {errors.due_date && <span className="inv-error">{errors.due_date}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3 — Optional transaction links */}
+        <div className="inv-section">
+          <h3 className="inv-section-title">Vincular a Transacción (opcional)</h3>
+          <div className="inv-grid">
+            <div className="inv-field">
+              <label htmlFor="venta">ID de Venta</label>
+              <input
+                id="venta"
+                name="venta"
+                type="number"
+                min="1"
+                placeholder="Ej: 12"
+                value={formData.venta}
+                onChange={handleChange}
+              />
+              {errors.venta && <span className="inv-error">{errors.venta}</span>}
+            </div>
+            <div className="inv-field">
+              <label htmlFor="separacion">ID de Separación</label>
+              <input
+                id="separacion"
+                name="separacion"
+                type="number"
+                min="1"
+                placeholder="Ej: 7"
+                value={formData.separacion}
+                onChange={handleChange}
+              />
+              {errors.separacion && <span className="inv-error">{errors.separacion}</span>}
             </div>
           </div>
         </div>
@@ -337,17 +300,11 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
                 onChange={(e) => setAiText(e.target.value)}
                 rows={3}
               />
-              <button
-                type="button"
-                className="inv-ai-btn"
-                onClick={handleAiClick}
-              >
+              <button type="button" className="inv-ai-btn" onClick={handleAiClick}>
                 Analizar con IA
               </button>
               {aiToast && (
-                <p className="inv-ai-toast">
-                  Funcionalidad próximamente disponible
-                </p>
+                <p className="inv-ai-toast">Funcionalidad próximamente disponible</p>
               )}
             </div>
           )}

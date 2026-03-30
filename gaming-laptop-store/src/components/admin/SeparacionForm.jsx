@@ -5,10 +5,10 @@ import * as ClienteService from "../../services/ClienteService";
 import * as UnidadService from "../../services/UnidadService";
 import "../../styles/admin/separacionForm.css";
 
-const SeparacionForm = ({ onClose, onSubmit, separacion }) => {
+const SeparacionForm = ({ onClose, onSubmit, separacion, preselectedUnidadId }) => {
   const [formData, setFormData] = useState({
     cliente: "",
-    unidad_producto: "",
+    unidad_producto: preselectedUnidadId ? String(preselectedUnidadId) : "",
     valor_abono: "",
     fecha_separacion: "",
     fecha_maxima_compra: "",
@@ -16,6 +16,7 @@ const SeparacionForm = ({ onClose, onSubmit, separacion }) => {
 
   const [clientes, setClientes] = useState([]);
   const [unidades, setUnidades] = useState([]);
+  const [preselectedUnidad, setPreselectedUnidad] = useState(null);
 
   const isEditMode = Boolean(separacion);
 
@@ -30,6 +31,11 @@ const SeparacionForm = ({ onClose, onSubmit, separacion }) => {
 
       const unidadesData = await UnidadService.getUnidades();
       setUnidades(unidadesData || []);
+
+      if (preselectedUnidadId) {
+        const found = (unidadesData || []).find((u) => u.id === preselectedUnidadId);
+        if (found) setPreselectedUnidad(found);
+      }
     } catch (error) {
       console.error("Error al obtener datos:", error);
     }
@@ -114,22 +120,41 @@ const SeparacionForm = ({ onClose, onSubmit, separacion }) => {
           <label htmlFor="unidad_producto">
             Unidad de Producto <span className="required">*</span>
           </label>
-          <select
-            id="unidad_producto"
-            name="unidad_producto"
-            value={formData.unidad_producto}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Selecciona una unidad...</option>
-            {unidades
-              .filter((u) => u.estado_venta === "sin_vender")
-              .map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.serial} - {u.variante?.producto?.nombre}
-                </option>
-              ))}
-          </select>
+          {preselectedUnidad ? (
+            <div
+              style={{
+                padding: "0.6rem 1rem",
+                background: "var(--icon-bg)",
+                border: "1px solid var(--fourth-color)",
+                borderRadius: "8px",
+                fontSize: "0.9rem",
+                color: "var(--text-color)",
+                fontWeight: 600,
+              }}
+            >
+              {preselectedUnidad.serial && !preselectedUnidad.serial.startsWith("SIN-SERIAL-")
+                ? preselectedUnidad.serial
+                : "Serial pendiente"}{" "}
+              — {preselectedUnidad.producto_nombre || "—"}
+            </div>
+          ) : (
+            <select
+              id="unidad_producto"
+              name="unidad_producto"
+              value={formData.unidad_producto}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona una unidad...</option>
+              {unidades
+                .filter((u) => u.estado_venta === "sin_vender")
+                .map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.serial} - {u.producto_nombre}
+                  </option>
+                ))}
+            </select>
+          )}
         </div>
 
         <div className="sf-form-group">
