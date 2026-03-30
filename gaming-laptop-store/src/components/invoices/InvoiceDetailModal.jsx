@@ -63,11 +63,8 @@ const InvoiceDetailModal = ({ invoice, onClose }) => {
       <div className="inv-detail">
         <div className="inv-section">
           <h3 className="inv-section-title">Datos del Cliente</h3>
-          <Row label="Nombre" value={invoice.client_name} />
-          <Row label="Cédula / NIT" value={invoice.client_document} />
-          <Row label="Teléfono" value={invoice.client_phone} />
-          <Row label="Dirección" value={invoice.client_address} />
-          <Row label="Correo" value={invoice.client_email} />
+          <Row label="Nombre" value={invoice.cliente_nombre} />
+          <Row label="Cédula" value={invoice.cliente_cedula} />
         </div>
 
         <div className="inv-section">
@@ -83,6 +80,8 @@ const InvoiceDetailModal = ({ invoice, onClose }) => {
         <div className="inv-section">
           <h3 className="inv-section-title">Metadatos</h3>
           <Row label="Bill ID" value={invoice.bill_id} />
+          {invoice.venta && <Row label="Venta vinculada" value={`#${invoice.venta}`} />}
+          {invoice.separacion && <Row label="Separación vinculada" value={`#${invoice.separacion}`} />}
           <Row
             label="Correo enviado"
             value={

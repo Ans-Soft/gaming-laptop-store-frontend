@@ -12,7 +12,6 @@ import Login from "./pages/admin/Login.jsx";
 import AdminLayout from "./components/admin/AdminLayout.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import Users from "./pages/admin/Users.jsx";
-import Categories from "./pages/admin/Categories.jsx";
 import Brands from "./pages/admin/Brands.jsx";
 import BaseProducts from "./pages/admin/BaseProducts.jsx";
 import Products from "./pages/admin/Products.jsx";
@@ -28,7 +27,6 @@ import OrdenesCompra from "./pages/admin/OrdenesCompra.jsx";
 import ProductosBajoPedido from "./pages/admin/ProductosBajoPedido.jsx";
 import Separaciones from "./pages/admin/Separaciones.jsx";
 import Ventas from "./pages/admin/Ventas.jsx";
-import Recibos from "./pages/admin/Recibos.jsx";
 import ClienteDetail from "./pages/admin/ClienteDetail.jsx";
 import VentaDetail from "./pages/admin/VentaDetail.jsx";
 import SeparacionDetail from "./pages/admin/SeparacionDetail.jsx";
@@ -63,7 +61,6 @@ const router = createBrowserRouter([
       { path: "/admin/users", element: <Users /> },
       { path: "/admin/base_products", element: <BaseProducts /> },
       { path: "/admin/products", element: <Products /> },
-      { path: "/admin/categories", element: <Categories /> },
       { path: "/admin/brands", element: <Brands /> },
       { path: "/admin/facturas", element: <Invoices /> },
       { path: "/admin/product-types", element: <ProductTypes /> },
@@ -80,7 +77,6 @@ const router = createBrowserRouter([
       { path: "/admin/separaciones/:id", element: <SeparacionDetail /> },
       { path: "/admin/ventas", element: <Ventas /> },
       { path: "/admin/ventas/:id", element: <VentaDetail /> },
-      { path: "/admin/recibos", element: <Recibos /> },
       { path: "/admin/inventario", element: <Inventario /> },
       { path: "/admin/reportes/ventas", element: <ReporteSalesReport /> },
       { path: "/admin/reportes/separaciones", element: <ReporteSeparacionesReport /> },

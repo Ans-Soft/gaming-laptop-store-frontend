@@ -149,3 +149,161 @@ select:focus {
 .actions svg:hover {
   color: var(--primary-color);
 }
+
+/* === Cell typography utilities (shared across admin tables) === */
+.cell-primary {
+  font-size: var(--cell-text-base);
+  font-weight: var(--cell-weight-normal);
+  color: var(--text-color);
+  line-height: 1.4;
+}
+
+.cell-primary--strong {
+  font-size: var(--cell-text-base);
+  font-weight: var(--cell-weight-strong);
+  color: var(--text-color);
+  line-height: 1.4;
+}
+
+.cell-primary--accent {
+  font-size: var(--cell-text-base);
+  font-weight: var(--cell-weight-strong);
+  color: var(--primary-color);
+  line-height: 1.4;
+}
+
+.cell-secondary {
+  font-size: var(--cell-text-sm);
+  font-weight: var(--cell-weight-normal);
+  color: var(--subtitle-color);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.cell-secondary--warning {
+  font-size: var(--cell-text-sm);
+  font-weight: var(--cell-weight-strong);
+  color: var(--warning-color);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.cell-code {
+  font-family: var(--font-mono);
+  font-size: var(--cell-text-sm);
+  font-weight: var(--cell-weight-normal);
+  color: var(--text-color);
+  letter-spacing: 0.02em;
+}
+
+.cell-empty {
+  color: var(--subtitle-color);
+}
+
+/* === Status Badges (shared across admin tables) === */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Condition badges — UnidadProducto */
+.condicion-nuevo {
+  background-color: var(--success-bg, #DCFCE7);
+  color: var(--success-color, #16A34A);
+}
+.condicion-open_box {
+  background-color: var(--icon-bg, #E0F0FC);
+  color: var(--primary-color, #2979C8);
+}
+.condicion-refurbished {
+  background-color: var(--warning-bg, #FEF3C7);
+  color: var(--warning-color, #B45309);
+}
+.condicion-usado {
+  background-color: var(--card-bg, #F0F7FF);
+  color: var(--subtitle-color, #4A6580);
+  border: 1px solid var(--fourth-color, #D4E5F2);
+}
+
+/* Estado Venta badges — UnidadProducto */
+.estado-venta-sin_vender {
+  background-color: var(--card-bg, #F0F7FF);
+  color: var(--subtitle-color, #4A6580);
+  border: 1px solid var(--fourth-color, #D4E5F2);
+}
+.estado-venta-separado {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+.estado-venta-vendido {
+  background-color: var(--success-bg, #DCFCE7);
+  color: var(--success-color, #16A34A);
+}
+.estado-venta-por_encargo {
+  background-color: var(--warning-bg, #FEF3C7);
+  color: var(--warning-color, #B45309);
+}
+.estado-venta-entregado_garantia {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.estado-venta-danado {
+  background-color: var(--error-bg, #FEE2E2);
+  color: var(--error-color, #DC2626);
+}
+.estado-venta-solicitud_metodo_aliado {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Estado Producto badges — UnidadProducto */
+.estado-prod-en_stock {
+  background-color: var(--success-bg, #DCFCE7);
+  color: var(--success-color, #16A34A);
+}
+.estado-prod-viajando {
+  background-color: var(--warning-bg, #FEF3C7);
+  color: var(--warning-color, #B45309);
+}
+.estado-prod-por_comprar {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+.estado-prod-por_entregar {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.estado-prod-entregado {
+  background-color: var(--icon-bg, #E0F0FC);
+  color: var(--primary-color, #2979C8);
+}
+.estado-prod-por_reparar {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+.estado-prod-en_reparacion {
+  background-color: var(--error-bg, #FEE2E2);
+  color: var(--error-color, #DC2626);
+}
+
+/* Logistic states — OrdenesCompra */
+.estado-viajando {
+  background-color: var(--warning-bg, #FEF3C7);
+  color: var(--warning-color, #B45309);
+}
+
+.estado-en_oficina_importadora {
+  background-color: var(--card-bg);
+  color: var(--primary-color);
+  border: 1px solid var(--fourth-color);
+}
+
+.estado-en_oficina {
+  background-color: var(--success-bg, #DCFCE7);
+  color: var(--success-color, #16A34A);
+}

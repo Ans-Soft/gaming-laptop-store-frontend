@@ -8,6 +8,7 @@ import CountCard from "../../components/admin/CountCard";
 import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import ProductTypesForm from "../../components/admin/ProductTypesForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 import {
   getProductTypes,
   getProductTypeDetail,
@@ -31,6 +32,7 @@ const ProductTypes = () => {
   const [editingProductType, setEditingProductType] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchProductTypes();
@@ -96,29 +98,45 @@ const ProductTypes = () => {
     }
   };
 
-  const handleActivate = async (productType) => {
-    if (window.confirm(`¿Activar el tipo de producto "${productType.nombre}"?`)) {
-      try {
-        await activateProductType(productType.id);
-        fetchProductTypes();
-      } catch (error) {
-        console.error("Error al activar tipo de producto:", error);
-      }
-    }
+  const handleActivate = (productType) => {
+    setConfirmDialog({
+      title: `¿Activar el tipo de producto "${productType.nombre}"?`,
+      message: "El tipo de producto volverá a estar disponible en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateProductType(productType.id);
+          fetchProductTypes();
+        } catch (error) {
+          console.error("Error al activar tipo de producto:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (productType) => {
-    if (window.confirm(`¿Desactivar el tipo de producto "${productType.nombre}"?`)) {
-      try {
-        await deactivateProductType(productType.id);
-        fetchProductTypes();
-      } catch (error) {
-        const errorMessage =
-          error.response?.data?.message || "No se pudo desactivar el tipo de producto.";
-        alert(errorMessage);
-        console.error("Error al desactivar tipo de producto:", error);
-      }
-    }
+  const handleDeactivate = (productType) => {
+    setConfirmDialog({
+      title: `¿Desactivar el tipo de producto "${productType.nombre}"?`,
+      message: "El tipo de producto quedará inactivo en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateProductType(productType.id);
+          fetchProductTypes();
+        } catch (error) {
+          const errorMessage =
+            error.response?.data?.message || "No se pudo desactivar el tipo de producto.";
+          alert(errorMessage);
+          console.error("Error al desactivar tipo de producto:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const columns = [
@@ -127,15 +145,6 @@ const ProductTypes = () => {
       key: "descripcion",
       label: "Descripción",
       render: (row) => row.descripcion || "—",
-    },
-    {
-      key: "active",
-      label: "Estado",
-      render: (row) => (
-        <span className={row.active ? "status-active" : "status-inactive"}>
-          {row.active ? "Activo" : "Inactivo"}
-        </span>
-      ),
     },
   ];
 
@@ -170,7 +179,7 @@ const ProductTypes = () => {
 
         <DataTable
           columns={columns}
-          data={productTypes}
+          data={productTypes.filter((pt) => pt.active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -196,6 +205,17 @@ const ProductTypes = () => {
             productType={editingProductType}
             isSubmitting={isSubmitting}
             submitError={submitError}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

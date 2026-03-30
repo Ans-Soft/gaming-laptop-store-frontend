@@ -5,14 +5,15 @@ import { ShoppingCart, Package } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
-import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import OrdenCompraForm from "../../components/admin/OrdenCompraForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
+import * as TRMService from "../../services/TRMService";
 import {
   getOrdenesCompra,
   createOrdenCompra,
   updateOrdenCompra,
-  activateOrdenCompra,
   deactivateOrdenCompra,
 } from "../../services/OrdenCompraService";
 
@@ -21,10 +22,23 @@ const OrdenesCompra = () => {
   const [ordenes, setOrdenes] = useState([]);
   const [editingOrden, setEditingOrden] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [trm, setTrm] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null); // orden to delete
 
   useEffect(() => {
     fetchOrdenes();
+    fetchTRM();
   }, []);
+
+  const fetchTRM = async () => {
+    try {
+      const data = await TRMService.getTRM();
+      const latest = data.trm_history?.[0];
+      if (latest) setTrm(parseFloat(latest.valor_cop));
+    } catch {
+      // TRM unavailable — COP column will show "—"
+    }
+  };
 
   const fetchOrdenes = async () => {
     try {
@@ -59,86 +73,163 @@ const OrdenesCompra = () => {
     }
   };
 
-  const handleActivate = async (orden) => {
-    if (window.confirm(`¿Estás seguro de activar esta orden de compra?`)) {
-      try {
-        await activateOrdenCompra(orden.id);
-        fetchOrdenes();
-      } catch (error) {
-        console.error("Error al activar orden:", error);
-      }
-    }
+  const handleDelete = (orden) => {
+    setConfirmDelete(orden);
   };
 
-  const handleDeactivate = async (orden) => {
-    if (window.confirm(`¿Estás seguro de desactivar esta orden de compra?`)) {
-      try {
-        await deactivateOrdenCompra(orden.id);
-        fetchOrdenes();
-      } catch (error) {
-        console.error("Error al desactivar orden:", error);
-      }
+  const handleConfirmDelete = async () => {
+    try {
+      await deactivateOrdenCompra(confirmDelete.id);
+      fetchOrdenes();
+    } catch (error) {
+      console.error("Error al eliminar orden:", error);
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
   const filteredOrdenes = ordenes.filter(
     (orden) =>
-      orden.unidad_serial?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      orden.numero_orden?.includes(searchTerm) ||
-      orden.proveedor_nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      orden.cliente_nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+      orden.active !== false &&
+      (orden.producto_nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        orden.numero_orden?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        orden.proveedor_nombre?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const estadoLogisticoLabel = {
+    viajando: "Viajando",
+    en_oficina_importadora: "En Oficina Importadora",
+    en_oficina: "En Oficina Tienda",
+  };
+
   const columns = [
-    { key: "unidad_serial", label: "Unidad (Serial)" },
     {
-      key: "tipo",
-      label: "Tipo",
+      key: "producto_nombre",
+      label: "Producto",
       render: (row) => (
-        <span className="tipo-badge">
-          {row.tipo === "compra_externa" ? "Compra Externa" : "Canje Cliente"}
+        <div>
+          <div className="cell-primary">{row.producto_nombre || "—"}</div>
+          {row.unidad_serial && !row.unidad_serial.startsWith("SIN-SERIAL-")
+            ? <div className="cell-secondary cell-code">Serial: {row.unidad_serial}</div>
+            : <div className="cell-secondary--warning">Serial pendiente</div>
+          }
+        </div>
+      ),
+    },
+    {
+      key: "condicion",
+      label: "Condición",
+      render: (row) => (
+        <span className={`status-badge condicion-${row.condicion}`}>
+          {row.condicion_display || row.condicion}
         </span>
       ),
     },
     {
       key: "proveedor_nombre",
-      label: "Proveedor/Cliente",
-      render: (row) =>
-        row.tipo === "compra_externa" ? row.proveedor_nombre : row.cliente_nombre,
+      label: "Proveedor",
+      render: (row) => (
+        <span className={row.proveedor_nombre ? "cell-primary" : "cell-empty"}>
+          {row.proveedor_nombre || "—"}
+        </span>
+      ),
     },
-    { key: "numero_orden", label: "N° Orden" },
+    {
+      key: "numero_orden",
+      label: "N° Orden",
+      render: (row) => <span className="cell-primary">{row.numero_orden}</span>,
+    },
+    {
+      key: "numero_tracking",
+      label: "Tracking",
+      render: (row) => row.numero_tracking
+        ? <span className="cell-code">{row.numero_tracking}</span>
+        : <span className="cell-empty">—</span>,
+    },
     {
       key: "costo_compra",
       label: "Costo Compra",
-      render: (row) => `$${parseFloat(row.costo_compra).toFixed(2)}`,
+      render: (row) => {
+        const usd = parseFloat(row.costo_compra || 0);
+        const cop = trm ? usd * trm : null;
+        return (
+          <div>
+            <div className="cell-primary--strong">
+              {cop ? `$${cop.toLocaleString("es-CO", { maximumFractionDigits: 0 })}` : "—"}
+            </div>
+            <div className="cell-secondary">
+              (${usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)
+            </div>
+          </div>
+        );
+      },
     },
     {
-      key: "impuesto_importacion",
-      label: "Impuesto (2%)",
-      render: (row) => `$${parseFloat(row.impuesto_importacion).toFixed(2)}`,
+      key: "costos_extra",
+      label: "Import. + Impuesto",
+      render: (row) => {
+        const usd = parseFloat(row.costo_importacion || 0) + parseFloat(row.impuesto_importacion || 0);
+        const cop = trm ? usd * trm : null;
+        if (usd === 0) return <span className="cell-empty">—</span>;
+        return (
+          <div>
+            <div className="cell-primary--strong">
+              {cop ? `$${cop.toLocaleString("es-CO", { maximumFractionDigits: 0 })}` : "—"}
+            </div>
+            <div className="cell-secondary">
+              (${usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)
+            </div>
+          </div>
+        );
+      },
     },
-    { key: "numero_tracking", label: "Seguimiento" },
     {
-      key: "active",
-      label: "Estado",
+      key: "costo_total",
+      label: "Costo Total",
+      render: (row) => {
+        const usd = parseFloat(row.costo_compra || 0)
+          + parseFloat(row.costo_importacion || 0)
+          + parseFloat(row.impuesto_importacion || 0);
+        const cop = trm ? usd * trm : null;
+        return (
+          <div>
+            <div className="cell-primary--strong">
+              {cop ? `$${cop.toLocaleString("es-CO", { maximumFractionDigits: 0 })}` : "—"}
+            </div>
+            <div className="cell-secondary">
+              (${usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      key: "unidad_precio",
+      label: "Precio de Venta",
+      render: (row) => row.unidad_precio
+        ? <span className="cell-primary--accent">
+            ${parseFloat(row.unidad_precio).toLocaleString("es-CO", { maximumFractionDigits: 0 })}
+          </span>
+        : <span className="cell-empty">—</span>,
+    },
+    {
+      key: "estado_logistico",
+      label: "Estado Logístico",
       render: (row) => (
-        <span className={row.active ? "status-active" : "status-inactive"}>
-          {row.active ? "Activo" : "Inactivo"}
+        <span className={`status-badge estado-${row.estado_logistico}`}>
+          {estadoLogisticoLabel[row.estado_logistico] || row.estado_logistico}
         </span>
       ),
     },
   ];
 
+  const activeOrdenes = ordenes.filter((o) => o.active !== false);
+
   const stats = [
     {
-      label: "Total Órdenes",
-      count: ordenes.length,
+      label: "Total Órdenes Activas",
+      count: activeOrdenes.length,
       icon: <Package className="icon-card" />,
-    },
-    {
-      label: "Órdenes Activas",
-      count: ordenes.filter((o) => o.active).length,
-      icon: <FaRegCheckCircle className="icon-card" />,
     },
   ];
 
@@ -156,7 +247,7 @@ const OrdenesCompra = () => {
           registerLabel="Registrar Orden de Compra"
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          placeholder="Buscar por serial, orden, proveedor o cliente..."
+          placeholder="Buscar por producto, orden o proveedor..."
         />
 
         <CountCard stats={stats} />
@@ -168,16 +259,10 @@ const OrdenesCompra = () => {
           onEdit={handleOpenModal}
           customActions={[
             {
-              icon: FaCheck,
-              handler: handleActivate,
-              show: (row) => !row.active,
-              title: "Activar",
-            },
-            {
-              icon: FaTimes,
-              handler: handleDeactivate,
-              show: (row) => row.active,
-              title: "Desactivar",
+              icon: FaTrash,
+              handler: handleDelete,
+              show: () => true,
+              title: "Eliminar",
             },
           ]}
         />
@@ -187,6 +272,16 @@ const OrdenesCompra = () => {
             onClose={handleCloseModal}
             onSubmit={handleSubmitOrden}
             orden={editingOrden}
+          />
+        )}
+
+        {confirmDelete && (
+          <ConfirmModal
+            title="¿Eliminar orden de compra?"
+            message={`Se eliminará la orden ${confirmDelete.numero_orden}. Esta acción no se puede deshacer.`}
+            confirmLabel="Sí, eliminar"
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setConfirmDelete(null)}
           />
         )}
       </div>

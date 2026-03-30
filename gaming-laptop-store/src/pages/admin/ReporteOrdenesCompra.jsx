@@ -21,9 +21,11 @@ const ReporteOrdenesCompra = () => {
       const data = await OrdenCompraService.getOrdenesCompra();
       const ordenesData = Array.isArray(data) ? data : data.orden_compra || [];
 
-      // Default filter: show viajando and en_oficina_importadora
+      // Filter: show only active orders with viajando and en_oficina_importadora status
       const defaultEstados = ["viajando", "en_oficina_importadora"];
-      const filtered = ordenesData.filter((o) => defaultEstados.includes(o.estado_logistico));
+      const filtered = ordenesData.filter(
+        (o) => o.active !== false && defaultEstados.includes(o.estado_logistico)
+      );
 
       setOrdenes(filtered);
     } catch (error) {
@@ -88,12 +90,6 @@ const ReporteOrdenesCompra = () => {
       label: "Serial",
       sortable: true,
       render: (row) => row.unidad_serial || "N/A",
-    },
-    {
-      key: "tipo",
-      label: "Tipo",
-      sortable: true,
-      render: (row) => (row.tipo === "compra_externa" ? "Compra Externa" : "Canje Cliente"),
     },
     {
       key: "estado_logistico",

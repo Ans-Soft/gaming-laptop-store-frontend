@@ -8,7 +8,6 @@ import {
   FileText,
   Users,
   Tag,
-  Grid,
   Boxes,
   Sliders,
   Truck,
@@ -36,9 +35,24 @@ const NAV_SECTIONS = [
         label: "Productos",
       },
       {
+        path: "/admin/ordenes-compra",
+        icon: ShoppingCart,
+        label: "Órdenes de Compra",
+      },
+      {
         path: "/admin/unidades",
         icon: Box,
         label: "Inventario (Unidades)",
+      },
+      {
+        path: "/admin/separaciones",
+        icon: Lock,
+        label: "Separaciones",
+      },
+      {
+        path: "/admin/ventas",
+        icon: ShoppingCart,
+        label: "Ventas",
       },
       {
         path: "/admin/bajo-pedido",
@@ -56,29 +70,9 @@ const NAV_SECTIONS = [
         label: "Clientes",
       },
       {
-        path: "/admin/ordenes-compra",
-        icon: ShoppingCart,
-        label: "Órdenes de Compra",
-      },
-      {
         path: "/admin/productos-bajo-pedido",
         icon: Clock,
         label: "Productos Bajo Pedido",
-      },
-      {
-        path: "/admin/separaciones",
-        icon: Lock,
-        label: "Separaciones",
-      },
-      {
-        path: "/admin/ventas",
-        icon: ShoppingCart,
-        label: "Ventas",
-      },
-      {
-        path: "/admin/recibos",
-        icon: FileText,
-        label: "Recibos",
       },
       {
         path: "/admin/inventario",
@@ -134,11 +128,6 @@ const NAV_SECTIONS = [
         path: "/admin/brands",
         icon: Tag,
         label: "Marcas",
-      },
-      {
-        path: "/admin/categories",
-        icon: Grid,
-        label: "Categorías",
       },
       {
         path: "/admin/product-types",

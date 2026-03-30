@@ -23,8 +23,16 @@ const ESTADO_PRODUCTO_OPTIONS = [
   { value: "en_reparacion", label: "En Reparación" },
 ];
 
+const CONDICION_OPTIONS = [
+  { value: "nuevo", label: "Nuevo" },
+  { value: "open_box", label: "Open Box" },
+  { value: "refurbished", label: "Refurbished" },
+  { value: "usado", label: "Usado" },
+];
+
 const EMPTY_FORM = {
   serial: "",
+  condicion: "nuevo",
   estado_venta: "sin_vender",
   estado_producto: "en_stock",
   precio: "",
@@ -33,47 +41,40 @@ const EMPTY_FORM = {
 /**
  * UnidadProductoForm — create and edit form for UnidadProducto.
  *
- * Features:
- *   - Displays the associated variant name in a banner at the top.
- *   - Required fields: serial, estado_venta, estado_producto, precio.
- *   - Info notice explaining that changing estado_producto triggers automatic
- *     variant estado sync on the backend.
- *
  * Props:
- *   onClose         {Function}  — closes the modal
- *   onSubmit        {Function}  — (payload: Object, id?: number) => void
- *   unidad          {Object}    — existing unidad for edit mode (null for create)
- *   varianteId      {number}    — required when creating from a variant context
- *   varianteNombre  {string}    — variant label to show in the banner
- *   isSubmitting    {boolean}
- *   submitError     {string}
+ *   onClose          {Function}  — closes the modal
+ *   onSubmit         {Function}  — (payload: Object, id?: number) => void
+ *   unidad           {Object}    — existing unidad for edit mode (null for create)
+ *   productoId       {number}    — required when creating (product ID)
+ *   productoNombre   {string}    — product label to show in the banner
+ *   condicionDefault {string}    — pre-selected condition for create mode
+ *   isSubmitting     {boolean}
+ *   submitError      {string}
  */
 const UnidadProductoForm = ({
   onClose,
   onSubmit,
   unidad,
-  varianteId,
-  varianteNombre,
+  productoId,
+  productoNombre,
+  condicionDefault = "nuevo",
   isSubmitting,
   submitError,
 }) => {
   const isEditMode = Boolean(unidad);
 
-  // ── Form state ─────────────────────────────────────────────────────────────
-  const [formData, setFormData] = useState({ ...EMPTY_FORM });
+  const [formData, setFormData] = useState({ ...EMPTY_FORM, condicion: condicionDefault });
   const [errors, setErrors] = useState({});
 
-  // ── Resolved variant context ───────────────────────────────────────────────
-  const displayVarianteId = isEditMode ? unidad.variante : varianteId;
-  const displayVarianteNombre = isEditMode
-    ? (unidad.variante_nombre || "—")
-    : (varianteNombre || "—");
+  const displayProductoNombre = isEditMode
+    ? (unidad.producto_nombre || "—")
+    : (productoNombre || "—");
 
-  // ── Mount: pre-populate in edit mode ──────────────────────────────────────
   useEffect(() => {
     if (isEditMode && unidad) {
       setFormData({
         serial: unidad.serial || "",
+        condicion: unidad.condicion || "nuevo",
         estado_venta: unidad.estado_venta || "sin_vender",
         estado_producto: unidad.estado_producto || "en_stock",
         precio: unidad.precio !== null && unidad.precio !== undefined
@@ -84,21 +85,19 @@ const UnidadProductoForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
-  // ── Validation ─────────────────────────────────────────────────────────────
-
   const validate = () => {
     const newErrors = {};
-
     if (!formData.serial || !formData.serial.trim()) {
       newErrors.serial = "El serial es obligatorio.";
+    }
+    if (!formData.condicion) {
+      newErrors.condicion = "Selecciona una condición.";
     }
     if (!formData.estado_venta) {
       newErrors.estado_venta = "Selecciona un estado de venta.";
@@ -106,39 +105,30 @@ const UnidadProductoForm = ({
     if (!formData.estado_producto) {
       newErrors.estado_producto = "Selecciona un estado del producto.";
     }
-    if (
-      !formData.precio ||
-      isNaN(Number(formData.precio)) ||
-      Number(formData.precio) <= 0
-    ) {
+    if (!formData.precio || isNaN(Number(formData.precio)) || Number(formData.precio) <= 0) {
       newErrors.precio = "El precio debe ser un número mayor a 0.";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  // ── Submit ─────────────────────────────────────────────────────────────────
 
   const handleSubmit = () => {
     if (!validate()) return;
 
     const payload = {
       serial: formData.serial.trim(),
+      condicion: formData.condicion,
       estado_venta: formData.estado_venta,
       estado_producto: formData.estado_producto,
       precio: Number(formData.precio),
     };
 
-    // Include variante_id only on create
-    if (!isEditMode && displayVarianteId) {
-      payload.variante_id = Number(displayVarianteId);
+    if (!isEditMode && productoId) {
+      payload.producto_id = Number(productoId);
     }
 
     if (onSubmit) onSubmit(payload, unidad?.id);
   };
-
-  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <ModalBase
@@ -147,7 +137,7 @@ const UnidadProductoForm = ({
       subtitle={
         isEditMode
           ? "Actualiza la información de la unidad"
-          : "Completa la información para registrar una nueva unidad de la variante"
+          : "Completa la información para registrar una nueva unidad"
       }
       onClose={onClose}
       onSubmit={handleSubmit}
@@ -155,39 +145,12 @@ const UnidadProductoForm = ({
     >
       {submitError && <div className="form-error-banner">{submitError}</div>}
 
-      {/* Variant context banner */}
+      {/* Product context banner */}
       <div className="uf-variant-banner">
-        <span className="uf-variant-banner-label">Variante:</span>
-        <span className="uf-variant-banner-name">{displayVarianteNombre}</span>
+        <span className="uf-variant-banner-label">Producto:</span>
+        <span className="uf-variant-banner-name">{displayProductoNombre}</span>
       </div>
 
-      {/* Cascade explanation box */}
-      <div
-        style={{
-          marginBottom: "1.5rem",
-          padding: "1rem",
-          backgroundColor: "#dbeafe",
-          border: "1px solid #93c5fd",
-          borderRadius: "6px",
-          fontSize: "0.9rem",
-          color: "#1e40af",
-        }}
-      >
-        <div style={{ fontWeight: "600", marginBottom: "0.5rem" }}>ℹ Cambios en cascada</div>
-        <ul style={{ margin: "0.5rem 0", paddingLeft: "1.5rem" }}>
-          <li>
-            El <strong>precio de la variante</strong> se actualizará al valor mínimo de todas las unidades activas.
-          </li>
-          <li>
-            El <strong>estado de la variante</strong> se ajustará según los estados de sus unidades activas.
-          </li>
-          <li>
-            Cambios en unidades inactivas no afectan a la variante.
-          </li>
-        </ul>
-      </div>
-
-      {/* Main fields grid */}
       <div className="uf-grid">
 
         {/* Serial — full width */}
@@ -205,9 +168,27 @@ const UnidadProductoForm = ({
             disabled={isSubmitting}
             required
           />
-          {errors.serial && (
-            <span className="uf-field-error">{errors.serial}</span>
-          )}
+          {errors.serial && <span className="uf-field-error">{errors.serial}</span>}
+        </div>
+
+        {/* Condición */}
+        <div className="form-group">
+          <label htmlFor="uf-condicion">
+            Condición <span className="required">*</span>
+          </label>
+          <select
+            id="uf-condicion"
+            name="condicion"
+            value={formData.condicion}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            required
+          >
+            {CONDICION_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+          {errors.condicion && <span className="uf-field-error">{errors.condicion}</span>}
         </div>
 
         {/* Precio */}
@@ -227,12 +208,7 @@ const UnidadProductoForm = ({
             disabled={isSubmitting}
             required
           />
-          <span className="uf-price-hint">
-            El precio de la variante se actualizará al mínimo de sus unidades activas.
-          </span>
-          {errors.precio && (
-            <span className="uf-field-error">{errors.precio}</span>
-          )}
+          {errors.precio && <span className="uf-field-error">{errors.precio}</span>}
         </div>
 
         {/* Estado venta */}
@@ -249,18 +225,14 @@ const UnidadProductoForm = ({
             required
           >
             {ESTADO_VENTA_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          {errors.estado_venta && (
-            <span className="uf-field-error">{errors.estado_venta}</span>
-          )}
+          {errors.estado_venta && <span className="uf-field-error">{errors.estado_venta}</span>}
         </div>
 
         {/* Estado producto */}
-        <div className="form-group form-group--full">
+        <div className="form-group">
           <label htmlFor="uf-estado-producto">
             Estado del Producto <span className="required">*</span>
           </label>
@@ -273,14 +245,10 @@ const UnidadProductoForm = ({
             required
           >
             {ESTADO_PRODUCTO_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          {errors.estado_producto && (
-            <span className="uf-field-error">{errors.estado_producto}</span>
-          )}
+          {errors.estado_producto && <span className="uf-field-error">{errors.estado_producto}</span>}
         </div>
 
       </div>

@@ -3,7 +3,6 @@ import { PackagePlus, Edit } from "lucide-react";
 import ModalBase from "./ModalBase";
 import "../../styles/admin/usersForm.css";
 import "../../styles/admin/baseProductsForm.css";
-import { getCategories } from "../../services/CategoryService";
 import { getBrands } from "../../services/BrandService";
 
 const BASE_URL = "http://127.0.0.1:8000";
@@ -30,7 +29,6 @@ const BaseProductsForm = ({
     model_name: "",
     long_description: "",
     brand: "",
-    categories: [],
   });
 
   const [graphicsCardSpecs, setGraphicsCardSpecs] = useState({
@@ -55,9 +53,7 @@ const BaseProductsForm = ({
   // images: [{ id, file, previewUrl, altText, toRemove }]
   const [images, setImages] = useState([]);
 
-  const [categoriesList, setCategoriesList] = useState([]);
   const [brandsList, setBrandsList] = useState([]);
-  const [categorySearch, setCategorySearch] = useState("");
 
   const fileInputRef = useRef(null);
 
@@ -67,11 +63,7 @@ const BaseProductsForm = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cats, brs] = await Promise.all([
-          getCategories(),
-          getBrands(),
-        ]);
-        setCategoriesList(cats);
+        const brs = await getBrands();
         setBrandsList(brs);
       } catch (error) {
         console.error("Error al cargar datos:", error);
@@ -85,7 +77,6 @@ const BaseProductsForm = ({
         model_name: product.model_name,
         long_description: product.long_description,
         brand: product.brand.id,
-        categories: product.categories.map((cat) => cat.id),
       });
 
       // Load existing images sorted by order
@@ -141,10 +132,6 @@ const BaseProductsForm = ({
     }
   }, [product, isEditMode, productType]);
 
-  const filteredCategories = categoriesList.filter((cat) =>
-    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
-  );
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -164,19 +151,6 @@ const BaseProductsForm = ({
         setLaptopSpecs((prev) => ({ ...prev, [name]: value }));
       }
     }
-  };
-
-  const handleCategoryToggle = (id) => {
-    const numId = Number(id);
-    setFormData((prev) => {
-      const alreadySelected = prev.categories.map(Number).includes(numId);
-      return {
-        ...prev,
-        categories: alreadySelected
-          ? prev.categories.filter((c) => Number(c) !== numId)
-          : [...prev.categories, numId],
-      };
-    });
   };
 
   // ── Image handlers ──────────────────────────────────────────────────────────
@@ -268,7 +242,6 @@ const BaseProductsForm = ({
     const fd = new FormData();
     fd.append("model_name", formData.model_name.trim());
     fd.append("brand", String(Number(formData.brand)));
-    formData.categories.forEach((c) => fd.append("categories", String(Number(c))));
     fd.append("long_description", formData.long_description.trim());
     fd.append("specs", JSON.stringify(specs));
 
@@ -611,43 +584,6 @@ const BaseProductsForm = ({
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-          <label>
-            Categorías *{" "}
-            {formData.categories.length > 0 && (
-              <span className="bpf-cat-count">
-                ({formData.categories.length} seleccionada{formData.categories.length !== 1 ? "s" : ""})
-              </span>
-            )}
-          </label>
-          <input
-            type="text"
-            placeholder="Buscar categoría..."
-            value={categorySearch}
-            onChange={(e) => setCategorySearch(e.target.value)}
-            className="bpf-cat-search"
-          />
-          <div className="bpf-cat-chips">
-            {filteredCategories.length === 0 ? (
-              <span className="bpf-cat-empty">Sin resultados</span>
-            ) : (
-              filteredCategories.map((cat) => {
-                const isSelected = formData.categories.map(Number).includes(cat.id);
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    className={`bpf-cat-chip${isSelected ? " bpf-cat-chip--selected" : ""}`}
-                    onClick={() => handleCategoryToggle(cat.id)}
-                  >
-                    {cat.name}
-                  </button>
-                );
-              })
-            )}
-          </div>
         </div>
 
         <div className="form-group" style={{ gridColumn: "1 / -1" }}>

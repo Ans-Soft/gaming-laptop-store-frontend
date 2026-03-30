@@ -80,7 +80,6 @@ export const getPublicProductos = async (priceParams = {}) => {
         nombre: producto.nombre,
         descripcion: producto.descripcion,
         marca: producto.marca,
-        categorias: producto.categorias,
         imagenes: producto.imagenes,
         disponibilidad,
         precio,

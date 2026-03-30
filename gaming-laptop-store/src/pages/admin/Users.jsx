@@ -8,6 +8,7 @@ import CountCard from "../../components/admin/CountCard";
 import { FaRegCheckCircle, FaRegUser, FaCheck, FaTimes } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import UsersForm from "../../components/admin/UsersForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 import {
   getUsers,
   registerUser,
@@ -20,6 +21,7 @@ const Users = () => {
   const [showModal, setShowModal] = useState(false);
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -58,43 +60,48 @@ const Users = () => {
     }
   };
 
-  const handleActivate = async (user) => {
-    console.log("Activating user:", user);
-    if (window.confirm(`¿Estás seguro de activar a ${user.first_name}?`)) {
-      try {
-        await activateUser(user.id);
-        fetchUsers();
-      } catch (error) {
-        console.error("Error al activar usuario:", error);
-      }
-    }
+  const handleActivate = (user) => {
+    setConfirmDialog({
+      title: `¿Activar a ${user.first_name}?`,
+      message: "El usuario volverá a tener acceso al sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateUser(user.id);
+          fetchUsers();
+        } catch (error) {
+          console.error("Error al activar usuario:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (user) => {
-    console.log("Deactivating user:", user);
-    if (window.confirm(`¿Estás seguro de desactivar a ${user.first_name}?`)) {
-      try {
-        await deactivateUser(user.id);
-        fetchUsers();
-      } catch (error) {
-        console.error("Error al desactivar usuario:", error);
-      }
-    }
+  const handleDeactivate = (user) => {
+    setConfirmDialog({
+      title: `¿Desactivar a ${user.first_name}?`,
+      message: "El usuario perderá acceso al sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateUser(user.id);
+          fetchUsers();
+        } catch (error) {
+          console.error("Error al desactivar usuario:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const columns = [
     { key: "first_name", label: "Nombre" },
     { key: "last_name", label: "Apellido" },
     { key: "email", label: "Correo electrónico" },
-    {
-      key: "is_active",
-      label: "Estado",
-      render: (row) => (
-        <span className={row.is_active ? "status-active" : "status-inactive"}>
-          {row.is_active ? "Activo" : "Inactivo"}
-        </span>
-      ),
-    },
   ];
 
   const stats = [
@@ -128,7 +135,7 @@ const Users = () => {
 
         <DataTable
           columns={columns}
-          data={users}
+          data={users.filter((u) => u.is_active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -152,6 +159,17 @@ const Users = () => {
             onClose={handleCloseModal}
             onSubmit={handleSubmitUser}
             user={editingUser}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

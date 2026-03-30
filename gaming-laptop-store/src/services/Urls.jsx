@@ -25,13 +25,6 @@ const urls = {
   baseProductDeactivate: `${BASE_URL}/products/base-products/deactivate/`,
 
 
-  // CATEGORIES
-  categoriesList: `${BASE_URL}/products/categories/list/`,
-  categoryCreate: `${BASE_URL}/products/categories/create/`,
-  categoryUpdate: `${BASE_URL}/products/categories/update/`,
-  categoryActivate: `${BASE_URL}/products/categories/activate/`,
-  categoryDeactivate: `${BASE_URL}/products/categories/deactivate/`,
-
   // PRODUCT TYPES
   productTypesList: `${BASE_URL}/products/product-types/list/`,
   productTypesCreate: `${BASE_URL}/products/product-types/create/`,
@@ -116,12 +109,6 @@ const urls = {
   ventasCreate: `${BASE_URL}/sales/ventas/create/`,
   ventasUpdate: (id) => `${BASE_URL}/sales/ventas/update/${id}/`,
   ventasDetail: (id) => `${BASE_URL}/sales/ventas/detail/${id}/`,
-
-  // RECIBOS
-  recibosList: `${BASE_URL}/sales/recibos/list/`,
-  recibosCreate: `${BASE_URL}/sales/recibos/create/`,
-  recibosUpdate: (id) => `${BASE_URL}/sales/recibos/update/${id}/`,
-  recibosDetail: (id) => `${BASE_URL}/sales/recibos/detail/${id}/`,
 
   // INVOICES
   invoicesList: `${BASE_URL}/sales/invoices/list/`,

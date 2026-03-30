@@ -9,6 +9,7 @@ import CountCard from "../../components/admin/CountCard";
 import TitleCrud from "../../components/admin/TitleCrud";
 
 import ProductsForm from "../../components/admin/ProductsForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 
 import {
   getProductVariants,
@@ -34,6 +35,7 @@ const Products = () => {
   const [editingVariant, setEditingVariant] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchVariants();
@@ -86,18 +88,42 @@ const Products = () => {
     }
   };
 
-  const handleActivate = async (variant) => {
-    if (window.confirm(`¿Activar variante ${variant.id}?`)) {
-      await activateProductVariant(variant.id);
-      fetchVariants();
-    }
+  const handleActivate = (variant) => {
+    setConfirmDialog({
+      title: `¿Activar variante ${variant.id}?`,
+      message: "La variante volverá a estar disponible en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateProductVariant(variant.id);
+          fetchVariants();
+        } catch (error) {
+          console.error("Error al activar variante:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (variant) => {
-    if (window.confirm(`¿Desactivar variante ${variant.id}?`)) {
-      await deactivateProductVariant(variant.id);
-      fetchVariants();
-    }
+  const handleDeactivate = (variant) => {
+    setConfirmDialog({
+      title: `¿Desactivar variante ${variant.id}?`,
+      message: "La variante quedará inactiva en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateProductVariant(variant.id);
+          fetchVariants();
+        } catch (error) {
+          console.error("Error al desactivar variante:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const columns = [
@@ -115,16 +141,6 @@ const Products = () => {
       key: "price",
       label: "Precio",
       render: (row) => formatMoney(row.price),
-    },
-
-    {
-      key: "active",
-      label: "Estado",
-      render: (row) => (
-        <span className={row.active ? "status-active" : "status-inactive"}>
-          {row.active ? "Activo" : "Inactivo"}
-        </span>
-      ),
     },
   ];
 
@@ -159,7 +175,7 @@ const Products = () => {
 
         <DataTable
           columns={columns}
-          data={variants}
+          data={variants.filter((v) => v.active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -185,6 +201,17 @@ const Products = () => {
             variant={editingVariant}
             isSubmitting={isSubmitting}
             submitError={submitError}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

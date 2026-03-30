@@ -9,6 +9,7 @@ import CountCard from "../../components/admin/CountCard";
 import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import ClientesForm from "../../components/admin/ClientesForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 import {
   getClientes,
   createCliente,
@@ -23,6 +24,7 @@ const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [editingCliente, setEditingCliente] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     fetchClientes();
@@ -61,26 +63,42 @@ const Clientes = () => {
     }
   };
 
-  const handleActivate = async (cliente) => {
-    if (window.confirm(`¿Estás seguro de activar al cliente ${cliente.nombre_completo}?`)) {
-      try {
-        await activateCliente(cliente.id);
-        fetchClientes();
-      } catch (error) {
-        console.error("Error al activar cliente:", error);
-      }
-    }
+  const handleActivate = (cliente) => {
+    setConfirmDialog({
+      title: `¿Activar al cliente ${cliente.nombre_completo}?`,
+      message: "El cliente volverá a estar activo en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateCliente(cliente.id);
+          fetchClientes();
+        } catch (error) {
+          console.error("Error al activar cliente:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (cliente) => {
-    if (window.confirm(`¿Estás seguro de desactivar al cliente ${cliente.nombre_completo}?`)) {
-      try {
-        await deactivateCliente(cliente.id);
-        fetchClientes();
-      } catch (error) {
-        console.error("Error al desactivar cliente:", error);
-      }
-    }
+  const handleDeactivate = (cliente) => {
+    setConfirmDialog({
+      title: `¿Desactivar al cliente ${cliente.nombre_completo}?`,
+      message: "El cliente quedará inactivo en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateCliente(cliente.id);
+          fetchClientes();
+        } catch (error) {
+          console.error("Error al desactivar cliente:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const handleView = (cliente) => {
@@ -89,9 +107,10 @@ const Clientes = () => {
 
   const filteredClientes = clientes.filter(
     (cliente) =>
-      cliente.nombre_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cliente.active !== false &&
+      (cliente.nombre_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.cedula.includes(searchTerm) ||
-      cliente.correo.toLowerCase().includes(searchTerm.toLowerCase())
+      cliente.correo.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const columns = [
@@ -100,15 +119,6 @@ const Clientes = () => {
     { key: "celular", label: "Celular" },
     { key: "correo", label: "Correo" },
     { key: "ciudad", label: "Ciudad" },
-    {
-      key: "active",
-      label: "Estado",
-      render: (row) => (
-        <span className={row.active ? "status-active" : "status-inactive"}>
-          {row.active ? "Activo" : "Inactivo"}
-        </span>
-      ),
-    },
   ];
 
   const stats = [
@@ -175,6 +185,17 @@ const Clientes = () => {
             onClose={handleCloseModal}
             onSubmit={handleSubmitCliente}
             cliente={editingCliente}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

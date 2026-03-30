@@ -9,6 +9,7 @@ import CountCard from "../../components/admin/CountCard";
 import TitleCrud from "../../components/admin/TitleCrud";
 import BajoPedidoForm from "../../components/admin/BajoPedidoForm";
 import BajoPedidoCreateUnitForm from "../../components/admin/BajoPedidoCreateUnitForm";
+import ConfirmModal from "../../components/admin/ConfirmModal";
 
 import {
   getBajoPedidos,
@@ -34,6 +35,7 @@ const BajoPedido = () => {
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   // Create unit from BajoPedido state
   const [showCreateUnitModal, setShowCreateUnitModal] = useState(false);
@@ -106,26 +108,42 @@ const BajoPedido = () => {
     }
   };
 
-  const handleActivate = async (bajoPedido) => {
-    if (window.confirm(`Activar bajo pedido #${bajoPedido.id}?`)) {
-      try {
-        await activateBajoPedido(bajoPedido.id);
-        fetchBajoPedidos();
-      } catch (error) {
-        console.error("Error al activar bajo pedido:", error);
-      }
-    }
+  const handleActivate = (bajoPedido) => {
+    setConfirmDialog({
+      title: `¿Activar bajo pedido #${bajoPedido.id}?`,
+      message: "El registro volverá a estar activo en el sistema.",
+      confirmLabel: "Sí, activar",
+      isDestructive: false,
+      onConfirm: async () => {
+        try {
+          await activateBajoPedido(bajoPedido.id);
+          fetchBajoPedidos();
+        } catch (error) {
+          console.error("Error al activar bajo pedido:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
-  const handleDeactivate = async (bajoPedido) => {
-    if (window.confirm(`Desactivar bajo pedido #${bajoPedido.id}?`)) {
-      try {
-        await deactivateBajoPedido(bajoPedido.id);
-        fetchBajoPedidos();
-      } catch (error) {
-        console.error("Error al desactivar bajo pedido:", error);
-      }
-    }
+  const handleDeactivate = (bajoPedido) => {
+    setConfirmDialog({
+      title: `¿Desactivar bajo pedido #${bajoPedido.id}?`,
+      message: "El registro quedará inactivo en el sistema.",
+      confirmLabel: "Sí, desactivar",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await deactivateBajoPedido(bajoPedido.id);
+          fetchBajoPedidos();
+        } catch (error) {
+          console.error("Error al desactivar bajo pedido:", error);
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   };
 
   const handleOpenCreateUnit = (bajoPedido) => {
@@ -242,25 +260,6 @@ const BajoPedido = () => {
           <span style={{ color: "#9ca3af" }}>—</span>
         ),
     },
-    {
-      key: "active",
-      label: "Estado Sistema",
-      render: (row) => (
-        <span
-          style={{
-            display: "inline-block",
-            padding: "0.35rem 0.75rem",
-            borderRadius: "20px",
-            fontSize: "0.8rem",
-            fontWeight: "600",
-            backgroundColor: row.active ? "#d1fae5" : "#fee2e2",
-            color: row.active ? "#065f46" : "#991b1b",
-          }}
-        >
-          {row.active ? "Activo" : "Inactivo"}
-        </span>
-      ),
-    },
   ];
 
   const stats = [
@@ -299,7 +298,7 @@ const BajoPedido = () => {
 
         <DataTable
           columns={columns}
-          data={bajoPedidos}
+          data={bajoPedidos.filter((bp) => bp.active !== false)}
           rowKey="id"
           onEdit={handleOpenModal}
           customActions={[
@@ -341,6 +340,17 @@ const BajoPedido = () => {
             onSubmit={handleCreateUnitSubmit}
             isSubmitting={isCreatingUnit}
             submitError={createUnitError}
+          />
+        )}
+
+        {confirmDialog && (
+          <ConfirmModal
+            title={confirmDialog.title}
+            message={confirmDialog.message}
+            confirmLabel={confirmDialog.confirmLabel}
+            isDestructive={confirmDialog.isDestructive}
+            onConfirm={confirmDialog.onConfirm}
+            onCancel={() => setConfirmDialog(null)}
           />
         )}
       </div>

@@ -58,13 +58,12 @@ function formatPrice(price) {
  *   producto {Object} - A merged ProductoCatalogo object from CatalogService
  */
 const CatalogCard = ({ producto }) => {
-  const { imagenes, precio, disponibilidad, nombre, categorias } = producto
+  const { imagenes, precio, disponibilidad, nombre } = producto
 
   const firstImage = imagenes?.[0]
   const imageSrc = firstImage ? resolveImageUrl(firstImage.url) : null
   const imageAlt = firstImage?.alt_text || nombre || "Producto"
 
-  const categoryName = categorias?.[0]?.nombre ?? null
   const productName = nombre ?? "Producto"
 
   const availabilityDisplay = getAvailabilityDisplay(disponibilidad)
@@ -96,11 +95,6 @@ const CatalogCard = ({ producto }) => {
 
       {/* Card body */}
       <div className="cc-body">
-        {/* Category chip */}
-        {categoryName && (
-          <span className="cc-category">{categoryName}</span>
-        )}
-
         {/* Product name */}
         <h3 className="cc-name">{productName}</h3>
 
