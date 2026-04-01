@@ -118,7 +118,8 @@ const Clientes = () => {
     { key: "cedula", label: "Cédula" },
     { key: "celular", label: "Celular" },
     { key: "correo", label: "Correo" },
-    { key: "ciudad", label: "Ciudad" },
+    { key: "ciudad_nombre", label: "Ciudad" },
+    { key: "departamento_nombre", label: "Departamento" },
   ];
 
   const stats = [

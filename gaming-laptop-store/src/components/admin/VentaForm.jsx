@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ShoppingCart, Edit, Trash2, Plus, UserPlus, Users } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { ShoppingCart, Edit, Trash2, Plus, UserPlus, Users, Search } from "lucide-react";
 import ModalBase from "../../components/admin/ModalBase";
 import * as ClienteService from "../../services/ClienteService";
 import * as UnidadService from "../../services/UnidadService";
@@ -35,11 +35,25 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
   const [ciudades, setCiudades] = useState([]);
   const [selectedUnidad, setSelectedUnidad] = useState("");
   const [selectedPrecio, setSelectedPrecio] = useState("");
+  const [unidadSearch, setUnidadSearch] = useState("");
+  const [showUnidadDropdown, setShowUnidadDropdown] = useState(false);
+  const unidadSearchRef = useRef(null);
 
   const isEditMode = Boolean(venta);
 
   useEffect(() => {
     fetchData();
+  }, []);
+
+  // Close unit search dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (unidadSearchRef.current && !unidadSearchRef.current.contains(e.target)) {
+        setShowUnidadDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const fetchData = async () => {
@@ -51,7 +65,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
         api.get(urls.ciudadesList).then((r) => r.data),
       ]);
 
-      setClientes(clientesData.cliente || []);
+      setClientes(Array.isArray(clientesData) ? clientesData : (clientesData.clientes || []));
       setUnidades(unidadesData || []);
       setDepartamentos(Array.isArray(deptosData) ? deptosData : (deptosData.departamentos || []));
       setCiudades(Array.isArray(ciudadesData) ? ciudadesData : (ciudadesData.ciudades || []));
@@ -119,6 +133,28 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
     return Object.keys(errs).length === 0;
   };
 
+  // Unidades available: sin_vender and not already added
+  const selectedIds = formData.items_data.map((i) => i.unidad_producto);
+  const availableUnidades = unidades.filter(
+    (u) => u.estado_venta === "sin_vender" && !selectedIds.includes(u.id)
+  );
+  const filteredDropdownUnidades = unidadSearch.trim()
+    ? availableUnidades.filter((u) => {
+        const term = unidadSearch.toLowerCase();
+        return (
+          u.serial?.toLowerCase().includes(term) ||
+          u.producto_nombre?.toLowerCase().includes(term)
+        );
+      })
+    : availableUnidades;
+
+  const handleSelectUnidad = (unidad) => {
+    setSelectedUnidad(String(unidad.id));
+    setSelectedPrecio(unidad.precio);
+    setUnidadSearch(`${unidad.serial} - ${unidad.producto_nombre}`);
+    setShowUnidadDropdown(false);
+  };
+
   const handleAddItem = () => {
     if (!selectedUnidad || !selectedPrecio) {
       alert("Debe seleccionar unidad y precio");
@@ -134,6 +170,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
     setFormData((prev) => ({ ...prev, items_data: [...prev.items_data, newItem] }));
     setSelectedUnidad("");
     setSelectedPrecio("");
+    setUnidadSearch("");
   };
 
   const handleRemoveItem = (index) => {
@@ -208,6 +245,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
       }
       onClose={onClose}
       onSubmit={handleSubmit}
+      className="vf-modal-wide"
     >
       <div className="vf-form-grid">
 
@@ -252,7 +290,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
         {clienteMode === "nuevo" && (
           <div className="vf-nuevo-cliente vf-full">
             <div className="vf-nuevo-cliente-grid">
-              <div className="vf-form-group">
+              <div className="form-group">
                 <label>Nombre completo <span className="required">*</span></label>
                 <input
                   name="nombre_completo"
@@ -264,7 +302,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 {nuevoClienteErrors.nombre_completo && <span className="vf-field-error">{nuevoClienteErrors.nombre_completo}</span>}
               </div>
 
-              <div className="vf-form-group">
+              <div className="form-group">
                 <label>Cédula <span className="required">*</span></label>
                 <input
                   name="cedula"
@@ -276,7 +314,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 {nuevoClienteErrors.cedula && <span className="vf-field-error">{nuevoClienteErrors.cedula}</span>}
               </div>
 
-              <div className="vf-form-group">
+              <div className="form-group">
                 <label>Celular <span className="required">*</span></label>
                 <input
                   name="celular"
@@ -288,7 +326,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 {nuevoClienteErrors.celular && <span className="vf-field-error">{nuevoClienteErrors.celular}</span>}
               </div>
 
-              <div className="vf-form-group">
+              <div className="form-group">
                 <label>Correo <span className="required">*</span></label>
                 <input
                   name="correo"
@@ -300,7 +338,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 {nuevoClienteErrors.correo && <span className="vf-field-error">{nuevoClienteErrors.correo}</span>}
               </div>
 
-              <div className="vf-form-group vf-full">
+              <div className="form-group vf-nc-full">
                 <label>Dirección <span className="required">*</span></label>
                 <input
                   name="direccion"
@@ -312,7 +350,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 {nuevoClienteErrors.direccion && <span className="vf-field-error">{nuevoClienteErrors.direccion}</span>}
               </div>
 
-              <div className="vf-form-group">
+              <div className="form-group">
                 <label>Departamento <span className="required">*</span></label>
                 <select name="departamento" value={nuevoCliente.departamento} onChange={handleNuevoClienteChange}>
                   <option value="">Selecciona...</option>
@@ -323,7 +361,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 {nuevoClienteErrors.departamento && <span className="vf-field-error">{nuevoClienteErrors.departamento}</span>}
               </div>
 
-              <div className="vf-form-group">
+              <div className="form-group">
                 <label>Ciudad <span className="required">*</span></label>
                 <select
                   name="ciudad"
@@ -332,7 +370,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                   disabled={!nuevoCliente.departamento}
                 >
                   <option value="">
-                    {nuevoCliente.departamento ? "Selecciona..." : "Selecciona departamento primero"}
+                    {nuevoCliente.departamento ? "Selecciona..." : "Selecciona depto. primero"}
                   </option>
                   {ciudadesFiltradas.map((c) => (
                     <option key={c.id} value={c.id}>{c.nombre}</option>
@@ -350,10 +388,11 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
           <textarea
             id="notas"
             name="notas"
-            placeholder="Notas adicionales sobre la venta..."
+            placeholder="Notas adicionales..."
             value={formData.notas}
             onChange={handleChange}
-            rows="2"
+            rows="1"
+            className="vf-notas-compact"
           />
         </div>
 
@@ -361,90 +400,124 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
         <div className="vf-items-section">
           <h4>Agregar Items</h4>
           <div className="vf-add-item">
-            <div className="vf-add-item-group">
-              <label htmlFor="selectedUnidad">Unidad</label>
-              <select
-                id="selectedUnidad"
-                value={selectedUnidad}
-                onChange={(e) => {
-                  const unidad = unidades.find((u) => u.id === parseInt(e.target.value));
-                  setSelectedUnidad(e.target.value);
-                  if (unidad) setSelectedPrecio(unidad.precio);
-                }}
-              >
-                <option value="">Selecciona una unidad...</option>
-                {unidades
-                  .filter((u) => u.estado_venta === "sin_vender")
-                  .map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.serial} - {u.producto_nombre}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div className="vf-add-item-group">
-              <label htmlFor="selectedPrecio">Precio</label>
-              <input
-                id="selectedPrecio"
-                type="number"
-                step="0.01"
-                placeholder="Precio"
-                value={selectedPrecio}
-                onChange={(e) => setSelectedPrecio(e.target.value)}
-              />
-            </div>
-
-            <button type="button" className="vf-add-btn" onClick={handleAddItem}>
-              <Plus size={20} /> Agregar
-            </button>
-          </div>
-
-          {formData.items_data.length > 0 && (
-            <div className="vf-items-list">
-              <h5>Items agregados:</h5>
-              <table className="vf-items-table">
-                <thead>
-                  <tr>
-                    <th>Serial</th>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.items_data.map((item, idx) => (
-                    <tr key={idx}>
-                      <td>{item.unidad_serial}</td>
-                      <td>{item.producto_nombre}</td>
-                      <td>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={item.precio}
-                          onChange={(e) => handleUpdateItemPrice(idx, e.target.value)}
-                          className="vf-price-input"
-                        />
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="vf-delete-btn"
-                          onClick={() => handleRemoveItem(idx)}
-                          title="Eliminar"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="vf-total">
-                <strong>Total: ${total.toLocaleString("es-CO", { maximumFractionDigits: 0 })}</strong>
+            <div className="vf-add-item-group vf-add-item-full">
+              <label htmlFor="unidadSearch">Unidad</label>
+              <div className="vf-search-wrapper" ref={unidadSearchRef}>
+                <Search size={16} className="vf-search-icon" />
+                <input
+                  id="unidadSearch"
+                  type="text"
+                  placeholder="Buscar por serial o producto..."
+                  value={unidadSearch}
+                  onChange={(e) => {
+                    setUnidadSearch(e.target.value);
+                    setSelectedUnidad("");
+                    setSelectedPrecio("");
+                    setShowUnidadDropdown(true);
+                  }}
+                  onFocus={() => setShowUnidadDropdown(true)}
+                  autoComplete="off"
+                />
+                {showUnidadDropdown && filteredDropdownUnidades.length > 0 && (
+                  <div className="vf-search-dropdown">
+                    {filteredDropdownUnidades.slice(0, 8).map((u) => (
+                      <div
+                        key={u.id}
+                        className="vf-search-option"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleSelectUnidad(u);
+                        }}
+                      >
+                        <code className="vf-search-option-serial">{u.serial}</code>
+                        <span className="vf-search-option-name">{u.producto_nombre}</span>
+                        <span className="vf-search-option-price">${Number(u.precio).toLocaleString("es-CO")}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {showUnidadDropdown && unidadSearch.trim() && filteredDropdownUnidades.length === 0 && (
+                  <div className="vf-search-dropdown">
+                    <div className="vf-search-no-results">Sin resultados</div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+
+            <div className="vf-add-item-row">
+              <div className="vf-add-item-group vf-add-item-precio">
+                <label htmlFor="selectedPrecio">Precio</label>
+                <input
+                  id="selectedPrecio"
+                  type="number"
+                  step="0.01"
+                  placeholder="Precio"
+                  value={selectedPrecio}
+                  onChange={(e) => setSelectedPrecio(e.target.value)}
+                />
+              </div>
+
+              <button type="button" className="vf-add-btn" onClick={handleAddItem}>
+                <Plus size={18} /> Agregar
+              </button>
+            </div>
+          </div>
+
+          <div className="vf-items-list">
+            {formData.items_data.length === 0 ? (
+              <div className="vf-empty-state">
+                <ShoppingCart size={28} strokeWidth={1.5} />
+                <p>No hay items agregados</p>
+              </div>
+            ) : (
+              <>
+                <table className="vf-items-table">
+                  <thead>
+                    <tr>
+                      <th>Serial</th>
+                      <th>Producto</th>
+                      <th>Precio</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.items_data.map((item, idx) => (
+                      <tr key={idx}>
+                        <td><code className="vf-serial-code">{item.unidad_serial}</code></td>
+                        <td>
+                          <span className="vf-product-name" title={item.producto_nombre}>
+                            {item.producto_nombre}
+                          </span>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={item.precio}
+                            onChange={(e) => handleUpdateItemPrice(idx, e.target.value)}
+                            className="vf-price-input"
+                          />
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="vf-delete-btn"
+                            onClick={() => handleRemoveItem(idx)}
+                            title="Eliminar"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="vf-total">
+                  <strong>Total: ${total.toLocaleString("es-CO", { maximumFractionDigits: 0 })}</strong>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </ModalBase>

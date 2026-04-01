@@ -2,48 +2,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
 
-.cf-form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.cf-form-group.cf-full {
+.cf-full {
   grid-column: 1 / -1;
 }
 
-.cf-form-group label {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #333;
-  font-size: 0.9rem;
-}
-
-.cf-form-group input,
-.cf-form-group select {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
-
-.cf-form-group input:focus,
-.cf-form-group select:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-.cf-form-group select:disabled {
-  background-color: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-}
-
-.required {
-  color: #ef4444;
+@media (max-width: 500px) {
+  .cf-form-grid {
+    grid-template-columns: 1fr;
+  }
 }

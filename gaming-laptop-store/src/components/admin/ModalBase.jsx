@@ -12,6 +12,7 @@ const ModalBase = ({
   onSubmit,
   isSubmitting = false,
   cancelLabel,
+  className,
 }) => {
   const modalRef = useRef();
 
@@ -33,7 +34,7 @@ const ModalBase = ({
 
   return (
     <div className="modal-overlay">
-      <div className="modal-container" ref={modalRef}>
+      <div className={`modal-container${className ? ` ${className}` : ''}`} ref={modalRef}>
         {/* Header */}
         <div className="modal-header">
           <div className="modal-title">

@@ -408,7 +408,7 @@ const Unidades = () => {
           columns={columns}
           data={filteredUnidades}
           rowKey="id"
-          onEdit={handleOpenModal}
+          onEdit={(row) => handleOpenModal(row)}
           customActions={[
             {
               icon: FaShoppingCart,
