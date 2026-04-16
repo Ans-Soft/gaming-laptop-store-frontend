@@ -84,7 +84,7 @@ const Inventario = () => {
   const getEstadoProductoColor = (estado) => {
     if (!estado || typeof estado !== "string") return "#6b7280";
     const lower = estado.toLowerCase();
-    if (lower.includes("stock")) return "#10b981";
+    if (lower.includes("oficina")) return "#10b981";
     if (lower.includes("viajando")) return "#f59e0b";
     if (lower.includes("comprar")) return "#8b5cf6";
     if (lower.includes("entregar")) return "#3b82f6";
@@ -236,7 +236,7 @@ const Inventario = () => {
               <label htmlFor="estado_producto">Estado Producto</label>
               <select id="estado_producto" name="estado_producto" value={filters.estado_producto} onChange={handleFilterChange}>
                 <option value="">Todos</option>
-                <option value="en_stock">En Stock</option>
+                <option value="en_stock">En Oficina</option>
                 <option value="viajando">Viajando</option>
                 <option value="por_comprar">Por Comprar</option>
                 <option value="por_entregar">Por Entregar</option>

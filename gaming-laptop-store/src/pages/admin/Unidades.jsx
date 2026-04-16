@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../../styles/admin/dataTable.css";
 import "../../styles/global.css";
-import { Box } from "lucide-react";
-import { FaCheck, FaTimes, FaShoppingCart, FaLock } from "react-icons/fa";
+import { Box, Package, Store, Truck, AlertTriangle, SlidersHorizontal } from "lucide-react";
+import { FaCheck, FaTimes, FaShoppingCart, FaLock, FaHandshake, FaShieldAlt } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
@@ -12,6 +12,9 @@ import UnidadProductoForm from "../../components/admin/UnidadProductoForm";
 import OrdenCompraForm from "../../components/admin/OrdenCompraForm";
 import VentaForm from "../../components/admin/VentaForm";
 import SeparacionForm from "../../components/admin/SeparacionForm";
+import MetodoAliadoForm from "../../components/admin/MetodoAliadoForm";
+import GarantiaForm from "../../components/admin/GarantiaForm";
+import ReportarDanoModal from "../../components/admin/ReportarDanoModal";
 import BreadcrumbNav from "../../components/admin/BreadcrumbNav";
 import ConfirmModal from "../../components/admin/ConfirmModal";
 import { createOrdenCompra, updateOrdenCompra } from "../../services/OrdenCompraService";
@@ -37,7 +40,7 @@ const ESTADO_VENTA_LABELS = {
 };
 
 const ESTADO_PRODUCTO_LABELS = {
-  en_stock: "En Stock",
+  en_stock: "En Oficina",
   viajando: "Viajando",
   por_comprar: "Por Comprar",
   por_entregar: "Por Entregar",
@@ -69,16 +72,20 @@ const Unidades = () => {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterEstadoVenta, setFilterEstadoVenta] = useState("");
   const [filterEstadoProducto, setFilterEstadoProducto] = useState("");
   const [filterCondicion, setFilterCondicion] = useState("");
+  const [filterPrecioMin, setFilterPrecioMin] = useState("");
+  const [filterPrecioMax, setFilterPrecioMax] = useState("");
 
   // Context product name (for breadcrumb/title when filtered by product)
   const [contextProductoNombre, setContextProductoNombre] = useState(null);
 
-  // Venta / Separación quick-action modals
+  // Venta / Separación / Método Aliado quick-action modals
   const [ventaTargetUnidad, setVentaTargetUnidad] = useState(null);
   const [separacionTargetUnidad, setSeparacionTargetUnidad] = useState(null);
+  const [metodoAliadoTargetUnidad, setMetodoAliadoTargetUnidad] = useState(null);
+  const [garantiaTargetUnidad, setGarantiaTargetUnidad] = useState(null);
+  const [reportarDanoTargetUnidad, setReportarDanoTargetUnidad] = useState(null);
 
   // OrdenCompra form (for creating new units — order creation auto-creates the unit)
   const [showOrdenForm, setShowOrdenForm] = useState(false);
@@ -220,19 +227,66 @@ const Unidades = () => {
     }
   };
 
+  const handleGarantia = (unidad) => {
+    setGarantiaTargetUnidad(unidad);
+  };
+
+  const handleGarantiaSubmit = async (data) => {
+    try {
+      await updateUnidad(data.unidadId, {
+        estado_venta: "entregado_garantia",
+        estado_producto: "por_entregar",
+        cliente_garantia: data.cliente_garantia,
+      });
+      setGarantiaTargetUnidad(null);
+      fetchUnidades();
+    } catch (error) {
+      console.error("Error al enviar a garantía:", error);
+      alert("Error al registrar entrega por garantía");
+    }
+  };
+
+  const handleMetodoAliado = (unidad) => {
+    setMetodoAliadoTargetUnidad(unidad);
+  };
+
+  const handleMetodoAliadoSubmit = async (data) => {
+    try {
+      await updateUnidad(data.unidadId, {
+        estado_venta: "solicitud_metodo_aliado",
+        cliente_metodo_aliado: data.cliente,
+        ciudad_envio_metodo_aliado: data.ciudad_envio,
+      });
+      setMetodoAliadoTargetUnidad(null);
+      fetchUnidades();
+    } catch (error) {
+      console.error("Error al registrar solicitud método aliado:", error);
+      alert("Error al registrar solicitud de método aliado");
+    }
+  };
+
   const activeUnidades = unidades.filter((u) => u.active !== false);
 
-  const filteredUnidades = activeUnidades.filter((u) => {
+  // Show only sin_vender — damaged units live in /admin/danados; sold/separated/garantía
+  // are managed in their own sections
+  const visibleUnidades = activeUnidades.filter(
+    (u) => u.estado_venta === "sin_vender"
+  );
+
+  const filteredUnidades = visibleUnidades.filter((u) => {
     const term = searchTerm.toLowerCase();
     const matchSearch =
       !searchTerm ||
       u.serial?.toLowerCase().includes(term) ||
       u.producto_nombre?.toLowerCase().includes(term) ||
       u.producto_marca?.toLowerCase().includes(term);
-    const matchEstadoVenta = !filterEstadoVenta || u.estado_venta === filterEstadoVenta;
     const matchEstadoProducto = !filterEstadoProducto || u.estado_producto === filterEstadoProducto;
     const matchCondicion = !filterCondicion || u.condicion === filterCondicion;
-    return matchSearch && matchEstadoVenta && matchEstadoProducto && matchCondicion;
+    const precio = Number(u.precio || 0);
+    const matchPrecio =
+      (!filterPrecioMin || precio >= Number(filterPrecioMin)) &&
+      (!filterPrecioMax || precio <= Number(filterPrecioMax));
+    return matchSearch && matchEstadoProducto && matchCondicion && matchPrecio;
   });
 
   const columns = [
@@ -294,17 +348,8 @@ const Unidades = () => {
       ),
     },
     {
-      key: "estado_venta",
-      label: "Estado Venta",
-      render: (row) => (
-        <span className={`status-badge estado-venta-${row.estado_venta}`}>
-          {ESTADO_VENTA_LABELS[row.estado_venta] || row.estado_venta}
-        </span>
-      ),
-    },
-    {
       key: "estado_producto",
-      label: "Estado Producto",
+      label: "Estado",
       render: (row) => (
         <span className={`status-badge estado-prod-${row.estado_producto}`}>
           {ESTADO_PRODUCTO_LABELS[row.estado_producto] || row.estado_producto}
@@ -315,29 +360,19 @@ const Unidades = () => {
 
   const stats = [
     {
-      label: "Total Activas",
-      count: activeUnidades.length,
-      icon: <Box className="icon-card" />,
+      label: "Total Unidades",
+      count: visibleUnidades.length,
+      icon: <Package className="icon-card" />,
     },
     {
-      label: "Sin Vender",
-      count: activeUnidades.filter((u) => u.estado_venta === "sin_vender").length,
-      icon: <Box className="icon-card" />,
+      label: "En Oficina",
+      count: visibleUnidades.filter((u) => u.estado_producto === "en_stock").length,
+      icon: <Store className="icon-card" style={{ stroke: "#065f46", color: "#065f46", backgroundColor: "#d1fae5" }} />,
     },
     {
-      label: "En Stock",
-      count: activeUnidades.filter((u) => u.estado_producto === "en_stock").length,
-      icon: <Box className="icon-card" />,
-    },
-    {
-      label: "Vendidas",
-      count: activeUnidades.filter((u) => u.estado_venta === "vendido").length,
-      icon: <Box className="icon-card" />,
-    },
-    {
-      label: "Separadas",
-      count: activeUnidades.filter((u) => u.estado_venta === "separado").length,
-      icon: <Box className="icon-card" />,
+      label: "Viajando",
+      count: visibleUnidades.filter((u) => u.estado_producto === "viajando").length,
+      icon: <Truck className="icon-card" style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }} />,
     },
   ];
 
@@ -348,7 +383,7 @@ const Unidades = () => {
           <BreadcrumbNav
             segments={[
               { label: "Productos", path: "/admin/productos" },
-              { label: contextProductoNombre, path: `/admin/unidades?producto_id=${filterProductoId}` },
+              { label: contextProductoNombre, path: `/admin/inventario?producto_id=${filterProductoId}` },
             ]}
           />
         )}
@@ -372,24 +407,18 @@ const Unidades = () => {
         />
 
         {/* Inline filters */}
-        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
-          <select
-            value={filterEstadoVenta}
-            onChange={(e) => setFilterEstadoVenta(e.target.value)}
-          >
-            <option value="">Todos los estados de venta</option>
-            {Object.entries(ESTADO_VENTA_LABELS).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
-            ))}
-          </select>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", margin: "1rem 0 0.5rem" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.35rem", color: "var(--subtitle-color)", fontSize: "0.85rem", fontWeight: 500, flexShrink: 0 }}>
+            <SlidersHorizontal size={14} />
+            Filtrar:
+          </span>
           <select
             value={filterEstadoProducto}
             onChange={(e) => setFilterEstadoProducto(e.target.value)}
           >
-            <option value="">Todos los estados del producto</option>
-            {Object.entries(ESTADO_PRODUCTO_LABELS).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
-            ))}
+            <option value="">Todos los estados</option>
+            <option value="en_stock">En Oficina</option>
+            <option value="viajando">Viajando</option>
           </select>
           <select
             value={filterCondicion}
@@ -400,6 +429,42 @@ const Unidades = () => {
               <option key={v} value={v}>{l}</option>
             ))}
           </select>
+          <input
+            type="number"
+            placeholder="Precio mín."
+            value={filterPrecioMin}
+            onChange={(e) => setFilterPrecioMin(e.target.value)}
+            style={{ width: "130px", padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--fourth-color)" }}
+          />
+          <input
+            type="number"
+            placeholder="Precio máx."
+            value={filterPrecioMax}
+            onChange={(e) => setFilterPrecioMax(e.target.value)}
+            style={{ width: "130px", padding: "0.6rem 0.75rem", borderRadius: "8px", border: "1px solid var(--fourth-color)" }}
+          />
+          {(filterEstadoProducto || filterCondicion || filterPrecioMin || filterPrecioMax) && (
+            <button
+              onClick={() => {
+                setFilterEstadoProducto("");
+                setFilterCondicion("");
+                setFilterPrecioMin("");
+                setFilterPrecioMax("");
+              }}
+              style={{
+                background: "none",
+                border: "1px solid var(--fourth-color)",
+                borderRadius: "8px",
+                padding: "0.6rem 1rem",
+                cursor: "pointer",
+                color: "var(--subtitle-color)",
+                fontFamily: "inherit",
+                fontSize: "0.85rem",
+              }}
+            >
+              Limpiar filtros
+            </button>
+          )}
         </div>
 
         <CountCard stats={stats} />
@@ -423,6 +488,28 @@ const Unidades = () => {
               title: "Registrar Separación",
             },
             {
+              icon: FaHandshake,
+              handler: handleMetodoAliado,
+              show: (row) => row.active && row.estado_venta === "sin_vender",
+              title: "Solicitud Método Aliado",
+            },
+            {
+              icon: FaShieldAlt,
+              handler: handleGarantia,
+              show: (row) => row.active && row.estado_venta === "sin_vender",
+              title: "Entregar por garantía",
+            },
+            {
+              icon: AlertTriangle,
+              handler: (row) => setReportarDanoTargetUnidad(row),
+              show: (row) =>
+                row.active &&
+                row.estado_venta === "sin_vender" &&
+                row.estado_producto === "en_stock",
+              title: "Reportar Dañado",
+              destructive: true,
+            },
+            {
               icon: FaCheck,
               handler: handleActivate,
               show: (row) => !row.active,
@@ -433,6 +520,7 @@ const Unidades = () => {
               handler: handleDeactivate,
               show: (row) => row.active,
               title: "Desactivar",
+              destructive: true,
             },
           ]}
         />
@@ -470,6 +558,35 @@ const Unidades = () => {
             onClose={() => setSeparacionTargetUnidad(null)}
             onSubmit={handleSeparacionSubmit}
             preselectedUnidadId={separacionTargetUnidad.id}
+          />
+        )}
+
+        {garantiaTargetUnidad && (
+          <GarantiaForm
+            unidad={garantiaTargetUnidad}
+            onClose={() => setGarantiaTargetUnidad(null)}
+            onSubmit={handleGarantiaSubmit}
+          />
+        )}
+
+        {metodoAliadoTargetUnidad && (
+          <MetodoAliadoForm
+            unidad={metodoAliadoTargetUnidad}
+            onClose={() => setMetodoAliadoTargetUnidad(null)}
+            onSubmit={handleMetodoAliadoSubmit}
+          />
+        )}
+
+        {reportarDanoTargetUnidad && (
+          <ReportarDanoModal
+            unidad={{
+              id: reportarDanoTargetUnidad.id,
+              serial: reportarDanoTargetUnidad.serial,
+              producto_nombre: reportarDanoTargetUnidad.producto_nombre,
+            }}
+            origen="stock"
+            onClose={() => setReportarDanoTargetUnidad(null)}
+            onSuccess={() => fetchUnidades()}
           />
         )}
 

@@ -16,17 +16,12 @@ export async function updateSeparacion(id, separacionData) {
   return response.data;
 }
 
+export async function patchSeparacion(id, separacionData) {
+  const response = await api.patch(urls.separacionesUpdate(id), separacionData);
+  return response.data;
+}
+
 export async function getSeparacionDetail(id) {
   const response = await api.get(urls.separacionesDetail(id));
-  return response.data;
-}
-
-export async function activateSeparacion(id) {
-  const response = await api.put(urls.separacionesActivate(id));
-  return response.data;
-}
-
-export async function deactivateSeparacion(id) {
-  const response = await api.put(urls.separacionesDeactivate(id));
   return response.data;
 }

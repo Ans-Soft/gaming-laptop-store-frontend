@@ -13,8 +13,6 @@ import AdminLayout from "./components/admin/AdminLayout.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import Users from "./pages/admin/Users.jsx";
 import Brands from "./pages/admin/Brands.jsx";
-import BaseProducts from "./pages/admin/BaseProducts.jsx";
-import Products from "./pages/admin/Products.jsx";
 import Invoices from "./pages/admin/Invoices.jsx";
 import ProductTypes from "./pages/admin/ProductTypes.jsx";
 import ProductFields from "./pages/admin/ProductFields.jsx";
@@ -27,16 +25,13 @@ import OrdenesCompra from "./pages/admin/OrdenesCompra.jsx";
 import ProductosBajoPedido from "./pages/admin/ProductosBajoPedido.jsx";
 import Separaciones from "./pages/admin/Separaciones.jsx";
 import Ventas from "./pages/admin/Ventas.jsx";
+import Garantias from "./pages/admin/Garantias.jsx";
+import Danados from "./pages/admin/Danados.jsx";
+import MetodoAliadoList from "./pages/admin/MetodoAliadoList.jsx";
 import ClienteDetail from "./pages/admin/ClienteDetail.jsx";
 import VentaDetail from "./pages/admin/VentaDetail.jsx";
 import SeparacionDetail from "./pages/admin/SeparacionDetail.jsx";
-import Inventario from "./pages/admin/Inventario.jsx";
-import ReporteSalesReport from "./pages/admin/ReporteSalesReport.jsx";
-import ReporteSeparacionesReport from "./pages/admin/ReporteSeparacionesReport.jsx";
-import ReporteMargenes from "./pages/admin/ReporteMargenes.jsx";
-import ReporteMasVendidos from "./pages/admin/ReporteMasVendidos.jsx";
-import ReporteOrdenesCompra from "./pages/admin/ReporteOrdenesCompra.jsx";
-import ReporteRentabilidad from "./pages/admin/ReporteRentabilidad.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -59,15 +54,13 @@ const router = createBrowserRouter([
     children: [
       { path: "/admin", element: <Dashboard /> },
       { path: "/admin/users", element: <Users /> },
-      { path: "/admin/base_products", element: <BaseProducts /> },
-      { path: "/admin/products", element: <Products /> },
       { path: "/admin/brands", element: <Brands /> },
       { path: "/admin/facturas", element: <Invoices /> },
       { path: "/admin/product-types", element: <ProductTypes /> },
       { path: "/admin/product-fields", element: <ProductFields /> },
       { path: "/admin/suppliers", element: <Suppliers /> },
       { path: "/admin/productos", element: <Productos /> },
-      { path: "/admin/unidades", element: <Unidades /> },
+      { path: "/admin/inventario", element: <Unidades /> },
       { path: "/admin/bajo-pedido", element: <BajoPedido /> },
       { path: "/admin/clientes", element: <Clientes /> },
       { path: "/admin/clientes/:id", element: <ClienteDetail /> },
@@ -76,14 +69,10 @@ const router = createBrowserRouter([
       { path: "/admin/separaciones", element: <Separaciones /> },
       { path: "/admin/separaciones/:id", element: <SeparacionDetail /> },
       { path: "/admin/ventas", element: <Ventas /> },
+      { path: "/admin/garantias", element: <Garantias /> },
+      { path: "/admin/danados", element: <Danados /> },
+      { path: "/admin/metodo-aliado", element: <MetodoAliadoList /> },
       { path: "/admin/ventas/:id", element: <VentaDetail /> },
-      { path: "/admin/inventario", element: <Inventario /> },
-      { path: "/admin/reportes/ventas", element: <ReporteSalesReport /> },
-      { path: "/admin/reportes/separaciones", element: <ReporteSeparacionesReport /> },
-      { path: "/admin/reportes/margenes", element: <ReporteMargenes /> },
-      { path: "/admin/reportes/mas-vendidos", element: <ReporteMasVendidos /> },
-      { path: "/admin/reportes/ordenes-compra", element: <ReporteOrdenesCompra /> },
-      { path: "/admin/reportes/rentabilidad", element: <ReporteRentabilidad /> },
     ],
   },
 ]);

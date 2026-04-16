@@ -5,24 +5,44 @@ import { Clock, Package } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
-import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
+import { FaRegCheckCircle, FaCheck, FaTimes, FaShoppingCart, FaEdit } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
-import ProductoBajoPedidoForm from "../../components/admin/ProductoBajoPedidoForm";
 import ConfirmModal from "../../components/admin/ConfirmModal";
+import OrdenCompraForm from "../../components/admin/OrdenCompraForm";
+import ModalBase from "../../components/admin/ModalBase";
 import {
   getProductosBajoPedido,
-  createProductoBajoPedido,
-  updateProductoBajoPedido,
   activateProductoBajoPedido,
   deactivateProductoBajoPedido,
+  patchProductoBajoPedido,
 } from "../../services/ProductoBajoPedidoService";
+import { createOrdenCompra, updateOrdenCompra } from "../../services/OrdenCompraService";
+
+const ESTADO_LOGISTICO_LABELS = {
+  viajando: "Viajando",
+  en_oficina_importadora: "En Ofic. Importadora",
+  en_oficina: "En Oficina Local",
+};
+
+const ESTADO_LOGISTICO_COLORS = {
+  viajando: { bg: "#fef3c7", text: "#92400e" },
+  en_oficina_importadora: { bg: "#ede9fe", text: "#5b21b6" },
+  en_oficina: { bg: "#d1fae5", text: "#065f46" },
+};
 
 const ProductosBajoPedido = () => {
-  const [showModal, setShowModal] = useState(false);
   const [productos, setProductos] = useState([]);
-  const [editingProducto, setEditingProducto] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [confirmDialog, setConfirmDialog] = useState(null);
+
+  // Create OC modal
+  const [showOCForm, setShowOCForm] = useState(false);
+  const [solicitudParaOC, setSolicitudParaOC] = useState(null);
+
+  // Update estado logístico modal
+  const [showEstadoModal, setShowEstadoModal] = useState(false);
+  const [solicitudParaEstado, setSolicitudParaEstado] = useState(null);
+  const [nuevoEstadoLogistico, setNuevoEstadoLogistico] = useState("viajando");
 
   useEffect(() => {
     fetchProductos();
@@ -31,33 +51,9 @@ const ProductosBajoPedido = () => {
   const fetchProductos = async () => {
     try {
       const data = await getProductosBajoPedido();
-      setProductos(data.producto_bajo_pedido || data);
+      setProductos(Array.isArray(data) ? data : (data.producto_bajo_pedido || []));
     } catch (error) {
       console.error("Error al obtener productos bajo pedido:", error);
-    }
-  };
-
-  const handleOpenModal = (producto = null) => {
-    setEditingProducto(producto);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setEditingProducto(null);
-    setShowModal(false);
-  };
-
-  const handleSubmitProducto = async (data, id) => {
-    try {
-      if (id) {
-        await updateProductoBajoPedido(id, data);
-      } else {
-        await createProductoBajoPedido(data);
-      }
-      handleCloseModal();
-      fetchProductos();
-    } catch (error) {
-      console.error("Error al guardar producto:", error);
     }
   };
 
@@ -99,34 +95,111 @@ const ProductosBajoPedido = () => {
     });
   };
 
+  const handleOpenOCForm = (solicitud) => {
+    setSolicitudParaOC(solicitud);
+    setShowOCForm(true);
+  };
+
+  const handleOCSubmit = async (ocData, ocId) => {
+    try {
+      let nuevaOC;
+      if (ocId) {
+        nuevaOC = await updateOrdenCompra(ocId, ocData);
+      } else {
+        nuevaOC = await createOrdenCompra(ocData);
+      }
+
+      const ocIdResult = nuevaOC?.orden_compra?.id || nuevaOC?.id;
+      if (ocIdResult && solicitudParaOC) {
+        await patchProductoBajoPedido(solicitudParaOC.id, { orden_compra: ocIdResult });
+      }
+
+      setShowOCForm(false);
+      setSolicitudParaOC(null);
+      fetchProductos();
+    } catch (error) {
+      console.error("Error al crear orden de compra:", error);
+      throw error;
+    }
+  };
+
+  const handleOpenEstadoModal = (solicitud) => {
+    setSolicitudParaEstado(solicitud);
+    setNuevoEstadoLogistico(solicitud.orden_compra_estado || "viajando");
+    setShowEstadoModal(true);
+  };
+
+  const handleUpdateEstado = async () => {
+    if (!solicitudParaEstado?.orden_compra) return;
+    try {
+      await updateOrdenCompra(solicitudParaEstado.orden_compra, {
+        estado_logistico: nuevoEstadoLogistico,
+      });
+      setShowEstadoModal(false);
+      setSolicitudParaEstado(null);
+      fetchProductos();
+    } catch (error) {
+      console.error("Error al actualizar estado logístico:", error);
+      alert("No se pudo actualizar el estado.");
+    }
+  };
+
   const filteredProductos = productos.filter(
     (p) =>
       p.active !== false &&
-      (p.cliente_nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.variante_nombre?.toLowerCase().includes(searchTerm.toLowerCase()))
+      ((p.cliente_nombre || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.bajo_pedido_str || p.bajo_pedido_producto_nombre || "").toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const getEstadoBadge = (row) => {
+    if (!row.orden_compra) {
+      return (
+        <span style={{ display: "inline-block", padding: "0.3rem 0.7rem", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, background: "#f3f4f6", color: "#4b5563" }}>
+          Por comprar
+        </span>
+      );
+    }
+    const est = row.orden_compra_estado;
+    const colors = ESTADO_LOGISTICO_COLORS[est] || { bg: "#f3f4f6", text: "#4b5563" };
+    return (
+      <span style={{ display: "inline-block", padding: "0.3rem 0.7rem", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, background: colors.bg, color: colors.text }}>
+        {ESTADO_LOGISTICO_LABELS[est] || est}
+      </span>
+    );
+  };
 
   const columns = [
     { key: "cliente_nombre", label: "Cliente" },
-    { key: "variante_nombre", label: "Producto" },
+    {
+      key: "bajo_pedido_str",
+      label: "Producto",
+      render: (row) => row.bajo_pedido_producto_nombre || row.bajo_pedido_str || "—",
+    },
+    {
+      key: "bajo_pedido_condicion",
+      label: "Condición",
+      render: (row) => {
+        const labels = { nuevo: "Nuevo", open_box: "Open Box", refurbished: "Refurbished", usado: "Usado" };
+        return labels[row.bajo_pedido_condicion] || row.bajo_pedido_condicion || "—";
+      },
+    },
     {
       key: "valor_abono",
-      label: "Valor Abono",
-      render: (row) => `$${parseFloat(row.valor_abono).toFixed(2)}`,
+      label: "Abono",
+      render: (row) => `$${Number(row.valor_abono).toLocaleString("es-CO")}`,
     },
-    { key: "fecha_maxima_compra", label: "Fecha Máxima" },
+    { key: "fecha_maxima_compra", label: "Fecha Máx." },
+    {
+      key: "orden_compra_estado",
+      label: "Estado Logístico",
+      render: (row) => getEstadoBadge(row),
+    },
     {
       key: "estado",
       label: "Estado",
       render: (row) => (
-        <span
-          className={
-            row.estado === "completada"
-              ? "status-active"
-              : "status-inactive"
-          }
-        >
-          {row.estado.charAt(0).toUpperCase() + row.estado.slice(1)}
+        <span className={row.estado === "completada" ? "status-active" : "status-inactive"}>
+          {row.estado ? row.estado.charAt(0).toUpperCase() + row.estado.slice(1) : "—"}
         </span>
       ),
     },
@@ -134,14 +207,24 @@ const ProductosBajoPedido = () => {
 
   const stats = [
     {
-      label: "Total Productos BP",
-      count: productos.length,
+      label: "Total",
+      count: productos.filter((p) => p.active !== false).length,
       icon: <Package className="icon-card" />,
     },
     {
       label: "Por Comprar",
-      count: productos.filter((p) => p.estado === "por_comprar").length,
+      count: productos.filter((p) => p.active !== false && !p.orden_compra).length,
       icon: <FaRegCheckCircle className="icon-card" />,
+    },
+    {
+      label: "En Tránsito",
+      count: productos.filter((p) => p.active !== false && p.orden_compra_estado === "viajando").length,
+      icon: <Clock className="icon-card" />,
+    },
+    {
+      label: "En Oficina",
+      count: productos.filter((p) => p.active !== false && p.orden_compra_estado === "en_oficina").length,
+      icon: <Package className="icon-card" />,
     },
   ];
 
@@ -151,12 +234,10 @@ const ProductosBajoPedido = () => {
         <TitleCrud
           title="Gestión de Productos Bajo Pedido"
           icon={Clock}
-          description="Administra los pedidos de clientes para comprar productos"
+          description="Sigue el flujo de pedidos de clientes: desde la solicitud hasta la llegada del producto"
         />
 
         <SearchBox
-          onRegisterClick={() => handleOpenModal()}
-          registerLabel="Registrar Nuevo Producto BP"
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           placeholder="Buscar por cliente o producto..."
@@ -168,8 +249,20 @@ const ProductosBajoPedido = () => {
           columns={columns}
           data={filteredProductos}
           rowKey="id"
-          onEdit={handleOpenModal}
+          showEdit={false}
           customActions={[
+            {
+              icon: FaShoppingCart,
+              handler: handleOpenOCForm,
+              show: (row) => row.active && !row.orden_compra,
+              title: "Registrar Orden de Compra",
+            },
+            {
+              icon: FaEdit,
+              handler: handleOpenEstadoModal,
+              show: (row) => row.active && Boolean(row.orden_compra),
+              title: "Actualizar Estado Logístico",
+            },
             {
               icon: FaCheck,
               handler: handleActivate,
@@ -185,12 +278,38 @@ const ProductosBajoPedido = () => {
           ]}
         />
 
-        {showModal && (
-          <ProductoBajoPedidoForm
-            onClose={handleCloseModal}
-            onSubmit={handleSubmitProducto}
-            producto={editingProducto}
+        {showOCForm && solicitudParaOC && (
+          <OrdenCompraForm
+            onClose={() => { setShowOCForm(false); setSolicitudParaOC(null); }}
+            onSubmit={handleOCSubmit}
+            preselectedProducto={
+              solicitudParaOC.bajo_pedido_producto_id
+                ? { id: solicitudParaOC.bajo_pedido_producto_id, nombre: solicitudParaOC.bajo_pedido_producto_nombre }
+                : null
+            }
           />
+        )}
+
+        {showEstadoModal && solicitudParaEstado && (
+          <ModalBase
+            title="Actualizar Estado Logístico"
+            subtitle={`Producto: ${solicitudParaEstado.bajo_pedido_producto_nombre || solicitudParaEstado.bajo_pedido_str}`}
+            onClose={() => { setShowEstadoModal(false); setSolicitudParaEstado(null); }}
+            onSubmit={handleUpdateEstado}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>Nuevo estado de la orden de compra:</label>
+              <select
+                value={nuevoEstadoLogistico}
+                onChange={(e) => setNuevoEstadoLogistico(e.target.value)}
+                style={{ padding: "0.6rem 0.75rem", borderRadius: "6px", border: "1px solid var(--fourth-color, #e5e7eb)", fontFamily: "inherit", fontSize: "0.9rem" }}
+              >
+                <option value="viajando">Viajando</option>
+                <option value="en_oficina_importadora">En Oficina Importadora</option>
+                <option value="en_oficina">En Oficina Local</option>
+              </select>
+            </div>
+          </ModalBase>
         )}
 
         {confirmDialog && (

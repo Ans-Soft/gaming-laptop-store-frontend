@@ -15,6 +15,7 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
     numero_tracking: "",
     costo_compra: "",
     costo_importacion: "",
+    porcentaje_impuesto: "2",
     precio_venta: "",
     estado_logistico: "viajando",
   });
@@ -88,10 +89,11 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
   // Recalculate impuesto and suggested price when currency toggle changes
   useEffect(() => {
     if (formData.costo_compra) {
+      const pct = parseFloat(formData.porcentaje_impuesto || 2) / 100;
       const valueUsd = costCurrency === "cop" && trm
         ? parseFloat(formData.costo_compra) / trm
         : parseFloat(formData.costo_compra);
-      const impuesto = valueUsd * 0.02;
+      const impuesto = valueUsd * pct;
       setImpuestoPreview(isNaN(impuesto) ? 0 : impuesto);
       recalcSuggestedPrice(formData.costo_compra, formData.costo_importacion, impuesto, costCurrency);
     }
@@ -118,6 +120,7 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
         numero_tracking: orden.numero_tracking || "",
         costo_compra: orden.costo_compra,
         costo_importacion: orden.costo_importacion || "",
+        porcentaje_impuesto: orden.porcentaje_impuesto?.toString() || "2",
         precio_venta: "",
         estado_logistico: orden.estado_logistico,
       });
@@ -130,17 +133,19 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
 
-      if (name === "costo_compra" || name === "costo_importacion") {
+      if (name === "costo_compra" || name === "costo_importacion" || name === "porcentaje_impuesto") {
         const compraVal = name === "costo_compra" ? value : prev.costo_compra;
         const importVal = name === "costo_importacion" ? value : prev.costo_importacion;
+        const pctVal = name === "porcentaje_impuesto" ? value : prev.porcentaje_impuesto;
 
+        const pct = parseFloat(pctVal || 2) / 100;
         const compraUsd = costCurrency === "cop" && trm
           ? parseFloat(compraVal || 0) / trm
           : parseFloat(compraVal || 0);
         const importUsd = costCurrency === "cop" && trm
           ? parseFloat(importVal || 0) / trm
           : parseFloat(importVal || 0);
-        const impuesto = compraUsd * 0.02;
+        const impuesto = compraUsd * pct;
 
         setImpuestoPreview(isNaN(impuesto) ? 0 : impuesto);
 
@@ -171,6 +176,8 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
     if (parseFloat(formData.costo_compra) <= 0) newErrors.costo_compra = "El costo debe ser mayor a 0";
     if (!formData.proveedor) newErrors.proveedor = "Selecciona un proveedor";
     if (!formData.numero_orden) newErrors.numero_orden = "Ingresa el número de orden";
+    if (formData.porcentaje_impuesto !== "" && parseFloat(formData.porcentaje_impuesto) < 0)
+      newErrors.porcentaje_impuesto = "El porcentaje no puede ser negativo";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -440,6 +447,26 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
                 />
               </div>
 
+              <div className="form-group">
+                <label htmlFor="porcentaje_impuesto">
+                  Impuesto de importación (%)
+                  <span className="ocf-hint"> — 0 si no aplica</span>
+                </label>
+                <input
+                  id="porcentaje_impuesto"
+                  name="porcentaje_impuesto"
+                  type="number"
+                  step="0.01"
+                  placeholder="Ej: 2"
+                  value={formData.porcentaje_impuesto}
+                  onChange={handleChange}
+                  className={errors.porcentaje_impuesto ? "input-error" : ""}
+                />
+                {errors.porcentaje_impuesto && (
+                  <span className="ocf-error-text">{errors.porcentaje_impuesto}</span>
+                )}
+              </div>
+
               {!isEditMode && (
                 <div className="form-group">
                   <label htmlFor="precio_venta">
@@ -489,7 +516,7 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
 
               <div className="ocf-cost-row">
                 <span className="ocf-cost-label">
-                  Impuesto (2%): <span className="ocf-hint">(auto-calculado)</span>
+                  Impuesto ({formData.porcentaje_impuesto || 2}%):
                 </span>
                 <span className="ocf-cost-amount">
                   {costCurrency === "usd"

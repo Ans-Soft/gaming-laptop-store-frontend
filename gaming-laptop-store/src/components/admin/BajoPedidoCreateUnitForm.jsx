@@ -159,7 +159,7 @@ const BajoPedidoCreateUnitForm = ({
             className="bpf-select"
             disabled={isSubmitting}
           >
-            <option value="en_stock">En Stock</option>
+            <option value="en_stock">En Oficina</option>
             <option value="viajando">Viajando</option>
             <option value="por_comprar">Por Comprar</option>
             <option value="por_entregar">Por Entregar</option>

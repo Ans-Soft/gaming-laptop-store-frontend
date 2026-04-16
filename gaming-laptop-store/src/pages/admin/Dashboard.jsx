@@ -1,51 +1,57 @@
 import DashboardCard from "../../components/admin/DashboardCard";
-import { Package, Tag, Users, Grid, FileText } from "lucide-react";
+import { Package, Tag, Users, FileText, Box, ShoppingCart, Lock } from "lucide-react";
 import "../../styles/admin/dashboard.css";
 
 export default function Dashboard() {
   const modules = [
     {
       icon: <Package size={32} />,
-      title: "Gestión de Productos Base",
-      description: "Administra el catálogo de productos base",
+      title: "Productos",
+      description: "Administra el catálogo de productos",
       color: "#00ffc3",
-      to: "/admin/base_products",
+      to: "/admin/productos",
     },
     {
-      icon: <Package size={32} />,
-      title: "Gestión de Productos Variantes",
-      description: "Administra el catálogo de portátiles activos",
+      icon: <Box size={32} />,
+      title: "Inventario",
+      description: "Gestiona unidades, seriales y estados",
       color: "#db6ec9ff",
-      to: "/admin/products",
+      to: "/admin/inventario",
+    },
+    {
+      icon: <ShoppingCart size={32} />,
+      title: "Ventas",
+      description: "Registra y consulta ventas realizadas",
+      color: "#2ef06a",
+      to: "/admin/ventas",
+    },
+    {
+      icon: <Lock size={32} />,
+      title: "Separaciones",
+      description: "Administra reservas de productos",
+      color: "#f59e0b",
+      to: "/admin/separaciones",
+    },
+    {
+      icon: <FileText size={32} />,
+      title: "Facturas",
+      description: "Genera y administra facturas",
+      color: "#1e40af",
+      to: "/admin/facturas",
     },
     {
       icon: <Tag size={32} />,
-      title: "Gestión de Marcas",
+      title: "Marcas",
       description: "Administra las marcas de productos",
       color: "#9c6bff",
       to: "/admin/brands",
     },
     {
       icon: <Users size={32} />,
-      title: "Gestión de Usuarios",
+      title: "Usuarios",
       description: "Administra usuarios y permisos",
-      color: "#2ef06a",
+      color: "#6366f1",
       to: "/admin/users",
-      
-    },
-    {
-      icon: <Grid size={32} />,
-      title: "Gestión de Categorías",
-      description: "Administra categorías de productos",
-      color: "#ff9f2e",
-      to: "/admin/categories",
-    },
-    {
-      icon: <FileText size={32} />,
-      title: "Gestión de Facturas",
-      description: "Genera y administra facturas de ventas y separaciones",
-      color: "#1e40af",
-      to: "/admin/facturas",
     },
   ];
 

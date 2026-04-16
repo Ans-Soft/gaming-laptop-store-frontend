@@ -205,7 +205,7 @@ select:focus {
   display: inline-block;
   padding: 3px 10px;
   border-radius: 20px;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -261,6 +261,24 @@ select:focus {
   color: #3730a3;
 }
 
+/* Estado Separación badges */
+.estado-sep-activa {
+  background-color: var(--success-bg, #DCFCE7);
+  color: var(--success-color, #16A34A);
+}
+.estado-sep-expirada {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+.estado-sep-cancelada {
+  background-color: var(--error-bg, #FEE2E2);
+  color: var(--error-color, #DC2626);
+}
+.estado-sep-completada {
+  background-color: var(--icon-bg, #E0F0FC);
+  color: var(--primary-color, #2979C8);
+}
+
 /* Estado Producto badges — UnidadProducto */
 .estado-prod-en_stock {
   background-color: var(--success-bg, #DCFCE7);
@@ -291,19 +309,168 @@ select:focus {
   color: var(--error-color, #DC2626);
 }
 
-/* Logistic states — OrdenesCompra */
+/* Logistic states — OrdenesCompra (read-only badges) */
 .estado-viajando {
-  background-color: var(--warning-bg, #FEF3C7);
-  color: var(--warning-color, #B45309);
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 .estado-en_oficina_importadora {
-  background-color: var(--card-bg);
-  color: var(--primary-color);
-  border: 1px solid var(--fourth-color);
+  background-color: #ede9fe;
+  color: #5b21b6;
 }
 
 .estado-en_oficina {
-  background-color: var(--success-bg, #DCFCE7);
-  color: var(--success-color, #16A34A);
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+/* Inline estado logístico select — OrdenesCompra */
+.oc-estado-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 20px;
+  padding: 0.35rem 2rem 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: right 0.55rem center;
+  background-size: 10px 6px;
+  transition: box-shadow 0.15s ease;
+}
+
+.oc-estado-select:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.10);
+}
+
+.oc-estado-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(41, 121, 200, 0.25);
+}
+
+.oc-estado-select--viajando {
+  background-color: #fef3c7;
+  color: #92400e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2392400e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.oc-estado-select--en_oficina_importadora {
+  background-color: #ede9fe;
+  color: #5b21b6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b21b6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.oc-estado-select--en_oficina {
+  background-color: #d1fae5;
+  color: #065f46;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23065f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Inline select — estado_venta (Unidades) */
+.uev-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 20px;
+  padding: 0.35rem 2rem 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: right 0.55rem center;
+  background-size: 10px 6px;
+  transition: box-shadow 0.15s ease;
+}
+
+.uev-select:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.10);
+}
+
+.uev-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(41, 121, 200, 0.25);
+}
+
+.uev-select--sin_vender {
+  background-color: #d1fae5;
+  color: #065f46;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23065f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uev-select--entregado_garantia {
+  background-color: #fef3c7;
+  color: #92400e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2392400e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uev-select--danado {
+  background-color: #fee2e2;
+  color: #dc2626;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23dc2626' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Inline select — estado_producto (Unidades) */
+.uep-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 20px;
+  padding: 0.35rem 2rem 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: right 0.55rem center;
+  background-size: 10px 6px;
+  transition: box-shadow 0.15s ease;
+}
+
+.uep-select:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.10);
+}
+
+.uep-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(41, 121, 200, 0.25);
+}
+
+.uep-select--en_stock {
+  background-color: #d1fae5;
+  color: #065f46;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23065f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uep-select--viajando {
+  background-color: #fef3c7;
+  color: #92400e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2392400e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uep-select--por_reparar {
+  background-color: #fee2e2;
+  color: #dc2626;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23dc2626' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uep-select--en_reparacion {
+  background-color: #ede9fe;
+  color: #5b21b6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b21b6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uep-select--por_entregar {
+  background-color: #fff7ed;
+  color: #c2410c;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c2410c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.uep-select--entregado {
+  background-color: #d1fae5;
+  color: #065f46;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23065f46' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }

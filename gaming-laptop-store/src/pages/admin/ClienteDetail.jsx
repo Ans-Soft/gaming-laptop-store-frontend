@@ -72,31 +72,31 @@ const ClienteDetail = () => {
       key: "id",
       label: "ID",
       sortable: true,
-      render: (value) => `#${value}`,
+      render: (row) => `#${row.id}`,
     },
     {
       key: "fecha",
       label: "Fecha",
       sortable: true,
-      render: (value) => new Date(value).toLocaleDateString("es-CO"),
+      render: (row) => new Date(row.fecha).toLocaleDateString("es-CO"),
     },
     {
       key: "total",
       label: "Total",
       sortable: true,
-      render: (value) => `$${parseFloat(value || 0).toFixed(2)}`,
+      render: (row) => `$${parseFloat(row.total || 0).toFixed(2)}`,
     },
     {
-      key: "items_count",
+      key: "items",
       label: "Items",
       sortable: false,
-      render: (value) => value || 0,
+      render: (row) => row.items?.length || 0,
     },
     {
       key: "notas",
       label: "Notas",
       sortable: false,
-      render: (value) => (value ? value.substring(0, 30) + "..." : "Sin notas"),
+      render: (row) => (row.notas ? row.notas.substring(0, 30) + "..." : "Sin notas"),
     },
   ];
 
@@ -105,39 +105,39 @@ const ClienteDetail = () => {
       key: "id",
       label: "ID",
       sortable: true,
-      render: (value) => `#${value}`,
+      render: (row) => `#${row.id}`,
     },
     {
       key: "fecha_separacion",
       label: "Fecha Separación",
       sortable: true,
-      render: (value) => new Date(value).toLocaleDateString("es-CO"),
+      render: (row) => new Date(row.fecha_separacion).toLocaleDateString("es-CO"),
     },
     {
       key: "estado",
       label: "Estado",
       sortable: true,
-      render: (value) => {
+      render: (row) => {
         const estados = {
           activa: "Activa",
           expirada: "Expirada",
           cancelada: "Cancelada",
           completada: "Completada",
         };
-        return estados[value] || value;
+        return estados[row.estado] || row.estado;
       },
     },
     {
       key: "valor_abono",
       label: "Valor Abono",
       sortable: true,
-      render: (value) => `$${parseFloat(value || 0).toFixed(2)}`,
+      render: (row) => `$${parseFloat(row.valor_abono || 0).toFixed(2)}`,
     },
     {
       key: "fecha_maxima_compra",
       label: "Fecha Máxima",
       sortable: true,
-      render: (value) => new Date(value).toLocaleDateString("es-CO"),
+      render: (row) => new Date(row.fecha_maxima_compra).toLocaleDateString("es-CO"),
     },
   ];
 

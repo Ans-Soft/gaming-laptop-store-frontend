@@ -11,6 +11,7 @@ const ModalBase = ({
   children,
   onSubmit,
   isSubmitting = false,
+  submitLabel,
   cancelLabel,
   className,
 }) => {
@@ -77,7 +78,7 @@ const ModalBase = ({
                 className="btn-submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Guardando..." : "+ Guardar"}
+                {isSubmitting ? "Guardando..." : (submitLabel || "+ Guardar")}
               </button>
             )}
           </div>

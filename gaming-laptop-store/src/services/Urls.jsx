@@ -17,14 +17,6 @@ const urls = {
   brandActivate: `${BASE_URL}/products/brands/activate/`,
   brandDeactivate: `${BASE_URL}/products/brands/deactivate/`,
 
-   // BASE PRODUCTS
-  baseProductsList: `${BASE_URL}/products/base-products/list/`,
-  baseProductCreate: `${BASE_URL}/products/base-products/create/`,
-  baseProductUpdate: `${BASE_URL}/products/base-products/update/`,
-  baseProductActivate: `${BASE_URL}/products/base-products/activate/`,
-  baseProductDeactivate: `${BASE_URL}/products/base-products/deactivate/`,
-
-
   // PRODUCT TYPES
   productTypesList: `${BASE_URL}/products/product-types/list/`,
   productTypesCreate: `${BASE_URL}/products/product-types/create/`,
@@ -76,6 +68,12 @@ const urls = {
   unidadesDeactivate: (id) => `${BASE_URL}/products/unidades/deactivate/${id}/`,
   unidadesDetail: (id) => `${BASE_URL}/products/unidades/${id}/detail/`,
 
+  // REPARACIONES (damaged equipment pipeline)
+  reparacionesList: `${BASE_URL}/products/reparaciones/list/`,
+  reparacionesReportarDano: (id) => `${BASE_URL}/products/unidades/${id}/reportar-dano/`,
+  reparacionesIniciar: (id) => `${BASE_URL}/products/unidades/${id}/iniciar-reparacion/`,
+  reparacionesCompletar: (id) => `${BASE_URL}/products/unidades/${id}/completar-reparacion/`,
+
   // DEPARTAMENTOS Y CIUDADES
   departamentosList: `${BASE_URL}/sales/departamentos/list/`,
   ciudadesList: `${BASE_URL}/sales/ciudades/list/`,
@@ -108,7 +106,9 @@ const urls = {
   ventasList: `${BASE_URL}/sales/ventas/list/`,
   ventasCreate: `${BASE_URL}/sales/ventas/create/`,
   ventasUpdate: (id) => `${BASE_URL}/sales/ventas/update/${id}/`,
+  ventasDelete: (id) => `${BASE_URL}/sales/ventas/delete/${id}/`,
   ventasDetail: (id) => `${BASE_URL}/sales/ventas/detail/${id}/`,
+  ventasDeactivate: (id) => `${BASE_URL}/sales/ventas/deactivate/${id}/`,
 
   // INVOICES
   invoicesList: `${BASE_URL}/sales/invoices/list/`,

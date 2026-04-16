@@ -12,11 +12,21 @@ export async function createVenta(ventaData) {
 }
 
 export async function updateVenta(id, ventaData) {
-  const response = await api.put(urls.ventasUpdate(id), ventaData);
+  const response = await api.patch(urls.ventasUpdate(id), ventaData);
+  return response.data;
+}
+
+export async function deleteVenta(id) {
+  const response = await api.delete(urls.ventasDelete(id));
   return response.data;
 }
 
 export async function getVentaDetail(id) {
   const response = await api.get(urls.ventasDetail(id));
+  return response.data;
+}
+
+export async function deactivateVenta(id) {
+  const response = await api.post(urls.ventasDeactivate(id));
   return response.data;
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FileText, Edit } from "lucide-react";
 import ModalBase from "../admin/ModalBase";
 import * as ClienteService from "../../services/ClienteService";
+import * as UnidadService from "../../services/UnidadService";
 import "../../styles/admin/invoiceForm.css";
 
 const EMPTY_FORM = {
@@ -9,14 +10,13 @@ const EMPTY_FORM = {
   venta: "",
   separacion: "",
   concepto: "",
-  item: "",
   serial_item: "",
   total_amount: "",
   payment_method: "",
   due_date: "",
 };
 
-const REQUIRED_FIELDS = ["cliente", "concepto", "item", "serial_item", "total_amount", "payment_method", "due_date"];
+const REQUIRED_FIELDS = ["cliente", "concepto", "serial_item", "total_amount", "payment_method", "due_date"];
 
 function computeBillId(due_date, serial_item) {
   if (!due_date || !serial_item.trim()) return "";
@@ -32,6 +32,8 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
   const [aiExpanded, setAiExpanded] = useState(false);
   const [aiText, setAiText] = useState("");
   const [aiToast, setAiToast] = useState(false);
+  const [tipoProductoDetected, setTipoProductoDetected] = useState("");
+  const [serialLookupLoading, setSerialLookupLoading] = useState(false);
 
   const isEditMode = Boolean(invoice);
 
@@ -55,12 +57,12 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
         venta: invoice.venta || "",
         separacion: invoice.separacion || "",
         concepto: invoice.concepto || "",
-        item: invoice.item || "",
         serial_item: invoice.serial_item || "",
         total_amount: invoice.total_amount || "",
         payment_method: invoice.payment_method || "",
         due_date: invoice.due_date || "",
       });
+      if (invoice.item) setTipoProductoDetected(invoice.item);
     }
   }, [invoice, isEditMode]);
 
@@ -69,6 +71,25 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleSerialBlur = async () => {
+    const serial = formData.serial_item.trim();
+    if (!serial) {
+      setTipoProductoDetected("");
+      return;
+    }
+    setSerialLookupLoading(true);
+    try {
+      const data = await UnidadService.getUnidades();
+      const units = Array.isArray(data) ? data : [];
+      const found = units.find((u) => u.serial === serial);
+      setTipoProductoDetected(found?.tipo_producto_nombre || "");
+    } catch {
+      setTipoProductoDetected("");
+    } finally {
+      setSerialLookupLoading(false);
     }
   };
 
@@ -164,20 +185,6 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
             </div>
 
             <div className="inv-field">
-              <label htmlFor="item">
-                Producto <span className="inv-required">*</span>
-              </label>
-              <select id="item" name="item" value={formData.item} onChange={handleChange}>
-                <option value="">Seleccionar...</option>
-                <option value="laptop">Laptop</option>
-                <option value="tarjeta_grafica">Tarjeta Gráfica</option>
-                <option value="hardware">Hardware</option>
-                <option value="pc_mesa">PC de Mesa</option>
-              </select>
-              {errors.item && <span className="inv-error">{errors.item}</span>}
-            </div>
-
-            <div className="inv-field">
               <label htmlFor="serial_item">
                 Serial <span className="inv-required">*</span>
               </label>
@@ -188,8 +195,18 @@ const InvoiceFormModal = ({ onClose, onSubmit, invoice, isSubmitting }) => {
                 placeholder="Ej: SN123ABC"
                 value={formData.serial_item}
                 onChange={handleChange}
+                onBlur={handleSerialBlur}
               />
               {errors.serial_item && <span className="inv-error">{errors.serial_item}</span>}
+            </div>
+
+            <div className="inv-field">
+              <label>Tipo de Producto</label>
+              <div className="inv-readonly-field">
+                {serialLookupLoading
+                  ? "Buscando..."
+                  : tipoProductoDetected || "Se detecta al ingresar el serial"}
+              </div>
             </div>
 
             <div className="inv-field">

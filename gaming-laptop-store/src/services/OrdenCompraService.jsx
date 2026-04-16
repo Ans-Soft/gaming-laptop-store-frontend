@@ -16,6 +16,11 @@ export async function updateOrdenCompra(id, ordenData) {
   return response.data;
 }
 
+export async function patchOrdenCompra(id, ordenData) {
+  const response = await api.patch(urls.ordenesCompraUpdate(id), ordenData);
+  return response.data;
+}
+
 export async function activateOrdenCompra(id) {
   const response = await api.post(urls.ordenesCompraActivate(id));
   return response.data;
