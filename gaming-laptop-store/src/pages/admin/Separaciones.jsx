@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "./../../styles/admin/dataTable.css";
 import "./../../styles/global.css";
-import { Lock, Package } from "lucide-react";
+import { Lock, Clock, CheckCircle, ShoppingCart, Ban, Edit, FileText, AlertTriangle } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
-import { FaRegCheckCircle, FaCheck, FaTimes } from "react-icons/fa";
 import TitleCrud from "../../components/admin/TitleCrud";
 import SeparacionForm from "../../components/admin/SeparacionForm";
+import CompletarVentaModal from "../../components/admin/CompletarVentaModal";
+import GenerarReciboModal from "../../components/admin/GenerarReciboModal";
 import ConfirmModal from "../../components/admin/ConfirmModal";
+import NotifyModal from "../../components/admin/NotifyModal";
+import ReportarDanoModal from "../../components/admin/ReportarDanoModal";
 import {
   getSeparaciones,
   createSeparacion,
   updateSeparacion,
-  activateSeparacion,
-  deactivateSeparacion,
+  patchSeparacion,
 } from "../../services/SeparacionService";
+import * as VentaService from "../../services/VentaService";
+import * as InvoiceService from "../../services/InvoiceService";
 
 const Separaciones = () => {
   const [showModal, setShowModal] = useState(false);
@@ -23,6 +27,10 @@ const Separaciones = () => {
   const [editingSeparacion, setEditingSeparacion] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [confirmDialog, setConfirmDialog] = useState(null);
+  const [completarVentaTarget, setCompletarVentaTarget] = useState(null);
+  const [generarReciboTarget, setGenerarReciboTarget] = useState(null);
+  const [reportarDanoTarget, setReportarDanoTarget] = useState(null);
+  const [notify, setNotify] = useState(null);
 
   useEffect(() => {
     fetchSeparaciones();
@@ -61,37 +69,87 @@ const Separaciones = () => {
     }
   };
 
-  const handleActivate = (separacion) => {
-    setConfirmDialog({
-      title: "¿Activar esta separación?",
-      message: "La separación volverá a estar activa en el sistema.",
-      confirmLabel: "Sí, activar",
-      isDestructive: false,
-      onConfirm: async () => {
+  // ── Completar Venta ──
+  const handleCompletarVentaSubmit = async (data) => {
+    let invoiceOk = true;
+    try {
+      // 1. Create the sale
+      const result = await VentaService.createVenta({
+        cliente: data.cliente,
+        notas: data.notas || "",
+        separacion: data.separacionId,
+        items_data: [{ unidad_producto: data.unidad_producto, precio: data.precio }],
+        estado_entrega: data.estado_entrega,
+      });
+      const venta = result.venta || result;
+
+      // 2. Mark separation as completed (PATCH — partial update)
+      try {
+        await patchSeparacion(data.separacionId, { estado: "completada" });
+      } catch (err) {
+        console.warn("Venta creada, pero error al actualizar separación:", err);
+      }
+
+      // 3. Create invoice (non-blocking)
+      if (venta?.id) {
         try {
-          await activateSeparacion(separacion.id);
-          fetchSeparaciones();
-        } catch (error) {
-          console.error("Error al activar separación:", error);
-        } finally {
-          setConfirmDialog(null);
+          await InvoiceService.createInvoice({
+            cliente: data.cliente,
+            venta: venta.id,
+            concepto: "venta",
+            serial_item: data.serial_item || `VENTA-${venta.id}`,
+            total_amount: data.precio,
+            payment_method: data.payment_method,
+            due_date: data.due_date,
+          });
+        } catch (invoiceErr) {
+          invoiceOk = false;
+          console.warn("Venta creada, pero error al generar factura:", invoiceErr?.response?.data || invoiceErr);
         }
-      },
-    });
+      }
+
+      setCompletarVentaTarget(null);
+      fetchSeparaciones();
+      setNotify(
+        invoiceOk
+          ? {
+              variant: "success",
+              title: "Venta completada",
+              message:
+                "La venta fue registrada, la separación se marcó como completada y la factura fue enviada al cliente.",
+            }
+          : {
+              variant: "warning",
+              title: "Venta registrada con advertencia",
+              message:
+                "La venta se completó correctamente, pero hubo un error al generar la factura. Puedes reintentar desde el listado de facturas.",
+            }
+      );
+    } catch (error) {
+      console.error("Error al completar venta:", error);
+      const msg = error.response?.data?.detail || "Error al completar la venta";
+      setNotify({
+        variant: "error",
+        title: "Error al completar la venta",
+        message: typeof msg === "object" ? JSON.stringify(msg) : msg,
+      });
+    }
   };
 
-  const handleDeactivate = (separacion) => {
+  // ── Cancelar ──
+  const handleCancelar = (separacion) => {
     setConfirmDialog({
-      title: "¿Desactivar esta separación?",
-      message: "La separación quedará inactiva en el sistema.",
-      confirmLabel: "Sí, desactivar",
+      title: "¿Cancelar esta separación?",
+      message: `Se cancelará la separación de ${separacion.cliente_nombre}. La unidad volverá a estar disponible para la venta.`,
+      confirmLabel: "Sí, cancelar",
       isDestructive: true,
       onConfirm: async () => {
         try {
-          await deactivateSeparacion(separacion.id);
+          await patchSeparacion(separacion.id, { estado: "cancelada" });
           fetchSeparaciones();
         } catch (error) {
-          console.error("Error al desactivar separación:", error);
+          console.error("Error al cancelar separación:", error);
+          alert("Error al cancelar la separación");
         } finally {
           setConfirmDialog(null);
         }
@@ -99,29 +157,134 @@ const Separaciones = () => {
     });
   };
 
-  const filteredSeparaciones = separaciones.filter(
+  // ── Generar Recibo ──
+  const handleGenerarReciboSubmit = async (invoiceData) => {
+    try {
+      await InvoiceService.createInvoice(invoiceData);
+      setGenerarReciboTarget(null);
+      alert("Recibo generado exitosamente");
+    } catch (error) {
+      console.error("Error al generar recibo:", error);
+      const data = error.response?.data;
+      const msg = data?.detail || data?.serial_item || "Error al generar el recibo";
+      alert(typeof msg === "object" ? JSON.stringify(msg) : msg);
+    }
+  };
+
+  const formatCOP = (value) => "$" + Number(value).toLocaleString("es-CO");
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
+  };
+
+  const ESTADO_LABELS = {
+    activa: "Activa",
+    expirada: "Expirada",
+    cancelada: "Cancelada",
+    completada: "Completada",
+  };
+
+  const activeSeparaciones = separaciones.filter(
     (s) =>
       s.active !== false &&
-      (s.cliente_nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.unidad_serial?.includes(searchTerm))
+      s.estado !== "completada" &&
+      s.unidad_estado_venta !== "vendido"
+  );
+
+  const filteredSeparaciones = activeSeparaciones.filter(
+    (s) =>
+      s.cliente_nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.unidad_serial?.includes(searchTerm)
   );
 
   const columns = [
-    { key: "cliente_nombre", label: "Cliente" },
-    { key: "unidad_serial", label: "Serial" },
+    {
+      key: "cliente_nombre",
+      label: "Cliente",
+      render: (row) => (
+        <span style={{ fontWeight: 600 }}>{row.cliente_nombre || "—"}</span>
+      ),
+    },
+    {
+      key: "unidad_serial",
+      label: "Serial",
+      render: (row) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "flex-start" }}>
+          <code
+            style={{
+              fontFamily: "Courier New, monospace",
+              backgroundColor: "var(--icon-bg)",
+              padding: "0.25rem 0.5rem",
+              borderRadius: "4px",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+            }}
+          >
+            {row.unidad_serial}
+          </code>
+          {row.unidad_estado_venta === "danado" && (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                background: "#fef2f2",
+                color: "#b91c1c",
+                border: "1px solid #fecaca",
+                borderRadius: "4px",
+                padding: "0.15rem 0.45rem",
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                lineHeight: 1,
+              }}
+              title="La unidad está en el flujo de reparación"
+            >
+              <AlertTriangle size={11} />
+              Unidad dañada
+            </span>
+          )}
+        </div>
+      ),
+    },
     {
       key: "valor_abono",
       label: "Valor Abono",
-      render: (row) => `$${parseFloat(row.valor_abono).toFixed(2)}`,
+      render: (row) => (
+        <span style={{ fontWeight: 600, color: "var(--primary-color)" }}>
+          {formatCOP(row.valor_abono)}
+        </span>
+      ),
     },
-    { key: "fecha_separacion", label: "Fecha Separación" },
-    { key: "fecha_maxima_compra", label: "Fecha Máxima" },
+    {
+      key: "saldo_pendiente",
+      label: "Saldo Pendiente",
+      render: (row) => {
+        const saldo = Number(row.unidad_precio || 0) - Number(row.valor_abono || 0);
+        return (
+          <span style={{ fontWeight: 600, color: saldo > 0 ? "#c2410c" : "var(--success-color)" }}>
+            {formatCOP(saldo > 0 ? saldo : 0)}
+          </span>
+        );
+      },
+    },
+    {
+      key: "fecha_separacion",
+      label: "Fecha Separación",
+      render: (row) => formatDate(row.fecha_separacion),
+    },
+    {
+      key: "fecha_maxima_compra",
+      label: "Fecha Máxima",
+      render: (row) => formatDate(row.fecha_maxima_compra),
+    },
     {
       key: "estado",
       label: "Estado",
       render: (row) => (
-        <span className={row.estado === "activa" ? "status-active" : "status-inactive"}>
-          {row.estado.charAt(0).toUpperCase() + row.estado.slice(1)}
+        <span className={`status-badge estado-sep-${row.estado}`}>
+          {ESTADO_LABELS[row.estado] || row.estado}
         </span>
       ),
     },
@@ -130,13 +293,18 @@ const Separaciones = () => {
   const stats = [
     {
       label: "Total Separaciones",
-      count: separaciones.length,
-      icon: <Package className="icon-card" />,
+      count: activeSeparaciones.length,
+      icon: <Lock className="icon-card" style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }} />,
     },
     {
       label: "Activas",
-      count: separaciones.filter((s) => s.estado === "activa").length,
-      icon: <FaRegCheckCircle className="icon-card" />,
+      count: activeSeparaciones.filter((s) => s.estado === "activa").length,
+      icon: <CheckCircle className="icon-card" style={{ stroke: "#065f46", color: "#065f46", backgroundColor: "#d1fae5" }} />,
+    },
+    {
+      label: "Expiradas",
+      count: activeSeparaciones.filter((s) => s.estado === "expirada").length,
+      icon: <Clock className="icon-card" style={{ stroke: "#c2410c", color: "#c2410c", backgroundColor: "#fff7ed" }} />,
     },
   ];
 
@@ -163,19 +331,48 @@ const Separaciones = () => {
           columns={columns}
           data={filteredSeparaciones}
           rowKey="id"
-          onEdit={handleOpenModal}
+          showEdit={false}
           customActions={[
             {
-              icon: FaCheck,
-              handler: handleActivate,
-              show: (row) => !row.active,
-              title: "Activar",
+              icon: ShoppingCart,
+              handler: (row) => setCompletarVentaTarget(row),
+              show: (row) =>
+                row.estado === "activa" && row.unidad_estado_venta !== "danado",
+              title: "Completar Venta",
             },
             {
-              icon: FaTimes,
-              handler: handleDeactivate,
-              show: (row) => row.active,
-              title: "Desactivar",
+              icon: Edit,
+              handler: (row) => handleOpenModal(row),
+              show: (row) =>
+                row.estado === "activa" && row.unidad_estado_venta !== "danado",
+              title: "Editar",
+            },
+            {
+              icon: FileText,
+              handler: (row) => setGenerarReciboTarget(row),
+              show: (row) => row.estado === "activa",
+              title: "Generar Recibo",
+            },
+            {
+              icon: AlertTriangle,
+              handler: (row) =>
+                setReportarDanoTarget({
+                  id: row.unidad_producto,
+                  serial: row.unidad_serial,
+                  producto_nombre: row.producto_nombre,
+                  cliente_nombre: row.cliente_nombre,
+                }),
+              show: (row) =>
+                row.estado === "activa" && row.unidad_estado_venta !== "danado",
+              title: "Reportar Dañado",
+              destructive: true,
+            },
+            {
+              icon: Ban,
+              handler: handleCancelar,
+              show: (row) => row.estado === "activa",
+              title: "Cancelar Separación",
+              destructive: true,
             },
           ]}
         />
@@ -188,6 +385,36 @@ const Separaciones = () => {
           />
         )}
 
+        {completarVentaTarget && (
+          <CompletarVentaModal
+            separacion={completarVentaTarget}
+            onClose={() => setCompletarVentaTarget(null)}
+            onSubmit={handleCompletarVentaSubmit}
+          />
+        )}
+
+        {generarReciboTarget && (
+          <GenerarReciboModal
+            separacion={generarReciboTarget}
+            onClose={() => setGenerarReciboTarget(null)}
+            onSubmit={handleGenerarReciboSubmit}
+          />
+        )}
+
+        {reportarDanoTarget && (
+          <ReportarDanoModal
+            unidad={{
+              id: reportarDanoTarget.id,
+              serial: reportarDanoTarget.serial,
+              producto_nombre: reportarDanoTarget.producto_nombre,
+            }}
+            origen="separacion"
+            clienteNombre={reportarDanoTarget.cliente_nombre}
+            onClose={() => setReportarDanoTarget(null)}
+            onSuccess={fetchSeparaciones}
+          />
+        )}
+
         {confirmDialog && (
           <ConfirmModal
             title={confirmDialog.title}
@@ -196,6 +423,15 @@ const Separaciones = () => {
             isDestructive={confirmDialog.isDestructive}
             onConfirm={confirmDialog.onConfirm}
             onCancel={() => setConfirmDialog(null)}
+          />
+        )}
+
+        {notify && (
+          <NotifyModal
+            variant={notify.variant}
+            title={notify.title}
+            message={notify.message}
+            onClose={() => setNotify(null)}
           />
         )}
       </div>

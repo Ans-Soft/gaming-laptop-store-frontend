@@ -1,0 +1,107 @@
+/* ReportarDanoModal — scoped with .rdm- prefix */
+
+.rdm-summary {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rdm-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rdm-summary-label {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rdm-summary-value {
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.rdm-mono {
+  font-family: "Courier New", monospace;
+}
+
+.rdm-origen-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rdm-origen-stock {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.rdm-origen-venta {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.rdm-origen-separacion {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.rdm-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.rdm-form-group label {
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.rdm-form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #0f172a;
+  resize: vertical;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rdm-form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color, #4f46e5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.rdm-info {
+  margin: 0;
+  padding: 10px 14px;
+  background: #fef9c3;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  color: #713f12;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}

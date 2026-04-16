@@ -23,6 +23,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
     notas: "",
     separacion: "",
     items_data: [],
+    estado_entrega: "por_entregar",
   });
 
   const [clienteMode, setClienteMode] = useState("existente"); // "existente" | "nuevo"
@@ -38,6 +39,12 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
   const [unidadSearch, setUnidadSearch] = useState("");
   const [showUnidadDropdown, setShowUnidadDropdown] = useState(false);
   const unidadSearchRef = useRef(null);
+
+  const today = new Date().toISOString().split("T")[0];
+  const [invoiceData, setInvoiceData] = useState({
+    payment_method: "",
+    due_date: today,
+  });
 
   const isEditMode = Boolean(venta);
 
@@ -98,6 +105,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
         notas: venta.notas || "",
         separacion: venta.separacion || "",
         items_data: venta.items || [],
+        estado_entrega: venta.estado_entrega || "por_entregar",
       });
     }
   }, [venta, isEditMode]);
@@ -226,7 +234,12 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
       }
     }
 
-    if (onSubmit) onSubmit({ ...formData, cliente: clienteId }, venta?.id);
+    if (!isEditMode) {
+      if (!invoiceData.payment_method) { alert("Debe seleccionar el método de pago"); return; }
+      if (!invoiceData.due_date) { alert("Debe seleccionar la fecha de la factura"); return; }
+    }
+
+    if (onSubmit) onSubmit({ ...formData, cliente: clienteId, estado_entrega: formData.estado_entrega }, venta?.id, isEditMode ? null : invoiceData);
   };
 
   const total = formData.items_data.reduce((sum, item) => sum + parseFloat(item.precio || 0), 0);
@@ -396,10 +409,31 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
           />
         </div>
 
+        {/* ── Estado de Entrega ── */}
+        <div className="vf-form-group vf-full">
+          <label>Estado de Entrega</label>
+          <div className="vf-client-toggle">
+            <button
+              type="button"
+              className={`vf-toggle-btn${formData.estado_entrega === "por_entregar" ? " active" : ""}`}
+              onClick={() => setFormData((prev) => ({ ...prev, estado_entrega: "por_entregar" }))}
+            >
+              Por Entregar
+            </button>
+            <button
+              type="button"
+              className={`vf-toggle-btn${formData.estado_entrega === "entregado" ? " active" : ""}`}
+              onClick={() => setFormData((prev) => ({ ...prev, estado_entrega: "entregado" }))}
+            >
+              Entregado
+            </button>
+          </div>
+        </div>
+
         {/* ── Items ── */}
         <div className="vf-items-section">
-          <h4>Agregar Items</h4>
-          <div className="vf-add-item">
+          <h4>{isEditMode ? "Items de la venta" : "Agregar Items"}</h4>
+          {!isEditMode && <div className="vf-add-item">
             <div className="vf-add-item-group vf-add-item-full">
               <label htmlFor="unidadSearch">Unidad</label>
               <div className="vf-search-wrapper" ref={unidadSearchRef}>
@@ -461,7 +495,7 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
                 <Plus size={18} /> Agregar
               </button>
             </div>
-          </div>
+          </div>}
 
           <div className="vf-items-list">
             {formData.items_data.length === 0 ? (
@@ -519,6 +553,37 @@ const VentaForm = ({ onClose, onSubmit, venta, preselectedUnidadId }) => {
             )}
           </div>
         </div>
+
+        {/* ── Datos de Factura (solo en modo crear) ── */}
+        {!isEditMode && (
+          <div className="vf-items-section" style={{ borderTop: "1px solid var(--fourth-color)", paddingTop: "1.25rem", marginTop: "0.5rem" }}>
+            <h4>Datos de Factura</h4>
+            <div className="vf-form-grid" style={{ marginBottom: 0 }}>
+              <div className="vf-form-group">
+                <label>Método de Pago <span className="required">*</span></label>
+                <select
+                  value={invoiceData.payment_method}
+                  onChange={(e) => setInvoiceData((p) => ({ ...p, payment_method: e.target.value }))}
+                >
+                  <option value="">Selecciona...</option>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              <div className="vf-form-group">
+                <label>Fecha de Factura <span className="required">*</span></label>
+                <input
+                  type="date"
+                  value={invoiceData.due_date}
+                  onChange={(e) => setInvoiceData((p) => ({ ...p, due_date: e.target.value }))}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ModalBase>
   );

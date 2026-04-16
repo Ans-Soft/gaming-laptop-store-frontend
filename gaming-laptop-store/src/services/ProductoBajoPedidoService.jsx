@@ -16,6 +16,11 @@ export async function updateProductoBajoPedido(id, productoData) {
   return response.data;
 }
 
+export async function patchProductoBajoPedido(id, productoData) {
+  const response = await api.patch(urls.productosBajoPedidoUpdate(id), productoData);
+  return response.data;
+}
+
 export async function activateProductoBajoPedido(id) {
   const response = await api.post(urls.productosBajoPedidoActivate(id));
   return response.data;

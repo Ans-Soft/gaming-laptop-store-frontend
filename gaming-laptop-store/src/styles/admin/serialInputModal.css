@@ -1,0 +1,105 @@
+.sim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sim-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--icon-bg, #f3f4f6);
+  border-radius: 8px;
+}
+
+.sim-info strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.sim-subtitle {
+  font-size: 0.8rem;
+  color: var(--subtitle-color, #6b7280);
+}
+
+.sim-description {
+  font-size: 0.88rem;
+  color: var(--subtitle-color, #6b7280);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.sim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sim-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-color, #1f2937);
+}
+
+.sim-field input {
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  font-size: 0.92rem;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.03em;
+  transition: border-color 0.15s ease;
+}
+
+.sim-field input:focus {
+  outline: none;
+  border-color: var(--primary-color, #2979c8);
+  box-shadow: 0 0 0 3px rgba(41, 121, 200, 0.12);
+}
+
+.sim-error {
+  font-size: 0.8rem;
+  color: #dc2626;
+}
+
+.sim-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.sim-btn-cancel,
+.sim-btn-submit {
+  padding: 0.55rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.sim-btn-cancel {
+  background: var(--icon-bg, #f3f4f6);
+  color: var(--text-color, #374151);
+}
+
+.sim-btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.sim-btn-submit {
+  background: var(--primary-color, #2979c8);
+  color: #fff;
+}
+
+.sim-btn-submit:hover {
+  opacity: 0.9;
+}
+
+.sim-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

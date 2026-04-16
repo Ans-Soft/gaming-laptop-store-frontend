@@ -3,27 +3,8 @@ import { Box, Edit } from "lucide-react";
 import ModalBase from "./ModalBase";
 import "../../styles/admin/unidadForm.css";
 
-// 'vendido' y 'separado' are auto-assigned by Venta/Separación — not manually selectable
-const ESTADO_VENTA_OPTIONS = [
-  { value: "sin_vender", label: "Sin Vender" },
-  { value: "por_encargo", label: "Por Encargo" },
-  { value: "entregado_garantia", label: "Entregado en Garantía" },
-  { value: "danado", label: "Dañado" },
-  { value: "solicitud_metodo_aliado", label: "Solicitud Método Aliado" },
-];
-
 const LOCKED_STATES = ["vendido", "separado"];
 const LOCKED_LABELS = { vendido: "Vendido", separado: "Separado" };
-
-const ESTADO_PRODUCTO_OPTIONS = [
-  { value: "en_stock", label: "En Stock" },
-  { value: "viajando", label: "Viajando" },
-  { value: "por_comprar", label: "Por Comprar" },
-  { value: "por_entregar", label: "Por Entregar" },
-  { value: "entregado", label: "Entregado" },
-  { value: "por_reparar", label: "Por Reparar" },
-  { value: "en_reparacion", label: "En Reparación" },
-];
 
 const CONDICION_OPTIONS = [
   { value: "nuevo", label: "Nuevo" },
@@ -35,8 +16,6 @@ const CONDICION_OPTIONS = [
 const EMPTY_FORM = {
   serial: "",
   condicion: "nuevo",
-  estado_venta: "sin_vender",
-  estado_producto: "en_stock",
   precio: "",
 };
 
@@ -78,8 +57,6 @@ const UnidadProductoForm = ({
       setFormData({
         serial: unidad.serial || "",
         condicion: unidad.condicion || "nuevo",
-        estado_venta: unidad.estado_venta || "sin_vender",
-        estado_producto: unidad.estado_producto || "en_stock",
         precio: unidad.precio !== null && unidad.precio !== undefined
           ? String(unidad.precio)
           : "",
@@ -102,12 +79,6 @@ const UnidadProductoForm = ({
     if (!formData.condicion) {
       newErrors.condicion = "Selecciona una condición.";
     }
-    if (!formData.estado_venta) {
-      newErrors.estado_venta = "Selecciona un estado de venta.";
-    }
-    if (!formData.estado_producto) {
-      newErrors.estado_producto = "Selecciona un estado del producto.";
-    }
     if (!formData.precio || isNaN(Number(formData.precio)) || Number(formData.precio) <= 0) {
       newErrors.precio = "El precio debe ser un número mayor a 0.";
     }
@@ -121,8 +92,6 @@ const UnidadProductoForm = ({
     const payload = {
       serial: formData.serial.trim(),
       condicion: formData.condicion,
-      estado_venta: formData.estado_venta,
-      estado_producto: formData.estado_producto,
       precio: Number(formData.precio),
     };
 
@@ -219,49 +188,6 @@ const UnidadProductoForm = ({
             required
           />
           {errors.precio && <span className="uf-field-error">{errors.precio}</span>}
-        </div>
-
-        {/* Estado venta */}
-        <div className="form-group">
-          <label htmlFor="uf-estado-venta">
-            Estado de Venta <span className="required">*</span>
-          </label>
-          <select
-            id="uf-estado-venta"
-            name="estado_venta"
-            value={formData.estado_venta}
-            onChange={handleChange}
-            disabled={isSubmitting || isLocked}
-            required
-          >
-            {isLocked
-              ? <option value={formData.estado_venta}>{LOCKED_LABELS[formData.estado_venta]}</option>
-              : ESTADO_VENTA_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))
-            }
-          </select>
-          {errors.estado_venta && <span className="uf-field-error">{errors.estado_venta}</span>}
-        </div>
-
-        {/* Estado producto */}
-        <div className="form-group">
-          <label htmlFor="uf-estado-producto">
-            Estado del Producto <span className="required">*</span>
-          </label>
-          <select
-            id="uf-estado-producto"
-            name="estado_producto"
-            value={formData.estado_producto}
-            onChange={handleChange}
-            disabled={isSubmitting || isLocked}
-            required
-          >
-            {ESTADO_PRODUCTO_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-          {errors.estado_producto && <span className="uf-field-error">{errors.estado_producto}</span>}
         </div>
 
       </div>

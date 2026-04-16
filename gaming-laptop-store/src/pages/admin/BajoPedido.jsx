@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import "../../styles/admin/dataTable.css";
 import "../../styles/global.css";
 import { Clock } from "lucide-react";
-import { FaCheck, FaTimes, FaPlus } from "react-icons/fa";
+import { FaCheck, FaTimes, FaPlus, FaUserPlus } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
 import TitleCrud from "../../components/admin/TitleCrud";
 import BajoPedidoForm from "../../components/admin/BajoPedidoForm";
 import BajoPedidoCreateUnitForm from "../../components/admin/BajoPedidoCreateUnitForm";
+import SolicitudBajoPedidoForm from "../../components/admin/SolicitudBajoPedidoForm";
 import ConfirmModal from "../../components/admin/ConfirmModal";
 
 import {
@@ -21,6 +22,7 @@ import {
 } from "../../services/BajoPedidoService";
 
 import { createUnidad } from "../../services/UnidadService";
+import { createProductoBajoPedido } from "../../services/ProductoBajoPedidoService";
 
 const formatCOP = (value) => "$" + Number(value).toLocaleString("es-CO");
 
@@ -42,6 +44,10 @@ const BajoPedido = () => {
   const [selectedBajoPedido, setSelectedBajoPedido] = useState(null);
   const [isCreatingUnit, setIsCreatingUnit] = useState(false);
   const [createUnitError, setCreateUnitError] = useState(null);
+
+  // Register solicitud de cliente state
+  const [showSolicitudModal, setShowSolicitudModal] = useState(false);
+  const [solicitudBajoPedido, setSolicitudBajoPedido] = useState(null);
 
   useEffect(() => {
     fetchBajoPedidos();
@@ -181,6 +187,24 @@ const BajoPedido = () => {
     }
   };
 
+  const handleSolicitudSubmit = async (payload) => {
+    try {
+      await createProductoBajoPedido(payload);
+      setShowSolicitudModal(false);
+      setSolicitudBajoPedido(null);
+      alert("Solicitud registrada exitosamente.");
+    } catch (error) {
+      console.error("Error al registrar solicitud:", error);
+      const msgs = error.response?.data;
+      if (msgs) {
+        const formatted = Object.entries(msgs).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`).join("; ");
+        alert(`Error: ${formatted}`);
+      } else {
+        alert("No se pudo registrar la solicitud.");
+      }
+    }
+  };
+
   const columns = [
     { key: "id", label: "ID" },
     {
@@ -303,6 +327,12 @@ const BajoPedido = () => {
           onEdit={handleOpenModal}
           customActions={[
             {
+              icon: FaUserPlus,
+              handler: (row) => { setSolicitudBajoPedido(row); setShowSolicitudModal(true); },
+              show: (row) => row.active && row.estado === "activo",
+              title: "Registrar solicitud de cliente",
+            },
+            {
               icon: FaPlus,
               handler: handleOpenCreateUnit,
               show: () => true,
@@ -340,6 +370,14 @@ const BajoPedido = () => {
             onSubmit={handleCreateUnitSubmit}
             isSubmitting={isCreatingUnit}
             submitError={createUnitError}
+          />
+        )}
+
+        {showSolicitudModal && solicitudBajoPedido && (
+          <SolicitudBajoPedidoForm
+            bajoPedido={solicitudBajoPedido}
+            onClose={() => { setShowSolicitudModal(false); setSolicitudBajoPedido(null); }}
+            onSubmit={handleSolicitudSubmit}
           />
         )}
 

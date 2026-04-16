@@ -1,0 +1,26 @@
+/* Danados page — scoped with .dan- prefix */
+
+.dan-origen-stock {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.dan-origen-venta {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.dan-origen-separacion {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dan-estado-por-reparar {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.dan-estado-en-reparacion {
+  background: #dbeafe;
+  color: #1e40af;
+}

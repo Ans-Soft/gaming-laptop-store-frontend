@@ -49,9 +49,9 @@
   --whatsapp-color:      #08D85C;
 
   /* ── TABLE CELL TYPOGRAPHY ── */
-  --cell-text-base:      0.875rem;
-  --cell-text-sm:        0.75rem;
-  --cell-text-badge:     0.72rem;
+  --cell-text-base:      0.95rem;
+  --cell-text-sm:        0.83rem;
+  --cell-text-badge:     0.8rem;
   --cell-weight-normal:  400;
   --cell-weight-strong:  600;
   --font-mono:           'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;

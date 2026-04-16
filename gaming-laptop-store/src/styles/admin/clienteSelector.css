@@ -1,0 +1,54 @@
+.cs-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.cs-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border: 1.5px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  background: var(--card-bg, #fff);
+  color: var(--subtitle-color, #6b7280);
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cs-toggle-btn.active {
+  background: var(--primary-color, #2979c8);
+  border-color: var(--primary-color, #2979c8);
+  color: #fff;
+}
+
+.cs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cs-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-color, #1f2937);
+}
+
+.cs-error {
+  font-size: 0.78rem;
+  color: #dc2626;
+}
+
+.cs-nuevo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.cs-full {
+  grid-column: 1 / -1;
+}

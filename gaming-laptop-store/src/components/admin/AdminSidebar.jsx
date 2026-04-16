@@ -2,10 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
-  Package,
-  Layers,
   ShoppingBag,
-  FileText,
   Users,
   Tag,
   Boxes,
@@ -18,10 +15,9 @@ import {
   ShoppingCart,
   Clock,
   Lock,
-  BarChart3,
-  DollarSign,
-  Award,
-  PieChart,
+  ShieldAlert,
+  Handshake,
+  Wrench,
 } from "lucide-react";
 import "../../styles/admin/adminSidebar.css";
 
@@ -40,9 +36,9 @@ const NAV_SECTIONS = [
         label: "Órdenes de Compra",
       },
       {
-        path: "/admin/unidades",
+        path: "/admin/inventario",
         icon: Box,
-        label: "Inventario (Unidades)",
+        label: "Inventario",
       },
       {
         path: "/admin/separaciones",
@@ -55,64 +51,24 @@ const NAV_SECTIONS = [
         label: "Ventas",
       },
       {
-        path: "/admin/bajo-pedido",
-        icon: Clock,
-        label: "Sourcing Bajo Pedido",
+        path: "/admin/garantias",
+        icon: ShieldAlert,
+        label: "Garantías",
       },
       {
-        path: "/admin/facturas",
-        icon: FileText,
-        label: "Facturas",
+        path: "/admin/danados",
+        icon: Wrench,
+        label: "Equipos Dañados",
       },
       {
-        path: "/admin/clientes",
-        icon: Users,
-        label: "Clientes",
+        path: "/admin/metodo-aliado",
+        icon: Handshake,
+        label: "Método Aliado",
       },
       {
         path: "/admin/productos-bajo-pedido",
         icon: Clock,
         label: "Productos Bajo Pedido",
-      },
-      {
-        path: "/admin/inventario",
-        icon: BarChart3,
-        label: "Inventario",
-      },
-    ],
-  },
-  {
-    label: "Reportes",
-    items: [
-      {
-        path: "/admin/reportes/ventas",
-        icon: FileText,
-        label: "Reporte de Ventas",
-      },
-      {
-        path: "/admin/reportes/separaciones",
-        icon: Clock,
-        label: "Reporte de Separaciones",
-      },
-      {
-        path: "/admin/reportes/margenes",
-        icon: DollarSign,
-        label: "Márgenes y Costos",
-      },
-      {
-        path: "/admin/reportes/mas-vendidos",
-        icon: Award,
-        label: "Más Vendidos",
-      },
-      {
-        path: "/admin/reportes/ordenes-compra",
-        icon: Package,
-        label: "Órdenes de Compra",
-      },
-      {
-        path: "/admin/reportes/rentabilidad",
-        icon: PieChart,
-        label: "Rentabilidad",
       },
     ],
   },
@@ -123,6 +79,16 @@ const NAV_SECTIONS = [
         path: "/admin/users",
         icon: Users,
         label: "Usuarios",
+      },
+      {
+        path: "/admin/clientes",
+        icon: Users,
+        label: "Clientes",
+      },
+      {
+        path: "/admin/bajo-pedido",
+        icon: Clock,
+        label: "Sourcing Bajo Pedido",
       },
       {
         path: "/admin/brands",
