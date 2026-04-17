@@ -63,6 +63,11 @@
   color: #92400e;
 }
 
+.rdm-origen-metodo_aliado {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 .rdm-form-group {
   display: flex;
   flex-direction: column;

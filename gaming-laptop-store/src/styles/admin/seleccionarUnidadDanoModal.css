@@ -1,0 +1,93 @@
+/* SeleccionarUnidadDanoModal — .sudm- prefix */
+
+.sudm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.sudm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  transition: border-color 0.15s ease;
+}
+
+.sudm-row:hover {
+  border-color: var(--primary-color);
+}
+
+.sudm-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.sudm-serial {
+  font-family: "Courier New", monospace;
+  background: var(--icon-bg);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sudm-nombre {
+  font-size: 0.88rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.sudm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.sudm-condicion-nuevo     { background: #dcfce7; color: #166534; }
+.sudm-condicion-open_box  { background: #dbeafe; color: #1e40af; }
+.sudm-condicion-refurbished { background: #f3e8ff; color: #6b21a8; }
+.sudm-condicion-usado     { background: #fef3c7; color: #92400e; }
+
+.sudm-btn-reportar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sudm-btn-reportar:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
+.sudm-empty {
+  color: var(--subtitle-color);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}

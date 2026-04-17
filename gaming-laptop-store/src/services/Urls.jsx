@@ -74,6 +74,12 @@ const urls = {
   reparacionesIniciar: (id) => `${BASE_URL}/products/unidades/${id}/iniciar-reparacion/`,
   reparacionesCompletar: (id) => `${BASE_URL}/products/unidades/${id}/completar-reparacion/`,
 
+  // MÉTODO ALIADO
+  metodoAliadoList: `${BASE_URL}/products/metodo-aliado/list/`,
+  metodoAliadoMarcarEnviada: (id) => `${BASE_URL}/products/unidades/${id}/metodo-aliado/marcar-enviada/`,
+  metodoAliadoMarcarEntregada: (id) => `${BASE_URL}/products/unidades/${id}/metodo-aliado/marcar-entregada/`,
+  metodoAliadoCancelar: (id) => `${BASE_URL}/products/unidades/${id}/metodo-aliado/cancelar/`,
+
   // DEPARTAMENTOS Y CIUDADES
   departamentosList: `${BASE_URL}/sales/departamentos/list/`,
   ciudadesList: `${BASE_URL}/sales/ciudades/list/`,
