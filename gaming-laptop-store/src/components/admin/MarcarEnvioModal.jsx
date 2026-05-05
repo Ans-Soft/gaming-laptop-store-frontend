@@ -18,6 +18,9 @@ export default function MarcarEnvioModal({ venta, onClose, onSubmit }) {
   const [tipo, setTipo] = useState(venta.tipo_entrega || "envio");
   const [transportadora, setTransportadora] = useState(venta.transportadora || "");
   const [numeroGuia, setNumeroGuia] = useState(venta.numero_guia || "");
+  const [marcarEntregado, setMarcarEntregado] = useState(
+    venta.estado_entrega === "entregado"
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -44,6 +47,12 @@ export default function MarcarEnvioModal({ venta, onClose, onSubmit }) {
       transportadora: tipo === "envio" ? transportadora.trim() : "",
       numero_guia: tipo === "envio" ? numeroGuia.trim() : "",
     };
+    // If the user explicitly marks the sale as delivered, propagate
+    // estado_entrega so the backend stamps fecha_entrega and cascades to
+    // unidades. Otherwise leave the field untouched.
+    if (marcarEntregado) {
+      payload.estado_entrega = "entregado";
+    }
 
     setSubmitting(true);
     try {
@@ -117,6 +126,34 @@ export default function MarcarEnvioModal({ venta, onClose, onSubmit }) {
                 </div>
               </>
             )}
+
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.55rem",
+                padding: "0.7rem 0.85rem",
+                background: marcarEntregado ? "#dcfce7" : "#f8fafc",
+                border: `1.5px solid ${marcarEntregado ? "#16a34a" : "var(--fourth-color, #e5e7eb)"}`,
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "0.88rem",
+                fontWeight: 600,
+                color: marcarEntregado ? "#166534" : "var(--subtitle-color, #475569)",
+                transition: "background 100ms ease, border-color 100ms ease",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={marcarEntregado}
+                onChange={(e) => setMarcarEntregado(e.target.checked)}
+                style={{ width: 16, height: 16, cursor: "pointer" }}
+              />
+              Marcar venta como entregada
+              <span style={{ fontWeight: 400, fontSize: "0.78rem", color: "#64748b", marginLeft: "auto" }}>
+                Cambia estado_entrega a "Entregado"
+              </span>
+            </label>
 
             {error && <div className="cm-banner cm-banner-error">{error}</div>}
           </div>

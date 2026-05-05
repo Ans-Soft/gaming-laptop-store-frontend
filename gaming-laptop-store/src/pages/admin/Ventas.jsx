@@ -593,11 +593,33 @@ const Ventas = () => {
               }}
             >
               <Store size={11} />
-              Entregado en oficina
+              {row.estado_entrega === "entregado" ? "Entregado en oficina" : "Recogida en oficina"}
             </span>
           );
         }
+        // tipo_entrega='envio' (default) without a guide number yet — show
+        // "Pendiente" while estado_entrega is por_entregar so the user knows
+        // a tracking still needs to be registered.
         if (!row.numero_guia) {
+          if (row.estado_entrega === "por_entregar") {
+            return (
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.3rem",
+                  background: "#fef3c7",
+                  color: "#92400e",
+                  padding: "0.2rem 0.55rem",
+                  borderRadius: "999px",
+                  fontSize: "0.78rem",
+                  fontWeight: 600,
+                }}
+              >
+                Pendiente
+              </span>
+            );
+          }
           return <span style={{ color: "#9ca3af", fontSize: "0.85rem" }}>Sin envío</span>;
         }
         return (
