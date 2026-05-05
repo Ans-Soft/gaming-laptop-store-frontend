@@ -1,0 +1,43 @@
+.ms-root {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: #ffffff;
+  border: 0.5px solid var(--db-border);
+  border-radius: var(--db-radius-md);
+  padding: 3px 4px;
+  height: 32px;
+}
+
+.ms-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 5px;
+  color: var(--db-text-secondary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.ms-btn:hover:not(:disabled) {
+  background: var(--db-bg-card);
+  color: var(--db-chart-primary);
+}
+
+.ms-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ms-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--db-text-primary);
+  min-width: 120px;
+  text-align: center;
+  user-select: none;
+}

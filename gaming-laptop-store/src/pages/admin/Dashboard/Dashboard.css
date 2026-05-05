@@ -1,0 +1,98 @@
+/* Local design tokens — aligned with the project's blue corporate palette
+   defined in src/styles/global.css. We prefix everything with --db- so the
+   dashboard remains self-contained, but the values resolve to the global
+   tokens (--card-bg, --text-color, --primary-color, etc.). */
+.db-root {
+  --db-bg-card:        var(--card-bg, #F0F7FF);
+  --db-bg-card-hover:  var(--card-bg-elevated, #E8F1FA);
+  --db-bg-page:        var(--bg-color, #ffffff);
+  --db-border:         rgba(10, 22, 40, 0.08);
+  --db-text-primary:   var(--text-color, #0A1628);
+  --db-text-secondary: var(--subtitle-color, #4A6580);
+  --db-text-tertiary:  #8AA1B8;
+  --db-success:        var(--success-color, #16A34A);
+  --db-danger:         var(--error-color, #DC2626);
+
+  /* Brand-aligned chart palette */
+  --db-chart-primary:    var(--primary-color, #2979C8);
+  --db-chart-primary-2:  var(--primary-bright, #1AABF5);
+  --db-chart-primary-3:  var(--third-color, #7ED4F7);
+  --db-chart-primary-4:  var(--fourth-color, #D4E5F2);
+
+  --db-radius-md: 10px;
+  --db-radius-lg: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: var(--db-bg-page);
+  color: var(--db-text-primary);
+}
+
+.db-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.db-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.db-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--db-text-primary);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.db-period-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--db-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.db-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.db-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.db-grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 1024px) {
+  .db-grid--3,
+  .db-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .db-grid--3,
+  .db-grid--2 {
+    grid-template-columns: 1fr;
+  }
+  .db-root {
+    padding: 14px;
+  }
+  .db-title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}

@@ -25,6 +25,7 @@ const Clientes = () => {
   const [editingCliente, setEditingCliente] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [confirmDialog, setConfirmDialog] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchClientes();
@@ -50,6 +51,7 @@ const Clientes = () => {
   };
 
   const handleSubmitCliente = async (data, id) => {
+    setIsSubmitting(true);
     try {
       if (id) {
         await updateCliente(id, data);
@@ -60,6 +62,12 @@ const Clientes = () => {
       fetchClientes();
     } catch (error) {
       console.error("Error al guardar cliente:", error);
+      const msg = error.response?.data
+        ? Object.values(error.response.data).flat().join(" ")
+        : "Error al guardar el cliente. Verifica los datos e intenta de nuevo.";
+      alert(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -186,6 +194,7 @@ const Clientes = () => {
             onClose={handleCloseModal}
             onSubmit={handleSubmitCliente}
             cliente={editingCliente}
+            isSubmitting={isSubmitting}
           />
         )}
 

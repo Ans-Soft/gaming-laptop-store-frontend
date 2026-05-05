@@ -1,0 +1,133 @@
+.sd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: #ffffff;
+  border: 0.5px solid var(--db-border);
+  border-radius: var(--db-radius-md);
+}
+
+.sd-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--db-text-tertiary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sd-body {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.sd-chart-wrap {
+  position: relative;
+  width: 170px;
+  height: 170px;
+}
+
+.sd-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  gap: 2px;
+}
+
+.sd-center-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--db-text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.sd-center-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--db-text-secondary);
+  text-transform: lowercase;
+}
+
+.sd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+}
+
+.sd-empty-text {
+  color: var(--db-text-tertiary);
+  font-size: 13px;
+}
+
+.sd-empty-text--danger { color: var(--db-danger); }
+
+.sd-retry {
+  background: transparent;
+  border: 0.5px solid var(--db-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sd-skeleton {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #DDE9F5 25%, #ECF3FB 50%, #DDE9F5 75%);
+  background-size: 200% 100%;
+  animation: sd-shimmer 1.4s infinite;
+}
+
+@keyframes sd-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sd-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-legend-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.sd-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.sd-legend-label { color: var(--db-text-secondary); }
+
+.sd-legend-value {
+  font-weight: 700;
+  color: var(--db-text-primary);
+}
+
+@media (max-width: 720px) {
+  .sd-body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}

@@ -1,0 +1,127 @@
+.st-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  background: #ffffff;
+  border: 0.5px solid var(--db-border);
+  border-radius: var(--db-radius-md);
+}
+
+.st-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.st-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--db-text-tertiary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.st-legend {
+  display: flex;
+  gap: 16px;
+}
+
+.st-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--db-text-secondary);
+}
+
+.st-line {
+  width: 18px;
+  height: 0;
+  border-top-width: 2px;
+  border-top-style: solid;
+}
+
+.st-line--solid  { border-color: #2979C8; }
+.st-line--dashed { border-top-style: dashed; border-color: #8AA1B8; }
+
+.st-body {
+  width: 100%;
+  height: 220px;
+}
+
+.st-skeleton {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ECF3FB 25%, #F5FAFE 50%, #ECF3FB 75%);
+  background-size: 200% 100%;
+  animation: st-shimmer 1.4s infinite;
+}
+
+@keyframes st-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.st-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 10px;
+}
+
+.st-empty-text { color: var(--db-text-tertiary); font-size: 13px; }
+.st-empty-text--danger { color: var(--db-danger); }
+
+.st-retry {
+  background: transparent;
+  border: 0.5px solid var(--db-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.st-tooltip {
+  background: #fff;
+  border: 0.5px solid var(--db-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: var(--shadow-md, 0 4px 16px rgba(10,22,40,0.10));
+  font-size: 12px;
+}
+
+.st-tooltip-day {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--db-text-primary);
+}
+
+.st-tooltip-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 6px;
+}
+
+.st-tooltip-dot {
+  width: 12px;
+  height: 0;
+  border-top-width: 2px;
+  border-top-style: solid;
+}
+
+.st-tooltip-dot--dashed { border-top-style: dashed; }
+
+.st-tooltip-label { color: var(--db-text-secondary); }
+
+.st-tooltip-value {
+  font-weight: 700;
+  color: var(--db-text-primary);
+  text-align: right;
+}

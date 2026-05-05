@@ -1,4 +1,5 @@
 export const DATE_RANGE_PRESETS = [
+  { value: "todos", label: "Todos los meses" },
   { value: "mes_actual", label: "Mes actual" },
   { value: "mes_anterior", label: "Mes anterior" },
   { value: "ultimos_7", label: "Últimos 7 días" },
@@ -20,6 +21,10 @@ export const computeDateRange = (preset) => {
   today.setHours(0, 0, 0, 0);
 
   if (preset === "personalizado") return null;
+
+  if (preset === "todos") {
+    return { from: "", to: "" };
+  }
 
   if (preset === "mes_actual") {
     const from = new Date(today.getFullYear(), today.getMonth(), 1);

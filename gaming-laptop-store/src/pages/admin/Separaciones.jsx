@@ -33,7 +33,8 @@ import * as VentaService from "../../services/VentaService";
 import * as InvoiceService from "../../services/InvoiceService";
 import "../../styles/admin/ventasPage.css";
 import "../../styles/admin/filtersBar.css";
-import { DATE_RANGE_PRESETS, computeDateRange, matchesDateRange } from "../../utils/dateRangeFilter";
+import { matchesDateRange } from "../../utils/dateRangeFilter";
+import { useDateRange } from "../../hooks/useDateRange";
 
 const CONDICION_LABELS = {
   nuevo: "Nuevo",
@@ -52,18 +53,28 @@ const Separaciones = () => {
   const [reportarDanoTarget, setReportarDanoTarget] = useState(null);
   const [notify, setNotify] = useState(null);
 
+  // Date range comes from the global header selector. Active separations are
+  // long-lived state — when the user lands on this page we default to "todos"
+  // so they see everything still pending. They can still filter to a specific
+  // month from the global selector.
+  const { from: dateFrom, to: dateTo, setPreset } = useDateRange();
+  const didMountRef = React.useRef(false);
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCondicion, setFilterCondicion] = useState("");
   const [filterValorMin, setFilterValorMin] = useState("");
   const [filterValorMax, setFilterValorMax] = useState("");
-  const [datePreset, setDatePreset] = useState("mes_actual");
-  const [dateFrom, setDateFrom] = useState(() => computeDateRange("mes_actual").from);
-  const [dateTo, setDateTo] = useState(() => computeDateRange("mes_actual").to);
 
   useEffect(() => {
     fetchSeparaciones();
   }, []);
+
+  useEffect(() => {
+    if (didMountRef.current) return;
+    didMountRef.current = true;
+    setPreset("todos");
+  }, [setPreset]);
 
   const fetchSeparaciones = async () => {
     try {
@@ -98,35 +109,18 @@ const Separaciones = () => {
     }
   };
 
-  // ── Date preset ──────────────────────────────────────────────────────────
-  const handleDatePresetChange = (preset) => {
-    setDatePreset(preset);
-    if (preset !== "personalizado") {
-      const range = computeDateRange(preset);
-      if (range) {
-        setDateFrom(range.from);
-        setDateTo(range.to);
-      }
-    }
-  };
-
   // ── Filtering ────────────────────────────────────────────────────────────
   const isFiltersActive =
     searchTerm.trim() ||
     filterCondicion ||
     filterValorMin ||
-    filterValorMax ||
-    datePreset !== "mes_actual";
+    filterValorMax;
 
   const clearFilters = () => {
     setSearchTerm("");
     setFilterCondicion("");
     setFilterValorMin("");
     setFilterValorMax("");
-    setDatePreset("mes_actual");
-    const range = computeDateRange("mes_actual");
-    setDateFrom(range.from);
-    setDateTo(range.to);
   };
 
   const activeSeparaciones = separaciones.filter(
@@ -412,8 +406,6 @@ const Separaciones = () => {
     },
   ];
 
-  const isCustomPreset = datePreset !== "personalizado";
-
   return (
     <section>
       <div className="table-container">
@@ -477,35 +469,6 @@ const Separaciones = () => {
             placeholder="Precio máx."
             value={filterValorMax}
             onChange={(e) => setFilterValorMax(e.target.value)}
-          />
-
-          <div className="fb-divider" />
-
-          {/* Date range preset */}
-          <select
-            className="fb-select"
-            value={datePreset}
-            onChange={(e) => handleDatePresetChange(e.target.value)}
-          >
-            {DATE_RANGE_PRESETS.map((p) => (
-              <option key={p.value} value={p.value}>{p.label}</option>
-            ))}
-          </select>
-
-          {/* Custom date pickers */}
-          <input
-            type="date"
-            className="fb-input"
-            value={dateFrom}
-            disabled={isCustomPreset}
-            onChange={(e) => setDateFrom(e.target.value)}
-          />
-          <input
-            type="date"
-            className="fb-input"
-            value={dateTo}
-            disabled={isCustomPreset}
-            onChange={(e) => setDateTo(e.target.value)}
           />
 
           {isFiltersActive && (

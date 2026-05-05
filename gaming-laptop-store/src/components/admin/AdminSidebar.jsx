@@ -1,7 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
-  LayoutDashboard,
   ShoppingBag,
   Users,
   Tag,
@@ -18,6 +17,7 @@ import {
   ShieldAlert,
   Handshake,
   Wrench,
+  LayoutDashboard,
 } from "lucide-react";
 import "../../styles/admin/adminSidebar.css";
 
@@ -25,6 +25,11 @@ const NAV_SECTIONS = [
   {
     label: "Gestión",
     items: [
+      {
+        path: "/admin/dashboard",
+        icon: LayoutDashboard,
+        label: "Dashboard",
+      },
       {
         path: "/admin/productos",
         icon: ShoppingBag,
@@ -125,16 +130,6 @@ const AdminSidebar = ({ isCollapsed, onToggle, onLogout }) => {
       >
         {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
       </button>
-
-      <NavLink
-        to="/admin"
-        end
-        className={({ isActive }) => `as-item ${isActive ? "as-item--active" : ""}`}
-        title={isCollapsed ? "Panel Principal" : undefined}
-      >
-        <LayoutDashboard size={20} />
-        {!isCollapsed && <span className="as-label">Panel Principal</span>}
-      </NavLink>
 
       {NAV_SECTIONS.map((section, sectionIdx) => (
         <div key={sectionIdx} className="as-section">

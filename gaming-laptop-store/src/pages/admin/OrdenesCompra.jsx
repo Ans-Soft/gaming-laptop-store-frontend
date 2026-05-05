@@ -19,6 +19,8 @@ import {
   patchOrdenCompra,
   deactivateOrdenCompra,
 } from "../../services/OrdenCompraService";
+import { matchesDateRange } from "../../utils/dateRangeFilter";
+import { useDateRange } from "../../hooks/useDateRange";
 
 const ESTADO_LOGISTICO_OPTIONS = [
   { value: "viajando", label: "Viajando" },
@@ -42,6 +44,9 @@ const OrdenesCompra = () => {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [serialModalOrden, setSerialModalOrden] = useState(null);
   const [serialSubmitting, setSerialSubmitting] = useState(false);
+
+  // Date range comes from the global header selector (filters by fecha_compra)
+  const { from: dateFrom, to: dateTo } = useDateRange();
 
   // Filters
   const [filterProveedor, setFilterProveedor] = useState("");
@@ -174,8 +179,19 @@ const OrdenesCompra = () => {
     const matchProveedor = !filterProveedor || orden.proveedor_nombre === filterProveedor;
     const matchCondicion = !filterCondicion || orden.condicion === filterCondicion;
     const matchEstado = !filterEstado || orden.estado_logistico === filterEstado;
-    return matchSearch && matchProveedor && matchCondicion && matchEstado;
+    const matchDate = matchesDateRange(orden.fecha_compra, dateFrom, dateTo);
+    return matchSearch && matchProveedor && matchCondicion && matchEstado && matchDate;
   });
+
+  const formatFechaCompra = (value) => {
+    if (!value) return "—";
+    const d = new Date(value.length <= 10 ? value + "T00:00:00" : value);
+    return d.toLocaleDateString("es-CO", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const columns = [
     {
@@ -239,8 +255,15 @@ const OrdenesCompra = () => {
       key: "numero_tracking",
       label: "Tracking",
       render: (row) => row.numero_tracking
-        ? <span className="cell-code">{row.numero_tracking}</span>
+        ? <span className="cell-primary">{row.numero_tracking}</span>
         : <span className="cell-empty">—</span>,
+    },
+    {
+      key: "fecha_compra",
+      label: "Fecha Compra",
+      render: (row) => (
+        <span className="cell-primary">{formatFechaCompra(row.fecha_compra)}</span>
+      ),
     },
     {
       key: "costo_total",

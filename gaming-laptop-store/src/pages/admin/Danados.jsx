@@ -22,7 +22,8 @@ import DataTable from "../../components/admin/DataTable";
 import ConfirmModal from "../../components/admin/ConfirmModal";
 import NotifyModal from "../../components/admin/NotifyModal";
 import * as ReparacionService from "../../services/ReparacionService";
-import { DATE_RANGE_PRESETS, computeDateRange, matchesDateRange } from "../../utils/dateRangeFilter";
+import { matchesDateRange } from "../../utils/dateRangeFilter";
+import { useDateRange } from "../../hooks/useDateRange";
 
 const ORIGEN_LABELS = {
   stock: "Stock",
@@ -44,6 +45,13 @@ const Danados = () => {
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [notify, setNotify] = useState(null);
 
+  // Date range comes from the global header selector. Damaged units are
+  // long-lived state — default to "todos" on mount so all damaged equipment is
+  // visible regardless of when it was reported. The user can still narrow to a
+  // specific month via the global selector.
+  const { from: dateFrom, to: dateTo, setPreset } = useDateRange();
+  const didMountRef = React.useRef(false);
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCondicion, setFilterCondicion] = useState("");
@@ -51,13 +59,16 @@ const Danados = () => {
   const [filterEstado, setFilterEstado] = useState("");
   const [filterValorMin, setFilterValorMin] = useState("");
   const [filterValorMax, setFilterValorMax] = useState("");
-  const [datePreset, setDatePreset] = useState("mes_actual");
-  const [dateFrom, setDateFrom] = useState(() => computeDateRange("mes_actual").from);
-  const [dateTo, setDateTo] = useState(() => computeDateRange("mes_actual").to);
 
   useEffect(() => {
     loadReparaciones();
   }, []);
+
+  useEffect(() => {
+    if (didMountRef.current) return;
+    didMountRef.current = true;
+    setPreset("todos");
+  }, [setPreset]);
 
   const loadReparaciones = async () => {
     setLoading(true);
@@ -149,18 +160,6 @@ const Danados = () => {
     });
   };
 
-  // ── Date preset ──────────────────────────────────────────────────────────
-  const handleDatePresetChange = (preset) => {
-    setDatePreset(preset);
-    if (preset !== "personalizado") {
-      const range = computeDateRange(preset);
-      if (range) {
-        setDateFrom(range.from);
-        setDateTo(range.to);
-      }
-    }
-  };
-
   // ── Filtering ────────────────────────────────────────────────────────────
   const isFiltersActive =
     searchTerm.trim() ||
@@ -168,8 +167,7 @@ const Danados = () => {
     filterOrigen ||
     filterEstado ||
     filterValorMin ||
-    filterValorMax ||
-    datePreset !== "mes_actual";
+    filterValorMax;
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -178,10 +176,6 @@ const Danados = () => {
     setFilterEstado("");
     setFilterValorMin("");
     setFilterValorMax("");
-    setDatePreset("mes_actual");
-    const range = computeDateRange("mes_actual");
-    setDateFrom(range.from);
-    setDateTo(range.to);
   };
 
   const filtered = reparaciones.filter((r) => {
@@ -205,8 +199,6 @@ const Danados = () => {
 
     return true;
   });
-
-  const isCustomPreset = datePreset !== "personalizado";
 
   // ── Stats (always from full reparaciones) ────────────────────────────────
   const now = new Date();
@@ -476,33 +468,6 @@ const Danados = () => {
             placeholder="Precio máx."
             value={filterValorMax}
             onChange={(e) => setFilterValorMax(e.target.value)}
-          />
-
-          <div className="fb-divider" />
-
-          <select
-            className="fb-select"
-            value={datePreset}
-            onChange={(e) => handleDatePresetChange(e.target.value)}
-          >
-            {DATE_RANGE_PRESETS.map((p) => (
-              <option key={p.value} value={p.value}>{p.label}</option>
-            ))}
-          </select>
-
-          <input
-            type="date"
-            className="fb-input"
-            value={dateFrom}
-            disabled={isCustomPreset}
-            onChange={(e) => setDateFrom(e.target.value)}
-          />
-          <input
-            type="date"
-            className="fb-input"
-            value={dateTo}
-            disabled={isCustomPreset}
-            onChange={(e) => setDateTo(e.target.value)}
           />
 
           {isFiltersActive && (
