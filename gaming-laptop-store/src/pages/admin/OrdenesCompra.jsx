@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from "react";
 import "./../../styles/admin/dataTable.css";
 import "./../../styles/global.css";
-import { ShoppingCart, Package, Truck, Building2, Store, SlidersHorizontal, AlertTriangle } from "lucide-react";
+import {
+  ShoppingCart,
+  Package,
+  Truck,
+  Building2,
+  Store,
+  SlidersHorizontal,
+  AlertTriangle,
+  List,
+  FileSpreadsheet,
+} from "lucide-react";
+import CargarImportaciones from "./CargarImportaciones";
+import "../../styles/admin/cargueMasivo.css";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
@@ -19,6 +31,8 @@ import {
   patchOrdenCompra,
   deactivateOrdenCompra,
 } from "../../services/OrdenCompraService";
+import { matchesDateRange } from "../../utils/dateRangeFilter";
+import { useDateRange } from "../../hooks/useDateRange";
 
 const ESTADO_LOGISTICO_OPTIONS = [
   { value: "viajando", label: "Viajando" },
@@ -43,15 +57,28 @@ const OrdenesCompra = () => {
   const [serialModalOrden, setSerialModalOrden] = useState(null);
   const [serialSubmitting, setSerialSubmitting] = useState(false);
 
+  // Date range comes from the global header selector (filters by fecha_compra)
+  const { from: dateFrom, to: dateTo } = useDateRange();
+
   // Filters
   const [filterProveedor, setFilterProveedor] = useState("");
   const [filterCondicion, setFilterCondicion] = useState("");
   const [filterEstado, setFilterEstado] = useState("");
+  const [activeTab, setActiveTab] = useState("listado"); // "listado" | "importaciones"
 
   useEffect(() => {
     fetchOrdenes();
     fetchTRM();
   }, []);
+
+  // Refetch when returning to the Listado tab so any recent change made on
+  // another tab (e.g. cargue de importaciones) is reflected immediately.
+  useEffect(() => {
+    if (activeTab === "listado") {
+      fetchOrdenes();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   const fetchTRM = async () => {
     try {
@@ -174,8 +201,19 @@ const OrdenesCompra = () => {
     const matchProveedor = !filterProveedor || orden.proveedor_nombre === filterProveedor;
     const matchCondicion = !filterCondicion || orden.condicion === filterCondicion;
     const matchEstado = !filterEstado || orden.estado_logistico === filterEstado;
-    return matchSearch && matchProveedor && matchCondicion && matchEstado;
+    const matchDate = matchesDateRange(orden.fecha_compra, dateFrom, dateTo);
+    return matchSearch && matchProveedor && matchCondicion && matchEstado && matchDate;
   });
+
+  const formatFechaCompra = (value) => {
+    if (!value) return "—";
+    const d = new Date(value.length <= 10 ? value + "T00:00:00" : value);
+    return d.toLocaleDateString("es-CO", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const columns = [
     {
@@ -239,27 +277,35 @@ const OrdenesCompra = () => {
       key: "numero_tracking",
       label: "Tracking",
       render: (row) => row.numero_tracking
-        ? <span className="cell-code">{row.numero_tracking}</span>
+        ? <span className="cell-primary">{row.numero_tracking}</span>
         : <span className="cell-empty">—</span>,
+    },
+    {
+      key: "fecha_compra",
+      label: "Fecha Compra",
+      render: (row) => (
+        <span className="cell-primary">{formatFechaCompra(row.fecha_compra)}</span>
+      ),
     },
     {
       key: "costo_total",
       label: "Costo Total",
       render: (row) => {
-        const compraUSD = parseFloat(row.costo_compra || 0);
-        const extraUSD = parseFloat(row.costo_importacion || 0) + parseFloat(row.impuesto_importacion || 0);
-        const totalUSD = compraUSD + extraUSD;
-        const totalCOP = trm ? totalUSD * trm : null;
+        // All cost legs are in COP — sum directly.
+        const compra = parseFloat(row.costo_compra || 0);
+        const impuesto = parseFloat(row.impuesto_importacion || 0);
+        const importacion = parseFloat(row.costo_importacion || 0);
+        const total = compra + impuesto + importacion;
+
         return (
           <div>
             <div className="cell-primary--strong">
-              {totalCOP ? `$${totalCOP.toLocaleString("es-CO", { maximumFractionDigits: 0 })}` : "—"}
+              ${total.toLocaleString("es-CO", { maximumFractionDigits: 0 })}
             </div>
             <div className="cell-secondary">
-              {extraUSD > 0
-                ? `$${compraUSD.toFixed(2)} + $${extraUSD.toFixed(2)} USD`
-                : `($${totalUSD.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)`
-              }
+              {importacion > 0
+                ? `$${compra.toLocaleString("es-CO", { maximumFractionDigits: 0 })} compra + $${impuesto.toLocaleString("es-CO", { maximumFractionDigits: 0 })} imp + $${importacion.toLocaleString("es-CO", { maximumFractionDigits: 0 })} import`
+                : `$${compra.toLocaleString("es-CO", { maximumFractionDigits: 0 })} compra + $${impuesto.toLocaleString("es-CO", { maximumFractionDigits: 0 })} imp`}
             </div>
           </div>
         );
@@ -340,6 +386,28 @@ const OrdenesCompra = () => {
           description="Administra las órdenes de compra y canjes de clientes"
         />
 
+        {/* Tabs: listado clásico vs cargue de importaciones desde Excel */}
+        <div className="cm-tabs" style={{ marginTop: "0.25rem", marginBottom: "1.25rem" }}>
+          <button
+            className={`cm-tab ${activeTab === "listado" ? "active" : ""}`}
+            onClick={() => setActiveTab("listado")}
+          >
+            <List size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Listado
+          </button>
+          <button
+            className={`cm-tab ${activeTab === "importaciones" ? "active" : ""}`}
+            onClick={() => setActiveTab("importaciones")}
+          >
+            <FileSpreadsheet size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Cargar importaciones
+          </button>
+        </div>
+
+        {activeTab === "importaciones" ? (
+          <CargarImportaciones onCommitted={fetchOrdenes} />
+        ) : (
+        <>
         <SearchBox
           onRegisterClick={() => handleOpenModal()}
           registerLabel="Registrar Orden de Compra"
@@ -444,6 +512,8 @@ const OrdenesCompra = () => {
             onConfirm={handleConfirmDelete}
             onCancel={() => setConfirmDelete(null)}
           />
+        )}
+        </>
         )}
       </div>
     </section>

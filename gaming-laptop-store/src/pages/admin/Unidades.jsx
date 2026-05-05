@@ -255,7 +255,10 @@ const Unidades = () => {
       await updateUnidad(data.unidadId, {
         estado_venta: "solicitud_metodo_aliado",
         cliente_metodo_aliado: data.cliente,
-        ciudad_envio_metodo_aliado: data.ciudad_envio,
+        ciudad_envio_metodo_aliado: data.ciudad_envio_metodo_aliado,
+        transportadora_metodo_aliado: data.transportadora_metodo_aliado || "",
+        numero_guia_metodo_aliado: data.numero_guia_metodo_aliado || "",
+        notas_metodo_aliado: data.notas_metodo_aliado || "",
       });
       setMetodoAliadoTargetUnidad(null);
       fetchUnidades();

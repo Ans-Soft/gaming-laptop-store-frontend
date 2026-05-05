@@ -7,34 +7,68 @@ import {
   Package,
   ShoppingCart,
   Lock,
+  Calendar,
+  SlidersHorizontal,
+  Search,
 } from "lucide-react";
 import "./../../styles/admin/dataTable.css";
 import "./../../styles/global.css";
 import "./../../styles/admin/danados.css";
+import "./../../styles/admin/ventasPage.css";
+import "../../styles/admin/filtersBar.css";
 import TitleCrud from "../../components/admin/TitleCrud";
-import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
 import DataTable from "../../components/admin/DataTable";
 import ConfirmModal from "../../components/admin/ConfirmModal";
 import NotifyModal from "../../components/admin/NotifyModal";
 import * as ReparacionService from "../../services/ReparacionService";
+import { matchesDateRange } from "../../utils/dateRangeFilter";
+import { useDateRange } from "../../hooks/useDateRange";
 
 const ORIGEN_LABELS = {
   stock: "Stock",
   venta: "Venta",
   separacion: "Separación",
+  metodo_aliado: "Método Aliado",
+};
+
+const CONDICION_LABELS = {
+  nuevo: "Nuevo",
+  open_box: "Open Box",
+  refurbished: "Refurbished",
+  usado: "Usado",
 };
 
 const Danados = () => {
   const [reparaciones, setReparaciones] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [notify, setNotify] = useState(null);
+
+  // Date range comes from the global header selector. Damaged units are
+  // long-lived state — default to "todos" on mount so all damaged equipment is
+  // visible regardless of when it was reported. The user can still narrow to a
+  // specific month via the global selector.
+  const { from: dateFrom, to: dateTo, setPreset } = useDateRange();
+  const didMountRef = React.useRef(false);
+
+  // Filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCondicion, setFilterCondicion] = useState("");
+  const [filterOrigen, setFilterOrigen] = useState("");
+  const [filterEstado, setFilterEstado] = useState("");
+  const [filterValorMin, setFilterValorMin] = useState("");
+  const [filterValorMax, setFilterValorMax] = useState("");
 
   useEffect(() => {
     loadReparaciones();
   }, []);
+
+  useEffect(() => {
+    if (didMountRef.current) return;
+    didMountRef.current = true;
+    setPreset("todos");
+  }, [setPreset]);
 
   const loadReparaciones = async () => {
     setLoading(true);
@@ -86,6 +120,8 @@ const Danados = () => {
         ? "quedará vendida y lista para entregar al cliente"
         : row.origen === "separacion"
         ? "volverá a estar separada para el cliente"
+        : row.origen === "metodo_aliado"
+        ? "volverá al flujo de método aliado"
         : "volverá al stock disponible";
 
     setConfirmDialog({
@@ -124,16 +160,134 @@ const Danados = () => {
     });
   };
 
+  // ── Filtering ────────────────────────────────────────────────────────────
+  const isFiltersActive =
+    searchTerm.trim() ||
+    filterCondicion ||
+    filterOrigen ||
+    filterEstado ||
+    filterValorMin ||
+    filterValorMax;
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setFilterCondicion("");
+    setFilterOrigen("");
+    setFilterEstado("");
+    setFilterValorMin("");
+    setFilterValorMax("");
+  };
+
   const filtered = reparaciones.filter((r) => {
-    if (!searchTerm.trim()) return true;
-    const q = searchTerm.trim().toLowerCase();
-    return (
-      (r.serial || "").toLowerCase().includes(q) ||
-      (r.producto_nombre || "").toLowerCase().includes(q) ||
-      (r.cliente_nombre || "").toLowerCase().includes(q)
-    );
+    const term = searchTerm.trim().toLowerCase();
+    if (term) {
+      const matchSerial = (r.serial || "").toLowerCase().includes(term);
+      const matchProducto = (r.producto_nombre || "").toLowerCase().includes(term);
+      const matchCliente = (r.cliente_nombre || "").toLowerCase().includes(term);
+      if (!matchSerial && !matchProducto && !matchCliente) return false;
+    }
+
+    if (filterCondicion && r.condicion !== filterCondicion) return false;
+    if (filterOrigen && r.origen !== filterOrigen) return false;
+    if (filterEstado && r.estado_producto !== filterEstado) return false;
+
+    const precio = Number(r.precio || 0);
+    if (filterValorMin && precio < Number(filterValorMin)) return false;
+    if (filterValorMax && precio > Number(filterValorMax)) return false;
+
+    if (!matchesDateRange(r.fecha_reporte_dano, dateFrom, dateTo)) return false;
+
+    return true;
   });
 
+  // ── Stats (always from full reparaciones) ────────────────────────────────
+  const now = new Date();
+  const mesActualFrom = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const porReparar = reparaciones.filter((r) => r.estado_producto === "por_reparar").length;
+  const enReparacion = reparaciones.filter((r) => r.estado_producto === "en_reparacion").length;
+  const desdeStock = reparaciones.filter((r) => r.origen === "stock").length;
+  const desdeVenta = reparaciones.filter((r) => r.origen === "venta").length;
+  const desdeSep = reparaciones.filter((r) => r.origen === "separacion").length;
+  const reportadosEsteMes = reparaciones.filter((r) => {
+    if (!r.fecha_reporte_dano) return false;
+    return new Date(r.fecha_reporte_dano) >= mesActualFrom;
+  }).length;
+
+  const stats = [
+    {
+      label: "Total en Reparación",
+      count: reparaciones.length,
+      icon: (
+        <Wrench
+          className="icon-card"
+          style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }}
+        />
+      ),
+    },
+    {
+      label: "Por Reparar",
+      count: porReparar,
+      icon: (
+        <AlertTriangle
+          className="icon-card"
+          style={{ stroke: "#b91c1c", color: "#b91c1c", backgroundColor: "#fee2e2" }}
+        />
+      ),
+    },
+    {
+      label: "En Reparación",
+      count: enReparacion,
+      icon: (
+        <PlayCircle
+          className="icon-card"
+          style={{ stroke: "#1e40af", color: "#1e40af", backgroundColor: "#dbeafe" }}
+        />
+      ),
+    },
+    {
+      label: "Reportados Este Mes",
+      count: reportadosEsteMes,
+      icon: (
+        <Calendar
+          className="icon-card"
+          style={{ stroke: "#1d4ed8", color: "#1d4ed8", backgroundColor: "#dbeafe" }}
+        />
+      ),
+    },
+    {
+      label: "Desde Stock",
+      count: desdeStock,
+      icon: (
+        <Package
+          className="icon-card"
+          style={{ stroke: "#6b21a8", color: "#6b21a8", backgroundColor: "#f3e8ff" }}
+        />
+      ),
+    },
+    {
+      label: "Desde Venta",
+      count: desdeVenta,
+      icon: (
+        <ShoppingCart
+          className="icon-card"
+          style={{ stroke: "#3730a3", color: "#3730a3", backgroundColor: "#e0e7ff" }}
+        />
+      ),
+    },
+    {
+      label: "Desde Separación",
+      count: desdeSep,
+      icon: (
+        <Lock
+          className="icon-card"
+          style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }}
+        />
+      ),
+    },
+  ];
+
+  // ── Columns ──────────────────────────────────────────────────────────────
   const columns = [
     {
       key: "origen",
@@ -142,6 +296,20 @@ const Danados = () => {
         <span className={`status-badge dan-origen-${row.origen}`}>
           {ORIGEN_LABELS[row.origen] || row.origen}
         </span>
+      ),
+    },
+    {
+      key: "producto_nombre",
+      label: "Producto",
+      render: (row) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{row.producto_nombre || "—"}</div>
+          {row.producto_marca && (
+            <div style={{ fontSize: "0.78rem", color: "var(--subtitle-color)", marginTop: "2px" }}>
+              {row.producto_marca}
+            </div>
+          )}
+        </div>
       ),
     },
     {
@@ -163,11 +331,17 @@ const Danados = () => {
       ),
     },
     {
-      key: "producto_nombre",
-      label: "Producto",
-      render: (row) => (
-        <span style={{ fontWeight: 600 }}>{row.producto_nombre || "—"}</span>
-      ),
+      key: "condicion",
+      label: "Condición",
+      render: (row) => {
+        const c = row.condicion;
+        if (!c) return <span style={{ color: "#94a3b8" }}>—</span>;
+        return (
+          <span className={`vp-condicion-${c}`}>
+            {CONDICION_LABELS[c] || c}
+          </span>
+        );
+      },
     },
     {
       key: "cliente_nombre",
@@ -219,75 +393,6 @@ const Danados = () => {
     },
   ];
 
-  const porReparar = reparaciones.filter((r) => r.estado_producto === "por_reparar").length;
-  const enReparacion = reparaciones.filter((r) => r.estado_producto === "en_reparacion").length;
-  const desdeStock = reparaciones.filter((r) => r.origen === "stock").length;
-  const desdeVenta = reparaciones.filter((r) => r.origen === "venta").length;
-  const desdeSep = reparaciones.filter((r) => r.origen === "separacion").length;
-
-  const stats = [
-    {
-      label: "Total en Reparación",
-      count: reparaciones.length,
-      icon: (
-        <Wrench
-          className="icon-card"
-          style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }}
-        />
-      ),
-    },
-    {
-      label: "Por Reparar",
-      count: porReparar,
-      icon: (
-        <AlertTriangle
-          className="icon-card"
-          style={{ stroke: "#b91c1c", color: "#b91c1c", backgroundColor: "#fee2e2" }}
-        />
-      ),
-    },
-    {
-      label: "En Reparación",
-      count: enReparacion,
-      icon: (
-        <PlayCircle
-          className="icon-card"
-          style={{ stroke: "#1e40af", color: "#1e40af", backgroundColor: "#dbeafe" }}
-        />
-      ),
-    },
-    {
-      label: "Desde Stock",
-      count: desdeStock,
-      icon: (
-        <Package
-          className="icon-card"
-          style={{ stroke: "#6b21a8", color: "#6b21a8", backgroundColor: "#f3e8ff" }}
-        />
-      ),
-    },
-    {
-      label: "Desde Venta",
-      count: desdeVenta,
-      icon: (
-        <ShoppingCart
-          className="icon-card"
-          style={{ stroke: "#3730a3", color: "#3730a3", backgroundColor: "#e0e7ff" }}
-        />
-      ),
-    },
-    {
-      label: "Desde Separación",
-      count: desdeSep,
-      icon: (
-        <Lock
-          className="icon-card"
-          style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }}
-        />
-      ),
-    },
-  ];
-
   return (
     <section>
       <div className="table-container">
@@ -297,11 +402,80 @@ const Danados = () => {
           description="Monitorea las unidades en el flujo de reparación"
         />
 
-        <SearchBox
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          placeholder="Buscar por serial, producto o cliente..."
-        />
+        <div className="fb-bar">
+          <span className="fb-label">
+            <SlidersHorizontal size={14} />
+            Filtrar:
+          </span>
+
+          <div className="fb-search">
+            <Search size={14} />
+            <input
+              type="text"
+              placeholder="Serial, producto o cliente..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="fb-divider" />
+
+          <select
+            className="fb-select"
+            value={filterCondicion}
+            onChange={(e) => setFilterCondicion(e.target.value)}
+          >
+            <option value="">Todas las condiciones</option>
+            {Object.entries(CONDICION_LABELS).map(([v, l]) => (
+              <option key={v} value={v}>{l}</option>
+            ))}
+          </select>
+
+          <select
+            className="fb-select"
+            value={filterOrigen}
+            onChange={(e) => setFilterOrigen(e.target.value)}
+          >
+            <option value="">Todos los orígenes</option>
+            <option value="stock">Stock</option>
+            <option value="venta">Venta</option>
+            <option value="separacion">Separación</option>
+            <option value="metodo_aliado">Método Aliado</option>
+          </select>
+
+          <select
+            className="fb-select"
+            value={filterEstado}
+            onChange={(e) => setFilterEstado(e.target.value)}
+          >
+            <option value="">Todos los estados</option>
+            <option value="por_reparar">Por Reparar</option>
+            <option value="en_reparacion">En Reparación</option>
+          </select>
+
+          <div className="fb-divider" />
+
+          <input
+            type="number"
+            className="fb-input"
+            placeholder="Precio mín."
+            value={filterValorMin}
+            onChange={(e) => setFilterValorMin(e.target.value)}
+          />
+          <input
+            type="number"
+            className="fb-input"
+            placeholder="Precio máx."
+            value={filterValorMax}
+            onChange={(e) => setFilterValorMax(e.target.value)}
+          />
+
+          {isFiltersActive && (
+            <button className="fb-clear" onClick={clearFilters}>
+              Limpiar filtros
+            </button>
+          )}
+        </div>
 
         <CountCard stats={stats} />
 

@@ -1,16 +1,18 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 import PublicLayout from "./components/PublicLayout.jsx";
 import Home from "./pages/home/Home.jsx";
 import Catalog from "./pages/catalog/Catalog.jsx";
+import ProductoDetail from "./pages/catalog/ProductoDetail.jsx";
 import PrivacyPolicy from "./pages/privacy/Privacy.jsx";
 import Conocenos from "./pages/conocenos/Conocenos.jsx";
 import Contactanos from "./pages/contactanos/Contactanos.jsx";
 import Envios from "./pages/envios/Envios.jsx";
 import Login from "./pages/admin/Login.jsx";
 import AdminLayout from "./components/admin/AdminLayout.jsx";
-import Dashboard from "./pages/admin/Dashboard.jsx";
 import Users from "./pages/admin/Users.jsx";
 import Brands from "./pages/admin/Brands.jsx";
 import Invoices from "./pages/admin/Invoices.jsx";
@@ -31,6 +33,10 @@ import MetodoAliadoList from "./pages/admin/MetodoAliadoList.jsx";
 import ClienteDetail from "./pages/admin/ClienteDetail.jsx";
 import VentaDetail from "./pages/admin/VentaDetail.jsx";
 import SeparacionDetail from "./pages/admin/SeparacionDetail.jsx";
+import Dashboard from "./pages/admin/Dashboard/Dashboard.jsx";
+import GananciaNeta from "./pages/admin/GananciaNeta.jsx";
+import OrdenesEnvio from "./pages/admin/OrdenesEnvio.jsx";
+import EquiposDanados from "./pages/admin/EquiposDanados.jsx";
 
 
 const router = createBrowserRouter([
@@ -40,6 +46,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/catalogo", element: <Catalog /> },
+      { path: "/producto/:id", element: <ProductoDetail /> },
       { path: "/politica-de-privacidad", element: <PrivacyPolicy /> },
       { path: "/conocenos", element: <Conocenos /> },
       { path: "/contactanos", element: <Contactanos /> },
@@ -52,7 +59,11 @@ const router = createBrowserRouter([
   {
     element: <AdminLayout />,
     children: [
-      { path: "/admin", element: <Dashboard /> },
+      { path: "/admin", element: <Navigate to="/admin/dashboard" replace /> },
+      { path: "/admin/dashboard", element: <Dashboard /> },
+      { path: "/admin/ganancia-neta", element: <GananciaNeta /> },
+      { path: "/admin/ordenes-envio", element: <OrdenesEnvio /> },
+      { path: "/admin/equipos-danados", element: <EquiposDanados /> },
       { path: "/admin/users", element: <Users /> },
       { path: "/admin/brands", element: <Brands /> },
       { path: "/admin/facturas", element: <Invoices /> },
@@ -77,6 +88,20 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
 createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+    {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+  </QueryClientProvider>
 );

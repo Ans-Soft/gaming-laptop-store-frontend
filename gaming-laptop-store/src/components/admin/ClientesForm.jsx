@@ -4,7 +4,7 @@ import ModalBase from "../../components/admin/ModalBase";
 import * as UbicacionService from "../../services/UbicacionService";
 import "../../styles/admin/clientesForm.css";
 
-const ClientesForm = ({ onClose, onSubmit, cliente }) => {
+const ClientesForm = ({ onClose, onSubmit, cliente, isSubmitting = false }) => {
   const [formData, setFormData] = useState({
     nombre_completo: "",
     cedula: "",
@@ -88,6 +88,7 @@ const ClientesForm = ({ onClose, onSubmit, cliente }) => {
       }
       onClose={onClose}
       onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
     >
       <div className="cf-form-grid">
         <div className="form-group">

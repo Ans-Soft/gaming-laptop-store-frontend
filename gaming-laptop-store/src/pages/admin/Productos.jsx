@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/admin/dataTable.css";
 import "../../styles/global.css";
-import { ShoppingBag, ShoppingCart } from "lucide-react";
+import { ShoppingBag, ShoppingCart, FileSpreadsheet, List } from "lucide-react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
@@ -11,6 +11,8 @@ import ProductoForm from "../../components/admin/ProductoForm";
 import OrdenCompraForm from "../../components/admin/OrdenCompraForm";
 import TypeFilterBar from "../../components/admin/TypeFilterBar";
 import ConfirmModal from "../../components/admin/ConfirmModal";
+import CargueMasivo from "./CargueMasivo";
+import "../../styles/admin/cargueMasivo.css";
 
 import {
   getProductos,
@@ -38,11 +40,21 @@ const Productos = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
+  const [activeTab, setActiveTab] = useState("catalogo"); // "catalogo" | "masivo"
 
   useEffect(() => {
     fetchProductos();
     fetchProductTypes();
   }, []);
+
+  // Refetch when returning to the Catalogo tab so any product just created
+  // via the bulk upload (or modified elsewhere) shows up immediately.
+  useEffect(() => {
+    if (activeTab === "catalogo") {
+      fetchProductos();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   const fetchProductos = async () => {
     try {
@@ -209,46 +221,71 @@ const Productos = () => {
           description="Administra el catalogo de productos"
         />
 
-        <SearchBox
-          onRegisterClick={() => handleOpenModal()}
-          registerLabel="Nuevo Producto"
-        />
+        {/* Tabs: catálogo CRUD vs cargue masivo desde Excel */}
+        <div className="cm-tabs" style={{ marginTop: "0.25rem", marginBottom: "1.25rem" }}>
+          <button
+            className={`cm-tab ${activeTab === "catalogo" ? "active" : ""}`}
+            onClick={() => setActiveTab("catalogo")}
+          >
+            <List size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Catálogo
+          </button>
+          <button
+            className={`cm-tab ${activeTab === "masivo" ? "active" : ""}`}
+            onClick={() => setActiveTab("masivo")}
+          >
+            <FileSpreadsheet size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Cargue masivo
+          </button>
+        </div>
 
-        {/* Filter by Product Type */}
-        <TypeFilterBar
-          productTypes={productTypes}
-          selectedTypeFilter={selectedTypeFilter}
-          onFilterChange={setSelectedTypeFilter}
-        />
+        {activeTab === "catalogo" && (
+          <>
+            <SearchBox
+              onRegisterClick={() => handleOpenModal()}
+              registerLabel="Nuevo Producto"
+            />
 
-        <CountCard stats={stats} />
+            {/* Filter by Product Type */}
+            <TypeFilterBar
+              productTypes={productTypes}
+              productos={productos}
+              selectedTypeFilter={selectedTypeFilter}
+              onFilterChange={setSelectedTypeFilter}
+            />
 
-        <DataTable
-          columns={columns}
-          data={filteredProductos.filter((p) => p.active !== false)}
-          rowKey="id"
-          onEdit={handleOpenModal}
-          customActions={[
-            {
-              icon: ShoppingCart,
-              handler: handleOpenOrdenModal,
-              title: "Crear Orden de Compra",
-              show: (row) => true,
-            },
-            {
-              icon: FaCheck,
-              handler: handleActivate,
-              show: (row) => !row.active,
-              title: "Activar",
-            },
-            {
-              icon: FaTimes,
-              handler: handleDeactivate,
-              show: (row) => row.active,
-              title: "Desactivar",
-            },
-          ]}
-        />
+            <CountCard stats={stats} />
+
+            <DataTable
+              columns={columns}
+              data={filteredProductos.filter((p) => p.active !== false)}
+              rowKey="id"
+              onEdit={handleOpenModal}
+              customActions={[
+                {
+                  icon: ShoppingCart,
+                  handler: handleOpenOrdenModal,
+                  title: "Crear Orden de Compra",
+                  show: (row) => true,
+                },
+                {
+                  icon: FaCheck,
+                  handler: handleActivate,
+                  show: (row) => !row.active,
+                  title: "Activar",
+                },
+                {
+                  icon: FaTimes,
+                  handler: handleDeactivate,
+                  show: (row) => row.active,
+                  title: "Desactivar",
+                },
+              ]}
+            />
+          </>
+        )}
+
+        {activeTab === "masivo" && <CargueMasivo onCommitted={fetchProductos} />}
 
         {showModal && (
           <ProductoForm

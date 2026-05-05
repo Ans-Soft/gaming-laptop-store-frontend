@@ -1,0 +1,107 @@
+.kc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  background: var(--db-bg-card);
+  border: 0.5px solid var(--db-border);
+  border-radius: var(--db-radius-md);
+  text-decoration: none;
+  color: inherit;
+  min-height: 104px;
+  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.kc-card--linked { cursor: pointer; }
+
+.kc-card--linked:hover {
+  background: var(--db-bg-card-hover);
+  border-color: rgba(41, 121, 200, 0.18);
+}
+
+.kc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kc-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--db-text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.kc-arrow {
+  color: var(--db-text-tertiary);
+  flex-shrink: 0;
+}
+
+.kc-card--linked:hover .kc-arrow {
+  color: var(--db-chart-primary);
+}
+
+.kc-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--db-text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+/* Zero values: visually communicate "empty" by dimming, without text. */
+.kc-value--zero {
+  color: var(--db-text-tertiary);
+  opacity: 0.55;
+  font-weight: 600;
+}
+
+.kc-value--error {
+  color: var(--db-text-tertiary);
+  font-weight: 600;
+}
+
+.kc-subtitle {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.kc-subtitle--success { color: var(--db-success); }
+.kc-subtitle--danger  { color: var(--db-danger); }
+.kc-subtitle--muted   { color: var(--db-text-secondary); }
+
+.kc-error-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kc-retry {
+  background: transparent;
+  border: 0.5px solid var(--db-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--db-text-primary);
+}
+
+.kc-retry:hover {
+  background: var(--db-bg-card-hover);
+}
+
+.kc-skeleton {
+  width: 60%;
+  height: 30px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #DDE9F5 25%, #ECF3FB 50%, #DDE9F5 75%);
+  background-size: 200% 100%;
+  animation: kc-shimmer 1.4s infinite;
+}
+
+@keyframes kc-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./../../styles/admin/dataTable.css";
 import "./../../styles/global.css";
-import { Lock, Clock, CheckCircle, ShoppingCart, Ban, Edit, FileText, AlertTriangle } from "lucide-react";
+import {
+  Lock,
+  Clock,
+  CheckCircle,
+  ShoppingCart,
+  Ban,
+  Edit,
+  FileText,
+  AlertTriangle,
+  SlidersHorizontal,
+  Search,
+} from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
 import CountCard from "../../components/admin/CountCard";
@@ -20,21 +31,50 @@ import {
 } from "../../services/SeparacionService";
 import * as VentaService from "../../services/VentaService";
 import * as InvoiceService from "../../services/InvoiceService";
+import "../../styles/admin/ventasPage.css";
+import "../../styles/admin/filtersBar.css";
+import { matchesDateRange } from "../../utils/dateRangeFilter";
+import { useDateRange } from "../../hooks/useDateRange";
+
+const CONDICION_LABELS = {
+  nuevo: "Nuevo",
+  open_box: "Open Box",
+  refurbished: "Refurbished",
+  usado: "Usado",
+};
 
 const Separaciones = () => {
   const [showModal, setShowModal] = useState(false);
   const [separaciones, setSeparaciones] = useState([]);
   const [editingSeparacion, setEditingSeparacion] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [completarVentaTarget, setCompletarVentaTarget] = useState(null);
   const [generarReciboTarget, setGenerarReciboTarget] = useState(null);
   const [reportarDanoTarget, setReportarDanoTarget] = useState(null);
   const [notify, setNotify] = useState(null);
 
+  // Date range comes from the global header selector. Active separations are
+  // long-lived state — when the user lands on this page we default to "todos"
+  // so they see everything still pending. They can still filter to a specific
+  // month from the global selector.
+  const { from: dateFrom, to: dateTo, setPreset } = useDateRange();
+  const didMountRef = React.useRef(false);
+
+  // Filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCondicion, setFilterCondicion] = useState("");
+  const [filterValorMin, setFilterValorMin] = useState("");
+  const [filterValorMax, setFilterValorMax] = useState("");
+
   useEffect(() => {
     fetchSeparaciones();
   }, []);
+
+  useEffect(() => {
+    if (didMountRef.current) return;
+    didMountRef.current = true;
+    setPreset("todos");
+  }, [setPreset]);
 
   const fetchSeparaciones = async () => {
     try {
@@ -69,11 +109,50 @@ const Separaciones = () => {
     }
   };
 
-  // ── Completar Venta ──
+  // ── Filtering ────────────────────────────────────────────────────────────
+  const isFiltersActive =
+    searchTerm.trim() ||
+    filterCondicion ||
+    filterValorMin ||
+    filterValorMax;
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setFilterCondicion("");
+    setFilterValorMin("");
+    setFilterValorMax("");
+  };
+
+  const activeSeparaciones = separaciones.filter(
+    (s) =>
+      s.active !== false &&
+      s.estado !== "completada" &&
+      s.unidad_estado_venta !== "vendido"
+  );
+
+  const filteredSeparaciones = activeSeparaciones.filter((s) => {
+    const term = searchTerm.trim().toLowerCase();
+    if (term) {
+      const matchCliente = (s.cliente_nombre || "").toLowerCase().includes(term);
+      const matchSerial = (s.unidad_serial || "").toLowerCase().includes(term);
+      if (!matchCliente && !matchSerial) return false;
+    }
+
+    if (filterCondicion && s.unidad_condicion !== filterCondicion) return false;
+
+    const precio = Number(s.unidad_precio || 0);
+    if (filterValorMin && precio < Number(filterValorMin)) return false;
+    if (filterValorMax && precio > Number(filterValorMax)) return false;
+
+    if (!matchesDateRange(s.fecha_separacion, dateFrom, dateTo)) return false;
+
+    return true;
+  });
+
+  // ── Completar Venta ──────────────────────────────────────────────────────
   const handleCompletarVentaSubmit = async (data) => {
     let invoiceOk = true;
     try {
-      // 1. Create the sale
       const result = await VentaService.createVenta({
         cliente: data.cliente,
         notas: data.notas || "",
@@ -83,14 +162,12 @@ const Separaciones = () => {
       });
       const venta = result.venta || result;
 
-      // 2. Mark separation as completed (PATCH — partial update)
       try {
         await patchSeparacion(data.separacionId, { estado: "completada" });
       } catch (err) {
         console.warn("Venta creada, pero error al actualizar separación:", err);
       }
 
-      // 3. Create invoice (non-blocking)
       if (venta?.id) {
         try {
           await InvoiceService.createInvoice({
@@ -104,7 +181,10 @@ const Separaciones = () => {
           });
         } catch (invoiceErr) {
           invoiceOk = false;
-          console.warn("Venta creada, pero error al generar factura:", invoiceErr?.response?.data || invoiceErr);
+          console.warn(
+            "Venta creada, pero error al generar factura:",
+            invoiceErr?.response?.data || invoiceErr
+          );
         }
       }
 
@@ -136,7 +216,7 @@ const Separaciones = () => {
     }
   };
 
-  // ── Cancelar ──
+  // ── Cancelar ─────────────────────────────────────────────────────────────
   const handleCancelar = (separacion) => {
     setConfirmDialog({
       title: "¿Cancelar esta separación?",
@@ -149,7 +229,11 @@ const Separaciones = () => {
           fetchSeparaciones();
         } catch (error) {
           console.error("Error al cancelar separación:", error);
-          alert("Error al cancelar la separación");
+          setNotify({
+            variant: "error",
+            title: "Error",
+            message: "Error al cancelar la separación",
+          });
         } finally {
           setConfirmDialog(null);
         }
@@ -157,17 +241,25 @@ const Separaciones = () => {
     });
   };
 
-  // ── Generar Recibo ──
+  // ── Generar Recibo ────────────────────────────────────────────────────────
   const handleGenerarReciboSubmit = async (invoiceData) => {
     try {
       await InvoiceService.createInvoice(invoiceData);
       setGenerarReciboTarget(null);
-      alert("Recibo generado exitosamente");
+      setNotify({
+        variant: "success",
+        title: "Recibo generado",
+        message: "El recibo fue generado exitosamente.",
+      });
     } catch (error) {
       console.error("Error al generar recibo:", error);
       const data = error.response?.data;
       const msg = data?.detail || data?.serial_item || "Error al generar el recibo";
-      alert(typeof msg === "object" ? JSON.stringify(msg) : msg);
+      setNotify({
+        variant: "error",
+        title: "Error al generar recibo",
+        message: typeof msg === "object" ? JSON.stringify(msg) : msg,
+      });
     }
   };
 
@@ -179,32 +271,12 @@ const Separaciones = () => {
     return d.toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
   };
 
-  const ESTADO_LABELS = {
-    activa: "Activa",
-    expirada: "Expirada",
-    cancelada: "Cancelada",
-    completada: "Completada",
-  };
-
-  const activeSeparaciones = separaciones.filter(
-    (s) =>
-      s.active !== false &&
-      s.estado !== "completada" &&
-      s.unidad_estado_venta !== "vendido"
-  );
-
-  const filteredSeparaciones = activeSeparaciones.filter(
-    (s) =>
-      s.cliente_nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.unidad_serial?.includes(searchTerm)
-  );
-
   const columns = [
     {
-      key: "cliente_nombre",
-      label: "Cliente",
+      key: "producto_nombre",
+      label: "Producto",
       render: (row) => (
-        <span style={{ fontWeight: 600 }}>{row.cliente_nombre || "—"}</span>
+        <span style={{ fontWeight: 500 }}>{row.producto_nombre || "—"}</span>
       ),
     },
     {
@@ -249,6 +321,26 @@ const Separaciones = () => {
       ),
     },
     {
+      key: "unidad_condicion",
+      label: "Condición",
+      render: (row) => {
+        const c = row.unidad_condicion;
+        if (!c) return null;
+        return (
+          <span className={`vp-condicion-${c}`}>
+            {CONDICION_LABELS[c] || c}
+          </span>
+        );
+      },
+    },
+    {
+      key: "cliente_nombre",
+      label: "Cliente",
+      render: (row) => (
+        <span style={{ fontWeight: 600 }}>{row.cliente_nombre || "—"}</span>
+      ),
+    },
+    {
       key: "valor_abono",
       label: "Valor Abono",
       render: (row) => (
@@ -279,32 +371,38 @@ const Separaciones = () => {
       label: "Fecha Máxima",
       render: (row) => formatDate(row.fecha_maxima_compra),
     },
-    {
-      key: "estado",
-      label: "Estado",
-      render: (row) => (
-        <span className={`status-badge estado-sep-${row.estado}`}>
-          {ESTADO_LABELS[row.estado] || row.estado}
-        </span>
-      ),
-    },
   ];
 
   const stats = [
     {
       label: "Total Separaciones",
       count: activeSeparaciones.length,
-      icon: <Lock className="icon-card" style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }} />,
+      icon: (
+        <Lock
+          className="icon-card"
+          style={{ stroke: "#92400e", color: "#92400e", backgroundColor: "#fef3c7" }}
+        />
+      ),
     },
     {
       label: "Activas",
       count: activeSeparaciones.filter((s) => s.estado === "activa").length,
-      icon: <CheckCircle className="icon-card" style={{ stroke: "#065f46", color: "#065f46", backgroundColor: "#d1fae5" }} />,
+      icon: (
+        <CheckCircle
+          className="icon-card"
+          style={{ stroke: "#065f46", color: "#065f46", backgroundColor: "#d1fae5" }}
+        />
+      ),
     },
     {
       label: "Expiradas",
       count: activeSeparaciones.filter((s) => s.estado === "expirada").length,
-      icon: <Clock className="icon-card" style={{ stroke: "#c2410c", color: "#c2410c", backgroundColor: "#fff7ed" }} />,
+      icon: (
+        <Clock
+          className="icon-card"
+          style={{ stroke: "#c2410c", color: "#c2410c", backgroundColor: "#fff7ed" }}
+        />
+      ),
     },
   ];
 
@@ -317,13 +415,68 @@ const Separaciones = () => {
           description="Administra las reservas de unidades en stock"
         />
 
+        {/* SearchBox: only register button; search lives in filters bar */}
         <SearchBox
           onRegisterClick={() => handleOpenModal()}
           registerLabel="Registrar Nueva Separación"
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          placeholder="Buscar por cliente o serial..."
         />
+
+        {/* Filters bar */}
+        <div className="fb-bar">
+          <span className="fb-label">
+            <SlidersHorizontal size={14} />
+            Filtrar:
+          </span>
+
+          {/* Text search */}
+          <div className="fb-search">
+            <Search size={14} />
+            <input
+              type="text"
+              placeholder="Cliente o serial..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="fb-divider" />
+
+          {/* Condición */}
+          <select
+            className="fb-select"
+            value={filterCondicion}
+            onChange={(e) => setFilterCondicion(e.target.value)}
+          >
+            <option value="">Todas las condiciones</option>
+            {Object.entries(CONDICION_LABELS).map(([v, l]) => (
+              <option key={v} value={v}>{l}</option>
+            ))}
+          </select>
+
+          <div className="fb-divider" />
+
+          {/* Valor range (sobre unidad_precio) */}
+          <input
+            type="number"
+            className="fb-input"
+            placeholder="Precio mín."
+            value={filterValorMin}
+            onChange={(e) => setFilterValorMin(e.target.value)}
+          />
+          <input
+            type="number"
+            className="fb-input"
+            placeholder="Precio máx."
+            value={filterValorMax}
+            onChange={(e) => setFilterValorMax(e.target.value)}
+          />
+
+          {isFiltersActive && (
+            <button className="fb-clear" onClick={clearFilters}>
+              Limpiar filtros
+            </button>
+          )}
+        </div>
 
         <CountCard stats={stats} />
 

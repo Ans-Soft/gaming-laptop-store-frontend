@@ -8,9 +8,19 @@ import "../../styles/admin/typeFilterBar.css";
  * Chip-based filter for product types with accessibility features
  * and responsive design. Replaces dropdown for better discoverability.
  */
-const TypeFilterBar = ({ productTypes, selectedTypeFilter, onFilterChange }) => {
+const TypeFilterBar = ({ productTypes, productos = [], selectedTypeFilter, onFilterChange }) => {
   const activeCount = selectedTypeFilter ? 1 : 0;
   const totalCount = productTypes.length;
+
+  // Count active products per tipo_producto id. Producto.tipo_producto is the
+  // FK id on the list endpoint.
+  const countsByType = productos.reduce((acc, p) => {
+    if (p.active === false) return acc;
+    const id = p.tipo_producto;
+    if (id == null) return acc;
+    acc[id] = (acc[id] || 0) + 1;
+    return acc;
+  }, {});
 
   const handleChipClick = (typeId) => {
     // Toggle: if clicking active chip, clear filter; otherwise set it
@@ -61,7 +71,7 @@ const TypeFilterBar = ({ productTypes, selectedTypeFilter, onFilterChange }) => 
               aria-label={`${type.nombre}${isActive ? ", seleccionado" : ""}`}
             >
               <span className="tfb-chip-name">{type.nombre}</span>
-              <span className="tfb-chip-badge">0</span>
+              <span className="tfb-chip-badge">{countsByType[type.id] || 0}</span>
             </button>
           );
         })}

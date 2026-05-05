@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Lock, ShoppingCart } from "lucide-react";
 import * as SeparacionService from "../../services/SeparacionService";
 import * as VentaService from "../../services/VentaService";
+import * as InvoiceService from "../../services/InvoiceService";
 import "../../styles/admin/separacionDetail.css";
 
 const SeparacionDetail = () => {
@@ -14,6 +15,8 @@ const SeparacionDetail = () => {
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [converting, setConverting] = useState(false);
   const [convertNotes, setConvertNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("efectivo");
+  const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0]);
 
   useEffect(() => {
     loadSeparacion();
@@ -46,33 +49,52 @@ const SeparacionDetail = () => {
   };
 
   const handleConvertToSale = async () => {
-    if (!window.confirm("¿Convertir esta separación en venta?")) return;
-
     setConverting(true);
+    let invoiceOk = true;
     try {
-      // Create sale with client and unit from separation
-      const saleData = {
+      const result = await VentaService.createVenta({
         cliente: separacion.cliente,
         items_data: [
           {
             unidad_producto: separacion.unidad_producto,
-            precio: separacion.valor_abono, // Use deposit as base price
-            unidad_serial: separacion.unidad_serial,
-            producto_nombre: separacion.producto_nombre,
+            precio: separacion.valor_abono,
           },
         ],
         notas: convertNotes || `Convertida desde separación #${separacion.id}`,
-        separacion: id, // Link to original separation
-      };
+        separacion: id,
+      });
+      const venta = result.venta || result;
 
-      await VentaService.createVenta(saleData);
+      try {
+        await SeparacionService.updateSeparacion(id, { estado: "completada" });
+      } catch (err) {
+        console.warn("Venta creada, pero error al actualizar separación:", err);
+      }
 
-      // Mark separation as completed
-      await SeparacionService.updateSeparacion(id, { estado: "completada" });
+      if (venta?.id) {
+        try {
+          await InvoiceService.createInvoice({
+            cliente: separacion.cliente,
+            venta: venta.id,
+            concepto: "venta",
+            serial_item: separacion.unidad_serial || `VENTA-${venta.id}`,
+            total_amount: separacion.valor_abono,
+            payment_method: paymentMethod,
+            due_date: dueDate,
+          });
+        } catch (invoiceErr) {
+          invoiceOk = false;
+          console.warn("Venta creada, pero error al generar factura:", invoiceErr?.response?.data || invoiceErr);
+        }
+      }
 
       setShowConvertModal(false);
       navigate("/admin/separaciones");
-      alert("Separación convertida a venta exitosamente");
+      if (invoiceOk) {
+        alert("Separación convertida a venta y factura generada exitosamente.");
+      } else {
+        alert("Venta registrada correctamente, pero hubo un error al generar la factura. Puedes crearla desde el listado de facturas.");
+      }
     } catch (error) {
       console.error("Error al convertir:", error);
       alert("Error al convertir la separación");
@@ -195,7 +217,29 @@ const SeparacionDetail = () => {
               </button>
             </div>
             <div className="sd-modal-body">
-              <p>Se creará una venta con los datos de esta separación.</p>
+              <p>Se creará una venta y una factura con los datos de esta separación.</p>
+              <div className="sd-modal-field">
+                <label htmlFor="payment_method">Método de Pago</label>
+                <select
+                  id="payment_method"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                >
+                  <option value="efectivo">Efectivo</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div className="sd-modal-field">
+                <label htmlFor="due_date">Fecha de la Factura</label>
+                <input
+                  id="due_date"
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+              </div>
               <div className="sd-modal-field">
                 <label htmlFor="notes">Notas Adicionales (opcional)</label>
                 <textarea

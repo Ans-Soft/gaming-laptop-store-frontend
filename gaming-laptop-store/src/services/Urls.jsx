@@ -74,6 +74,12 @@ const urls = {
   reparacionesIniciar: (id) => `${BASE_URL}/products/unidades/${id}/iniciar-reparacion/`,
   reparacionesCompletar: (id) => `${BASE_URL}/products/unidades/${id}/completar-reparacion/`,
 
+  // MÉTODO ALIADO
+  metodoAliadoList: `${BASE_URL}/products/metodo-aliado/list/`,
+  metodoAliadoMarcarEnviada: (id) => `${BASE_URL}/products/unidades/${id}/metodo-aliado/marcar-enviada/`,
+  metodoAliadoMarcarEntregada: (id) => `${BASE_URL}/products/unidades/${id}/metodo-aliado/marcar-entregada/`,
+  metodoAliadoCancelar: (id) => `${BASE_URL}/products/unidades/${id}/metodo-aliado/cancelar/`,
+
   // DEPARTAMENTOS Y CIUDADES
   departamentosList: `${BASE_URL}/sales/departamentos/list/`,
   ciudadesList: `${BASE_URL}/sales/ciudades/list/`,
@@ -131,6 +137,18 @@ const urls = {
   // TRM
   trmList: `${BASE_URL}/core/trm/list/`,
   trmCreate: `${BASE_URL}/core/trm/create/`,
+
+  // CARGUE MASIVO
+  cargueMasivoPlantilla: (tipoId) =>
+    `${BASE_URL}/products/cargue-masivo/plantilla/${tipoId}/`,
+  cargueMasivo: `${BASE_URL}/products/cargue-masivo/`,
+  cargueMasivoConfirmar: `${BASE_URL}/products/cargue-masivo/confirmar/`,
+  productoImagenesUpload: (id) =>
+    `${BASE_URL}/products/productos/${id}/imagenes/upload/`,
+
+  // IMPORTACIONES — bulk update of order import costs from xlsx
+  importacionPlantilla: `${BASE_URL}/purchases/importaciones/plantilla/`,
+  importacionCargar: `${BASE_URL}/purchases/importaciones/cargar/`,
 };
 
 export default urls;

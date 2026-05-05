@@ -9,6 +9,7 @@ const ORIGEN_LABELS = {
   stock: "Stock",
   venta: "Venta",
   separacion: "Separación",
+  metodo_aliado: "Método Aliado",
 };
 
 const ReportarDanoModal = ({
@@ -112,6 +113,12 @@ const ReportarDanoModal = ({
           <p className="rdm-info">
             La unidad saldrá del inventario disponible y volverá a{" "}
             <strong>stock</strong> cuando se complete la reparación.
+          </p>
+        )}
+        {origen === "metodo_aliado" && (
+          <p className="rdm-info">
+            La solicitud de método aliado permanecerá activa. La unidad volverá
+            a <strong>solicitud método aliado</strong> cuando termine la reparación.
           </p>
         )}
       </ModalBase>

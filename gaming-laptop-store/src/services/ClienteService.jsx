@@ -17,12 +17,12 @@ export async function updateCliente(id, clienteData) {
 }
 
 export async function activateCliente(id) {
-  const response = await api.put(urls.clientesActivate(id));
+  const response = await api.post(urls.clientesActivate(id));
   return response.data;
 }
 
 export async function deactivateCliente(id) {
-  const response = await api.put(urls.clientesDeactivate(id));
+  const response = await api.post(urls.clientesDeactivate(id));
   return response.data;
 }
 

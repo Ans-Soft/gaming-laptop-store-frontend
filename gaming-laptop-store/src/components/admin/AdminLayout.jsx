@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import DashboardHeader from "./DashboardHeader";
+import GlobalHeader from "./GlobalHeader";
 import AdminSidebar from "./AdminSidebar";
+import { DateRangeProvider } from "../../contexts/DateRangeContext";
 import { refreshToken, logout } from "../../services/Auth";
 import "../../styles/admin/adminLayout.css";
 
@@ -52,19 +53,21 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="al-root">
-      <DashboardHeader />
-      <div className="al-body">
-        <AdminSidebar
-          isCollapsed={isCollapsed}
-          onToggle={() => setIsCollapsed((prev) => !prev)}
-          onLogout={handleLogout}
-        />
-        <main className="al-content">
-          <Outlet />
-        </main>
+    <DateRangeProvider>
+      <div className="al-root">
+        <GlobalHeader />
+        <div className="al-body">
+          <AdminSidebar
+            isCollapsed={isCollapsed}
+            onToggle={() => setIsCollapsed((prev) => !prev)}
+            onLogout={handleLogout}
+          />
+          <main className="al-content">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </DateRangeProvider>
   );
 };
 
