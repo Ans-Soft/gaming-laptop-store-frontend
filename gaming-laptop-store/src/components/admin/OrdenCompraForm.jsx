@@ -24,7 +24,9 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
   const [proveedores, setProveedores] = useState([]);
   const [impuestoPreview, setImpuestoPreview] = useState(0);
   const [trm, setTrm] = useState(null);
-  const [costCurrency, setCostCurrency] = useState("usd");
+  // Canonical currency is COP (DB stores everything in COP). The user can
+  // toggle to USD to enter values in dollars and we convert on submit.
+  const [costCurrency, setCostCurrency] = useState("cop");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [dataError, setDataError] = useState(null);
@@ -86,25 +88,33 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
     }
   };
 
+  // Convert any currency-tagged value into COP. Returns NaN-safe number.
+  const toCop = (raw, currency) => {
+    const n = parseFloat(raw || 0);
+    if (isNaN(n)) return 0;
+    if (currency === "usd") return trm ? n * trm : n;
+    return n;
+  };
+
   // Recalculate impuesto and suggested price when currency toggle changes
   useEffect(() => {
     if (formData.costo_compra) {
       const pct = parseFloat(formData.porcentaje_impuesto || 2) / 100;
-      const valueUsd = costCurrency === "cop" && trm
-        ? parseFloat(formData.costo_compra) / trm
-        : parseFloat(formData.costo_compra);
-      const impuesto = valueUsd * pct;
-      setImpuestoPreview(isNaN(impuesto) ? 0 : impuesto);
-      recalcSuggestedPrice(formData.costo_compra, formData.costo_importacion, impuesto, costCurrency);
+      const compraCop = toCop(formData.costo_compra, costCurrency);
+      const impuestoCop = compraCop * pct;
+      setImpuestoPreview(isNaN(impuestoCop) ? 0 : impuestoCop);
+      recalcSuggestedPrice(formData.costo_compra, formData.costo_importacion, impuestoCop, costCurrency);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [costCurrency]);
 
-  const recalcSuggestedPrice = (costoCompra, costoImportacion, impuesto, currency) => {
-    if (!trm) return;
-    const compraUsd = currency === "cop" ? parseFloat(costoCompra || 0) / trm : parseFloat(costoCompra || 0);
-    const importUsd = currency === "cop" ? parseFloat(costoImportacion || 0) / trm : parseFloat(costoImportacion || 0);
-    const totalUsd = compraUsd + importUsd + impuesto;
-    const sugerido = Math.round((totalUsd * trm * 1.2 - 90000) / 100000) * 100000 + 90000;
+  const recalcSuggestedPrice = (costoCompra, costoImportacion, impuestoCop, currency) => {
+    // All math in COP. Margin 20% then round to nearest 100k + 90k tail.
+    const compraCop = toCop(costoCompra, currency);
+    const importCop = toCop(costoImportacion, currency);
+    const totalCop = compraCop + importCop + (impuestoCop || 0);
+    if (totalCop <= 0) return;
+    const sugerido = Math.round((totalCop * 1.2 - 90000) / 100000) * 100000 + 90000;
     if (sugerido > 0) {
       setFormData((prev) => ({ ...prev, precio_venta: sugerido.toString() }));
     }
@@ -139,19 +149,15 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
         const pctVal = name === "porcentaje_impuesto" ? value : prev.porcentaje_impuesto;
 
         const pct = parseFloat(pctVal || 2) / 100;
-        const compraUsd = costCurrency === "cop" && trm
-          ? parseFloat(compraVal || 0) / trm
-          : parseFloat(compraVal || 0);
-        const importUsd = costCurrency === "cop" && trm
-          ? parseFloat(importVal || 0) / trm
-          : parseFloat(importVal || 0);
-        const impuesto = compraUsd * pct;
+        const compraCop = toCop(compraVal, costCurrency);
+        const importCop = toCop(importVal, costCurrency);
+        const impuestoCop = compraCop * pct;
 
-        setImpuestoPreview(isNaN(impuesto) ? 0 : impuesto);
+        setImpuestoPreview(isNaN(impuestoCop) ? 0 : impuestoCop);
 
-        if (trm && compraUsd > 0) {
-          const totalUsd = compraUsd + importUsd + impuesto;
-          const sugerido = Math.round((totalUsd * trm * 1.2 - 90000) / 100000) * 100000 + 90000;
+        if (compraCop > 0) {
+          const totalCop = compraCop + importCop + impuestoCop;
+          const sugerido = Math.round((totalCop * 1.2 - 90000) / 100000) * 100000 + 90000;
           if (sugerido > 0) updated.precio_venta = sugerido.toString();
         }
       }
@@ -190,19 +196,17 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const compraUsd = costCurrency === "cop" && trm
-      ? (parseFloat(formData.costo_compra) / trm).toFixed(6)
-      : formData.costo_compra;
-    const importacionUsd = formData.costo_importacion !== ""
-      ? costCurrency === "cop" && trm
-        ? (parseFloat(formData.costo_importacion) / trm).toFixed(6)
-        : formData.costo_importacion
+    // Persist everything in COP. If the user typed values in USD, convert
+    // here using the live TRM. The backend stores COP regardless.
+    const compraCop = toCop(formData.costo_compra, costCurrency).toFixed(2);
+    const importacionCop = formData.costo_importacion !== ""
+      ? toCop(formData.costo_importacion, costCurrency).toFixed(2)
       : null;
 
     const payload = {
       ...formData,
-      costo_compra: compraUsd,
-      costo_importacion: importacionUsd,
+      costo_compra: compraCop,
+      costo_importacion: importacionCop,
       precio_venta: formData.precio_venta !== "" ? formData.precio_venta : null,
     };
 
@@ -519,17 +523,17 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
                   Impuesto ({formData.porcentaje_impuesto || 2}%):
                 </span>
                 <span className="ocf-cost-amount">
+                  {/* impuestoPreview already in COP. If user typed USD, also
+                      show its USD equivalent in this column. */}
                   {costCurrency === "usd"
-                    ? `$${impuestoPreview.toFixed(2)}`
-                    : trm ? `$${(impuestoPreview * trm).toLocaleString("es-CO", { maximumFractionDigits: 0 })}` : "—"
+                    ? trm ? `$${(impuestoPreview / trm).toFixed(2)}` : "—"
+                    : `$${impuestoPreview.toLocaleString("es-CO", { maximumFractionDigits: 0 })}`
                   }
                 </span>
                 <span className="ocf-cost-amount ocf-cop">
-                  {trm
-                    ? costCurrency === "usd"
-                      ? `$${(impuestoPreview * trm).toLocaleString("es-CO", { maximumFractionDigits: 0 })}`
-                      : `$${impuestoPreview.toFixed(2)}`
-                    : "—"
+                  {costCurrency === "usd"
+                    ? `$${impuestoPreview.toLocaleString("es-CO", { maximumFractionDigits: 0 })}`
+                    : trm ? `$${(impuestoPreview / trm).toFixed(2)}` : "—"
                   }
                 </span>
               </div>
@@ -558,25 +562,26 @@ const OrdenCompraForm = ({ onClose, onSubmit, orden, preselectedProducto }) => {
                 <span className="ocf-cost-label">Costo Total Est.:</span>
                 <span className="ocf-cost-amount">
                   {(() => {
-                    const compra = parseFloat(formData.costo_compra || 0);
-                    const importacion = parseFloat(formData.costo_importacion || 0);
+                    // Total in the user's chosen currency (USD or COP)
+                    const compraCop = toCop(formData.costo_compra, costCurrency);
+                    const importCop = toCop(formData.costo_importacion, costCurrency);
+                    const totalCop = compraCop + importCop + impuestoPreview;
                     if (costCurrency === "usd") {
-                      return `$${(compra + impuestoPreview + importacion).toFixed(2)}`;
-                    } else {
-                      return `$${(compra + (impuestoPreview * (trm || 0)) + importacion).toLocaleString("es-CO", { maximumFractionDigits: 0 })}`;
+                      return trm ? `$${(totalCop / trm).toFixed(2)}` : "—";
                     }
+                    return `$${totalCop.toLocaleString("es-CO", { maximumFractionDigits: 0 })}`;
                   })()}
                 </span>
                 <span className="ocf-cost-amount ocf-cop">
-                  {trm ? (() => {
-                    const compra = parseFloat(formData.costo_compra || 0);
-                    const importacion = parseFloat(formData.costo_importacion || 0);
+                  {(() => {
+                    const compraCop = toCop(formData.costo_compra, costCurrency);
+                    const importCop = toCop(formData.costo_importacion, costCurrency);
+                    const totalCop = compraCop + importCop + impuestoPreview;
                     if (costCurrency === "usd") {
-                      return `$${((compra + impuestoPreview + importacion) * trm).toLocaleString("es-CO", { maximumFractionDigits: 0 })}`;
-                    } else {
-                      return `$${((compra / trm) + impuestoPreview + (importacion / trm)).toFixed(2)}`;
+                      return `$${totalCop.toLocaleString("es-CO", { maximumFractionDigits: 0 })}`;
                     }
-                  })() : "—"}
+                    return trm ? `$${(totalCop / trm).toFixed(2)}` : "—";
+                  })()}
                 </span>
               </div>
 

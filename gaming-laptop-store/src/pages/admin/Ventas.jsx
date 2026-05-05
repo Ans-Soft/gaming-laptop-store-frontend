@@ -15,6 +15,8 @@ import {
   AlertTriangle,
   SlidersHorizontal,
   Search,
+  Package,
+  Store,
 } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
@@ -26,6 +28,7 @@ import GenerarReciboVentaModal from "../../components/admin/GenerarReciboVentaMo
 import NotifyModal from "../../components/admin/NotifyModal";
 import ReportarDanoModal from "../../components/admin/ReportarDanoModal";
 import SeleccionarUnidadDanoModal from "../../components/admin/SeleccionarUnidadDanoModal";
+import MarcarEnvioModal from "../../components/admin/MarcarEnvioModal";
 import * as VentaService from "../../services/VentaService";
 import * as InvoiceService from "../../services/InvoiceService";
 import "../../styles/admin/ventasPage.css";
@@ -53,6 +56,9 @@ const Ventas = () => {
   // Damage-reporting state
   const [reportarDanoTarget, setReportarDanoTarget] = useState(null);
   const [seleccionarUnidadTarget, setSeleccionarUnidadTarget] = useState(null);
+
+  // Shipment registration state
+  const [envioTarget, setEnvioTarget] = useState(null);
 
   // Date range comes from the global header selector (DateRangeContext)
   const { from: dateFrom, to: dateTo } = useDateRange();
@@ -289,6 +295,29 @@ const Ventas = () => {
     }
   };
 
+  const handleEnvioSubmit = async (payload) => {
+    if (!envioTarget) return;
+    try {
+      await VentaService.updateVenta(envioTarget.id, payload);
+      setEnvioTarget(null);
+      loadVentas();
+      setNotify({
+        variant: "success",
+        title: "Envío actualizado",
+        message:
+          payload.tipo_entrega === "local"
+            ? "Marcada como entrega en oficina."
+            : `Tracking ${payload.numero_guia} (${payload.transportadora}) registrado.`,
+      });
+    } catch (error) {
+      const msg =
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        "No se pudo guardar el envío.";
+      throw new Error(typeof msg === "object" ? JSON.stringify(msg) : msg);
+    }
+  };
+
   const handleSubmit = async (formData, ventaId, invoiceData) => {
     try {
       if (ventaId) {
@@ -447,12 +476,28 @@ const Ventas = () => {
           return <span style={{ color: "#9ca3af" }}>Sin productos</span>;
         const nombres = items.map((i) => i.producto_nombre).filter(Boolean);
         const primero = nombres[0] || `${items.length} producto${items.length === 1 ? "" : "s"}`;
-        const truncado = primero.length > 30 ? primero.substring(0, 30) + "…" : primero;
+        const tooltip = nombres.join(", ");
         return (
-          <span title={nombres.join(", ")}>
-            {truncado}
+          // CSS does the truncation via overflow:hidden + text-overflow:ellipsis,
+          // so the title attribute is the source of truth for the full name.
+          // cursor:help signals the tooltip is hoverable.
+          <span
+            title={tooltip}
+            style={{
+              display: "inline-block",
+              maxWidth: 220,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              verticalAlign: "bottom",
+              cursor: "help",
+            }}
+          >
+            {primero}
             {items.length > 1 && (
-              <span className="vp-extra-count">+{items.length - 1} más</span>
+              <span className="vp-extra-count" title={tooltip}>
+                +{items.length - 1} más
+              </span>
             )}
           </span>
         );
@@ -527,6 +572,61 @@ const Ventas = () => {
       ),
     },
     {
+      key: "tracking",
+      label: "Tracking",
+      render: (row) => {
+        // tipo_entrega='local' → recogida en oficina, no hay tracking.
+        if (row.tipo_entrega === "local") {
+          return (
+            <span
+              className="vp-tracking-local"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.3rem",
+                background: "#eff6ff",
+                color: "#1e40af",
+                padding: "0.2rem 0.55rem",
+                borderRadius: "999px",
+                fontSize: "0.78rem",
+                fontWeight: 600,
+              }}
+            >
+              <Store size={11} />
+              Entregado en oficina
+            </span>
+          );
+        }
+        if (!row.numero_guia) {
+          return <span style={{ color: "#9ca3af", fontSize: "0.85rem" }}>Sin envío</span>;
+        }
+        return (
+          <span
+            title={row.transportadora ? `${row.transportadora} — ${row.numero_guia}` : row.numero_guia}
+            style={{ display: "inline-flex", flexDirection: "column", lineHeight: 1.2 }}
+          >
+            <code
+              style={{
+                fontFamily: "Courier New, monospace",
+                background: "var(--icon-bg)",
+                padding: "0.18rem 0.5rem",
+                borderRadius: "4px",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+              }}
+            >
+              {row.numero_guia}
+            </code>
+            {row.transportadora && (
+              <span style={{ fontSize: "0.72rem", color: "var(--subtitle-color)", marginTop: "2px" }}>
+                {row.transportadora}
+              </span>
+            )}
+          </span>
+        );
+      },
+    },
+    {
       key: "estado_entrega",
       label: "Entrega",
       render: (row) =>
@@ -556,6 +656,12 @@ const Ventas = () => {
       icon: Mail,
       title: "Enviar Recibo",
       handler: handleEnviarRecibo,
+    },
+    {
+      show: (row) => row.active !== false && row.estado_entrega !== "entregado",
+      icon: Package,
+      title: "Marcar / Crear envío",
+      handler: (venta) => setEnvioTarget(venta),
     },
     {
       show: (row) => {
@@ -695,6 +801,14 @@ const Ventas = () => {
             venta={seleccionarUnidadTarget}
             onSelect={handleUnidadSelected}
             onClose={() => setSeleccionarUnidadTarget(null)}
+          />
+        )}
+
+        {envioTarget && (
+          <MarcarEnvioModal
+            venta={envioTarget}
+            onClose={() => setEnvioTarget(null)}
+            onSubmit={handleEnvioSubmit}
           />
         )}
 

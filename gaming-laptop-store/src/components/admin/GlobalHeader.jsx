@@ -20,9 +20,12 @@ export default function GlobalHeader() {
 
   const trmQuery = useTRMList(30);
 
+  // Backend returns `{ message, trm_history: [...] }`; the older fallback
+  // checked `results` (DRF default) but this endpoint isn't paginated, so the
+  // data always lives under `trm_history`.
   const trmList = Array.isArray(trmQuery.data)
     ? trmQuery.data
-    : trmQuery.data?.results ?? [];
+    : trmQuery.data?.trm_history ?? trmQuery.data?.results ?? [];
   const trmToday = trmList[0];
   const trmChartData = [...trmList]
     .reverse()

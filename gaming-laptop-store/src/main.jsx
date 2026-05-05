@@ -6,6 +6,7 @@ import "./index.css";
 import PublicLayout from "./components/PublicLayout.jsx";
 import Home from "./pages/home/Home.jsx";
 import Catalog from "./pages/catalog/Catalog.jsx";
+import ProductoDetail from "./pages/catalog/ProductoDetail.jsx";
 import PrivacyPolicy from "./pages/privacy/Privacy.jsx";
 import Conocenos from "./pages/conocenos/Conocenos.jsx";
 import Contactanos from "./pages/contactanos/Contactanos.jsx";
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/catalogo", element: <Catalog /> },
+      { path: "/producto/:id", element: <ProductoDetail /> },
       { path: "/politica-de-privacidad", element: <PrivacyPolicy /> },
       { path: "/conocenos", element: <Conocenos /> },
       { path: "/contactanos", element: <Contactanos /> },
