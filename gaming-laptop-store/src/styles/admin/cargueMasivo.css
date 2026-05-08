@@ -260,9 +260,8 @@
 .cm-tr-fallido > td {
   background: #fef2f2;
 }
-.cm-tr-ignorado > td {
+.cm-tr-actualizado > td {
   background: #fffbeb;
-  opacity: 0.78;
 }
 
 .cm-cell-input {

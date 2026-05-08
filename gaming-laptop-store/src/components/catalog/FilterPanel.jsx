@@ -2,23 +2,13 @@ import React, { useState, useRef, useEffect } from "react"
 import "../../styles/filterPanel.css"
 
 // ---------------------------------------------------------------------------
-// MultiSelect — custom dropdown with checkboxes (no external libraries)
+// MultiSelect — styled dropdown with checkboxes (no external libraries)
 // ---------------------------------------------------------------------------
 
-/**
- * MultiSelect component — a styled dropdown with checkboxes.
- * Props:
- *   label       {string}   - Section label shown above the trigger
- *   options     {Array}    - [{ label, value }]
- *   selected    {string[]} - Array of currently selected values
- *   onChange    {Function} - (newSelected: string[]) => void
- *   placeholder {string}   - Text when nothing is selected
- */
 const MultiSelect = ({ label, options, selected, onChange, placeholder }) => {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -87,20 +77,73 @@ const MultiSelect = ({ label, options, selected, onChange, placeholder }) => {
 }
 
 // ---------------------------------------------------------------------------
+// NumericRange — min/max paired inputs for a `numero` campo
+// ---------------------------------------------------------------------------
+
+const NumericRange = ({ label, value, onChange }) => {
+  const min = value?.min ?? ""
+  const max = value?.max ?? ""
+  return (
+    <div className="fp-group">
+      <span className="fp-label">{label}</span>
+      <div className="fp-price-row">
+        <input
+          type="number"
+          className="fp-input"
+          placeholder="Mín."
+          value={min}
+          onChange={(e) => onChange({ min: e.target.value, max })}
+          aria-label={`${label} mínimo`}
+        />
+        <span className="fp-price-sep" aria-hidden="true">—</span>
+        <input
+          type="number"
+          className="fp-input"
+          placeholder="Máx."
+          value={max}
+          onChange={(e) => onChange({ min, max: e.target.value })}
+          aria-label={`${label} máximo`}
+        />
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // FilterPanel
 // ---------------------------------------------------------------------------
 
 /**
- * FilterPanel component — sidebar with all filter controls.
- * Props:
- *   filters  {{ search, price_min, price_max, brands: string[], gpus: string[], rams: string[] }}
- *   onChange {(key: string, value: any) => void}
- *   onApply  {() => void}
- *   brandOptions {Array} - Dynamic list of [{ label, value }] from available productos
+ * Sidebar with all filter controls.
+ *
+ * filters keys:
+ *   - search (string, applied live by parent)
+ *   - price_min / price_max (string)
+ *   - brands (string[])
+ *   - attrs ({ [campo_producto_id]: string[] | { min, max } })
+ *
+ * promoCampos: array of TipoProductoCampo entries with mostrar_en_promo=true.
+ *   Each has campo_producto, campo_nombre, campo_tipo (texto/numero/booleano).
+ *
+ * attrOptions: { [campo_producto_id]: [{label, value}] } — distinct values
+ *   computed by parent from the current product set so the multi-select
+ *   only offers values that exist for the selected tipo.
  */
-const FilterPanel = ({ filters, onChange, onApply, brandOptions = [] }) => {
+const FilterPanel = ({
+  filters,
+  onChange,
+  onClear,
+  brandOptions = [],
+  promoCampos = [],
+  attrOptions = {},
+}) => {
   const handlePriceMin = (e) => onChange("price_min", e.target.value)
   const handlePriceMax = (e) => onChange("price_max", e.target.value)
+
+  const handleAttrChange = (campoId, value) => {
+    const nextAttrs = { ...(filters.attrs || {}), [campoId]: value }
+    onChange("attrs", nextAttrs)
+  }
 
   return (
     <div className="fp-panel" role="search" aria-label="Panel de filtros">
@@ -143,14 +186,51 @@ const FilterPanel = ({ filters, onChange, onApply, brandOptions = [] }) => {
         />
       )}
 
-      {/* Apply button */}
+      {/* Type-specific attribute filters — one group per campo flagged
+          mostrar_en_promo on the selected tipo_producto. */}
+      {promoCampos.map((campo) => {
+        const campoId = campo.campo_producto
+        const tipo = campo.campo_tipo
+        const label = (campo.campo_nombre || "")
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+        const attrs = filters.attrs || {}
+
+        if (tipo === "numero") {
+          return (
+            <NumericRange
+              key={campoId}
+              label={label}
+              value={attrs[campoId] || { min: "", max: "" }}
+              onChange={(val) => handleAttrChange(campoId, val)}
+            />
+          )
+        }
+
+        // texto + booleano fall back to multi-select with distinct values.
+        const opts = attrOptions[campoId] || []
+        if (opts.length === 0) return null
+
+        return (
+          <MultiSelect
+            key={campoId}
+            label={label}
+            options={opts}
+            selected={attrs[campoId] || []}
+            onChange={(val) => handleAttrChange(campoId, val)}
+            placeholder={`Cualquier ${label.toLowerCase()}`}
+          />
+        )
+      })}
+
+      {/* Clear button — filters apply live so we just need a reset action. */}
       <button
         type="button"
         className="fp-apply-btn"
-        onClick={onApply}
-        aria-label="Aplicar filtros"
+        onClick={onClear}
+        aria-label="Limpiar todos los filtros"
       >
-        Filtrar
+        Limpiar filtros
       </button>
     </div>
   )

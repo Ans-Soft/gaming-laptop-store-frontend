@@ -46,6 +46,11 @@ const ProductTypesForm = ({
         orden: c.orden,
         // Option B: required comes from the association row, not from the field itself
         required: Boolean(c.required),
+        // Promo card configuration: which fields are shown on the marketing
+        // image, in what order, with which icon. All optional.
+        mostrar_en_promo: Boolean(c.mostrar_en_promo),
+        orden_promo: c.orden_promo ?? 0,
+        icono_slug: c.icono_slug || "",
       }));
       // Sort by orden to maintain sequence
       setSelectedFields(preselected.sort((a, b) => a.orden - b.orden));
@@ -84,8 +89,18 @@ const ProductTypesForm = ({
         : 1;
       setSelectedFields((prev) => [
         ...prev,
-        // New associations default to required=false (Option B)
-        { id: field.id, nombre: field.nombre, tipo: field.tipo, orden: nextOrden, required: false },
+        // New associations default to required=false (Option B) and not on
+        // the promo card.
+        {
+          id: field.id,
+          nombre: field.nombre,
+          tipo: field.tipo,
+          orden: nextOrden,
+          required: false,
+          mostrar_en_promo: false,
+          orden_promo: 0,
+          icono_slug: "",
+        },
       ]);
     }
     setOpenDropdown(false);
@@ -94,6 +109,31 @@ const ProductTypesForm = ({
   const handleToggleRequired = (fieldId) => {
     setSelectedFields((prev) =>
       prev.map((f) => (f.id === fieldId ? { ...f, required: !f.required } : f))
+    );
+  };
+
+  const handleTogglePromo = (fieldId) => {
+    setSelectedFields((prev) =>
+      prev.map((f) =>
+        f.id === fieldId ? { ...f, mostrar_en_promo: !f.mostrar_en_promo } : f
+      )
+    );
+  };
+
+  const handleChangePromoOrden = (fieldId, value) => {
+    const n = parseInt(value, 10);
+    setSelectedFields((prev) =>
+      prev.map((f) =>
+        f.id === fieldId ? { ...f, orden_promo: Number.isFinite(n) ? n : 0 } : f
+      )
+    );
+  };
+
+  const handleChangeIconoSlug = (fieldId, value) => {
+    setSelectedFields((prev) =>
+      prev.map((f) =>
+        f.id === fieldId ? { ...f, icono_slug: value.trim().toLowerCase() } : f
+      )
     );
   };
 
@@ -143,8 +183,17 @@ const ProductTypesForm = ({
         {
           nombre: nombre.trim(),
           descripcion: descripcion.trim() || null,
-          // Include required flag per association (Option B)
-          campos: selectedFields.map((f) => ({ id: f.id, orden: f.orden, required: f.required })),
+          // Include required flag per association (Option B) plus the
+          // optional promo-card configuration (mostrar_en_promo, orden_promo,
+          // icono_slug). The backend persists them on TipoProductoCampo.
+          campos: selectedFields.map((f) => ({
+            id: f.id,
+            orden: f.orden,
+            required: f.required,
+            mostrar_en_promo: f.mostrar_en_promo,
+            orden_promo: f.orden_promo,
+            icono_slug: f.icono_slug,
+          })),
         },
         productType?.id
       );
@@ -251,6 +300,45 @@ const ProductTypesForm = ({
                           />
                           <span className="mptf-required-text">¿Es obligatorio?</span>
                         </label>
+                        <div className="mptf-promo-controls" title="Configura cómo aparece este campo en la imagen promocional">
+                          <label className="mptf-required-label">
+                            <input
+                              type="checkbox"
+                              className="mptf-required-checkbox"
+                              checked={field.mostrar_en_promo}
+                              onChange={() => handleTogglePromo(field.id)}
+                              disabled={isSubmitting}
+                            />
+                            <span className="mptf-required-text">Promo</span>
+                          </label>
+                          {field.mostrar_en_promo && (
+                            <>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                className="mptf-promo-input"
+                                value={field.orden_promo}
+                                onChange={(e) => handleChangePromoOrden(field.id, e.target.value)}
+                                disabled={isSubmitting}
+                                title="Orden en la card promocional (1, 2, 3...)"
+                                placeholder="#"
+                                style={{ width: 50 }}
+                              />
+                              <input
+                                type="text"
+                                list="promo-icon-suggestions"
+                                className="mptf-promo-input"
+                                value={field.icono_slug}
+                                onChange={(e) => handleChangeIconoSlug(field.id, e.target.value)}
+                                disabled={isSubmitting}
+                                title="Slug del icono. Sugerencias: cpu, gpu, ram, ssd, screen, vram, bus, tdp"
+                                placeholder="icono"
+                                style={{ width: 80 }}
+                              />
+                            </>
+                          )}
+                        </div>
                         <button
                           type="button"
                           className="mptf-sequence-remove"
@@ -263,6 +351,18 @@ const ProductTypesForm = ({
                       </div>
                     );
                   })}
+                  <datalist id="promo-icon-suggestions">
+                    <option value="cpu" />
+                    <option value="gpu" />
+                    <option value="ram" />
+                    <option value="ssd" />
+                    <option value="screen" />
+                    <option value="vram" />
+                    <option value="bus" />
+                    <option value="tdp" />
+                    <option value="ports" />
+                    <option value="power" />
+                  </datalist>
                 </div>
               )}
 

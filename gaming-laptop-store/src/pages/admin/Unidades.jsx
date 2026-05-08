@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import "../../styles/admin/dataTable.css";
 import "../../styles/global.css";
-import { Box, Package, Store, Truck, AlertTriangle, SlidersHorizontal } from "lucide-react";
+import { Box, Package, Store, Truck, AlertTriangle, SlidersHorizontal, Image as ImageIcon } from "lucide-react";
 import { FaCheck, FaTimes, FaShoppingCart, FaLock, FaHandshake, FaShieldAlt } from "react-icons/fa";
 import DataTable from "../../components/admin/DataTable";
 import SearchBox from "../../components/admin/SearchBox";
@@ -20,6 +20,7 @@ import ConfirmModal from "../../components/admin/ConfirmModal";
 import { createOrdenCompra, updateOrdenCompra } from "../../services/OrdenCompraService";
 import { createVenta } from "../../services/VentaService";
 import { createSeparacion } from "../../services/SeparacionService";
+import { descargarPromoZip } from "../../services/PromoImagesService";
 
 import {
   getUnidades,
@@ -42,6 +43,7 @@ const ESTADO_VENTA_LABELS = {
 const ESTADO_PRODUCTO_LABELS = {
   en_stock: "En Oficina",
   viajando: "Viajando",
+  en_oficina_importadora: "En Oficina Importadora",
   por_comprar: "Por Comprar",
   por_entregar: "Por Entregar",
   entregado: "Entregado",
@@ -76,6 +78,30 @@ const Unidades = () => {
   const [filterCondicion, setFilterCondicion] = useState("");
   const [filterPrecioMin, setFilterPrecioMin] = useState("");
   const [filterPrecioMax, setFilterPrecioMax] = useState("");
+
+  // Promo image generation
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoProgress, setPromoProgress] = useState(null);
+
+  const handleDownloadPromo = async () => {
+    if (promoLoading) return;
+    setPromoLoading(true);
+    setPromoProgress({ step: 0, total: 0, label: "Solicitando datos..." });
+    try {
+      const res = await descargarPromoZip({
+        onProgress: (p) => setPromoProgress(p),
+      });
+      if (res?.total === 0) {
+        alert("No hay unidades disponibles para generar imágenes promocionales.");
+      }
+    } catch (err) {
+      console.error("Error generando promo ZIP:", err);
+      alert("No se pudo generar el ZIP de imágenes. Revisa la consola para más detalles.");
+    } finally {
+      setPromoLoading(false);
+      setPromoProgress(null);
+    }
+  };
 
   // Context product name (for breadcrumb/title when filtered by product)
   const [contextProductoNombre, setContextProductoNombre] = useState(null);
@@ -207,13 +233,66 @@ const Unidades = () => {
     });
   };
 
-  const handleVentaSubmit = async (data) => {
+  const handleVentaSubmit = async (formData, _ventaId, invoiceData) => {
+    // VentaForm submits with three args: (formData, ventaId, invoiceData).
+    // From Inventario we always create a new sale; the invoice creation is
+    // best-effort — if it fails, the venta still committed and we surface
+    // the error so the admin can retry from the Ventas page.
     try {
-      await createVenta(data);
+      const ventaPayload = {
+        cliente: formData.cliente,
+        notas: formData.notas,
+        separacion: formData.separacion || null,
+        items_data: formData.items_data,
+        estado_entrega: formData.estado_entrega,
+      };
+      const result = await createVenta(ventaPayload);
+      const venta = result.venta || result;
+
+      if (invoiceData && venta?.id) {
+        try {
+          const InvoiceService = await import("../../services/InvoiceService");
+          const items = formData.items_data || [];
+          const serials = items
+            .map((i) => i.unidad_serial)
+            .filter(Boolean)
+            .join(", ");
+          const total = items.reduce(
+            (s, i) => s + parseFloat(i.precio || 0),
+            0
+          );
+          await InvoiceService.createInvoice({
+            cliente: formData.cliente,
+            venta: venta.id,
+            concepto: "venta",
+            serial_item: serials || `VENTA-${venta.id}`,
+            total_amount: total,
+            payment_method: invoiceData.payment_method,
+            due_date: invoiceData.due_date,
+          });
+        } catch (invoiceErr) {
+          console.warn(
+            "Venta creada pero la factura falló:",
+            invoiceErr?.response?.data || invoiceErr
+          );
+        }
+      }
+
       setVentaTargetUnidad(null);
       fetchUnidades();
     } catch (error) {
       console.error("Error al registrar venta:", error);
+      const data = error.response?.data;
+      const msg =
+        data?.detail ||
+        data?.error ||
+        (typeof data === "object"
+          ? Object.entries(data || {})
+              .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+              .join("; ")
+          : null) ||
+        "No se pudo registrar la venta. Revisa los datos e intenta nuevamente.";
+      alert(msg);
     }
   };
 
@@ -400,6 +479,54 @@ const Unidades = () => {
               : "Administra las unidades físicas de cada producto (serial, estado y precio individual)"
           }
         />
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.6rem", margin: "0 0 1rem" }}>
+          <Link
+            to="/admin/promo-preview"
+            title="Ver una vista previa del diseño de las imágenes antes de descargar"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.65rem 1.1rem",
+              background: "transparent",
+              color: "#6d28d9",
+              border: "1.5px solid #6d28d9",
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+              textDecoration: "none",
+            }}
+          >
+            Vista previa
+          </Link>
+          <button
+            onClick={handleDownloadPromo}
+            disabled={promoLoading}
+            title="Genera un ZIP con una imagen promocional 1080×1080 por cada unidad disponible (en stock, viajando o en oficina importadora)"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.65rem 1.1rem",
+              background: promoLoading ? "#9ca3af" : "linear-gradient(135deg, #6d28d9, #2563eb)",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+              cursor: promoLoading ? "not-allowed" : "pointer",
+              boxShadow: "0 2px 8px rgba(109, 40, 217, 0.25)",
+            }}
+          >
+            <ImageIcon size={18} />
+            {promoLoading
+              ? promoProgress && promoProgress.total
+                ? `Generando ${promoProgress.step}/${promoProgress.total}...`
+                : "Generando..."
+              : "Descargar imágenes promo"}
+          </button>
+        </div>
 
         <SearchBox
           onRegisterClick={() => handleOpenModal()}

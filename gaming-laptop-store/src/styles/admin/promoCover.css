@@ -1,0 +1,53 @@
+/* ================================================================
+   Cover card — 2160x2160 overlay on portada.jpg.
+   The template already contains the 2x2 product mosaic and the IG /
+   WhatsApp pill handles. We only paint the campaign title on top.
+   ================================================================ */
+
+.pcv-card {
+  width: 2160px;
+  height: 2160px;
+  position: relative;
+  overflow: hidden;
+  font-family: "Outfit", "Sora", "Segoe UI", system-ui, sans-serif;
+  color: #ffffff;
+  background: #000000;
+}
+
+.pcv-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Centered title box. Same magenta-neon language as the per-card price
+   box so the cover and unit cards read as a single campaign. */
+.pcv-title {
+  position: absolute;
+  top: 880px;
+  left: 200px;
+  right: 200px;
+  padding: 60px 80px;
+  background: rgba(15, 8, 50, 0.92);
+  color: #ffffff;
+  font-size: 110px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  line-height: 1.05;
+  text-align: center;
+  border: 6px solid rgba(180, 80, 255, 0.85);
+  border-radius: 36px;
+  text-shadow:
+    0 0 22px rgba(0, 230, 255, 0.6),
+    0 0 50px rgba(0, 180, 255, 0.35);
+  box-shadow:
+    0 0 40px rgba(180, 80, 255, 0.55),
+    0 0 90px rgba(180, 80, 255, 0.28),
+    inset 0 0 24px rgba(140, 60, 230, 0.25);
+  z-index: 2;
+}

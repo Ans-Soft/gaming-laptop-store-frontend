@@ -37,6 +37,7 @@ import Dashboard from "./pages/admin/Dashboard/Dashboard.jsx";
 import GananciaNeta from "./pages/admin/GananciaNeta.jsx";
 import OrdenesEnvio from "./pages/admin/OrdenesEnvio.jsx";
 import EquiposDanados from "./pages/admin/EquiposDanados.jsx";
+import PromoPreview from "./pages/admin/PromoPreview.jsx";
 
 
 const router = createBrowserRouter([
@@ -72,6 +73,7 @@ const router = createBrowserRouter([
       { path: "/admin/suppliers", element: <Suppliers /> },
       { path: "/admin/productos", element: <Productos /> },
       { path: "/admin/inventario", element: <Unidades /> },
+      { path: "/admin/promo-preview", element: <PromoPreview /> },
       { path: "/admin/bajo-pedido", element: <BajoPedido /> },
       { path: "/admin/clientes", element: <Clientes /> },
       { path: "/admin/clientes/:id", element: <ClienteDetail /> },

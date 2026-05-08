@@ -149,6 +149,10 @@ const urls = {
   // IMPORTACIONES — bulk update of order import costs from xlsx
   importacionPlantilla: `${BASE_URL}/purchases/importaciones/plantilla/`,
   importacionCargar: `${BASE_URL}/purchases/importaciones/cargar/`,
+
+  // PROMO CARDS — JSON shape used by the frontend html2canvas + JSZip
+  // pipeline that builds the marketing image ZIP for the inventory.
+  promoCardsData: `${BASE_URL}/products/promo-cards/data/`,
 };
 
 export default urls;
