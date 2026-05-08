@@ -4,14 +4,20 @@ import urls from "./Urls"
 /**
  * Estados de producto que cuentan como "disponible" en catálogo público.
  * Una unidad sólo aparece en catálogo si está sin_vender y se encuentra en
- * alguno de estos tres estados logísticos:
- *   - en_stock      → ya en oficina local
- *   - viajando      → camino al país
- *   - por_comprar   → en oficina importadora, lista para retirar
+ * alguno de estos estados logísticos:
+ *   - en_stock                → ya en oficina local
+ *   - viajando                → camino al país
+ *   - en_oficina_importadora  → en aduana / oficina importadora, lista para retirar
+ *   - por_comprar             → reservada para back-order, aún por comprar
  * Cualquier otro estado (por_reparar, en_reparacion, entregado, por_entregar)
  * indica que la unidad no es ofertable.
  */
-const ESTADOS_DISPONIBLES = new Set(["en_stock", "viajando", "por_comprar"]);
+const ESTADOS_DISPONIBLES = new Set([
+  "en_stock",
+  "viajando",
+  "en_oficina_importadora",
+  "por_comprar",
+]);
 
 /**
  * Fetch public products by merging two data sources:
@@ -60,8 +66,12 @@ export const getPublicProductos = async () => {
         return {
           id: producto.id,
           nombre: producto.nombre,
+          nombre_base: producto.nombre_base,
           descripcion: producto.descripcion,
           marca: producto.marca,
+          tipo_producto: producto.tipo_producto,
+          tipo_producto_nombre: producto.tipo_producto_nombre,
+          campo_valores: producto.campo_valores || [],
           imagenes: producto.imagenes,
           disponibilidad: "en_stock",
           precio: Math.min(...productUnidades.map((u) => u.precio)),

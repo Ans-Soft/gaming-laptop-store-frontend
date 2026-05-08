@@ -21,13 +21,14 @@ import "../../styles/admin/cargueMasivo.css";
 
 /**
  * Status discrimination for an editable preview row.
- * 'creado'   → row will be created (no errors, name is new)
- * 'ignorado' → name already exists in DB
- * 'fallido'  → has validation errors
+ * 'creado'      → row is new, will be inserted
+ * 'actualizado' → name already exists in DB and will be overwritten with the
+ *                 row's values (descripcion, marca, dynamic fields)
+ * 'fallido'     → has validation errors
  */
 const STATUS_BADGES = {
   creado: { label: "Nuevo", className: "cm-badge-nuevo" },
-  ignorado: { label: "Ya existe", className: "cm-badge-dup" },
+  actualizado: { label: "Se actualizará", className: "cm-badge-dup" },
   fallido: { label: "Error", className: "cm-badge-error" },
 };
 
@@ -139,7 +140,7 @@ export default function CargueMasivo({ onCommitted } = {}) {
       // render them in a single editable table.
       const rows = [
         ...(result.creados || []).map((r) => ({ ...r, status: "creado" })),
-        ...(result.ignorados || []).map((r) => ({ ...r, status: "ignorado" })),
+        ...(result.actualizados || []).map((r) => ({ ...r, status: "actualizado" })),
         ...(result.fallidos || []).map((r) => ({ ...r, status: "fallido" })),
       ].sort((a, b) => (a.fila ?? 0) - (b.fila ?? 0));
       setPreviewRows(rows);
@@ -172,18 +173,16 @@ export default function CargueMasivo({ onCommitted } = {}) {
   // ── Step 3 — Confirmar ────────────────────────────────────────────────────
   const handleConfirm = async () => {
     if (!previewRows) return;
-    // Send only rows the user wants to create. Ignorados (already exist) are
-    // dropped. Fallidos are also sent — server re-validates and may now
-    // accept them after edits.
-    const rowsToSend = previewRows
-      .filter((r) => r.status !== "ignorado")
-      .map((r) => ({ fila: r.fila, data: r.data }));
+    // Send every non-fatally-empty row. Server re-validates; rows whose name
+    // matches an existing producto are overwritten in place, the rest are
+    // inserted. Fallidos go too — they may now succeed after inline edits.
+    const rowsToSend = previewRows.map((r) => ({ fila: r.fila, data: r.data }));
 
     if (rowsToSend.length === 0) {
       setNotify({
         variant: "info",
-        title: "Sin filas para crear",
-        message: "Todas las filas son duplicados que ya existen.",
+        title: "Sin filas para guardar",
+        message: "No hay filas en la previsualización.",
       });
       return;
     }
@@ -192,22 +191,25 @@ export default function CargueMasivo({ onCommitted } = {}) {
     try {
       const result = await confirmarRows(tipoId, rowsToSend);
       setCommitted(result);
-      if (result.fallidos.length > 0) {
+      const creados = result.creados?.length || 0;
+      const actualizados = result.actualizados?.length || 0;
+      const fallidos = result.fallidos?.length || 0;
+      if (fallidos > 0) {
         setNotify({
           variant: "warning",
           title: "Carga parcial",
-          message: `${result.creados.length} creados, ${result.fallidos.length} con errores.`,
+          message: `${creados} creados, ${actualizados} actualizados, ${fallidos} con errores.`,
         });
       } else {
         setNotify({
           variant: "success",
           title: "Carga completada",
-          message: `${result.creados.length} producto${result.creados.length === 1 ? "" : "s"} creado${result.creados.length === 1 ? "" : "s"} correctamente.`,
+          message: `${creados} creado${creados === 1 ? "" : "s"}, ${actualizados} actualizado${actualizados === 1 ? "" : "s"}.`,
         });
       }
       // Notify the parent so the productos catalog refetches and shows the
-      // new rows immediately without requiring a manual reload.
-      if (typeof onCommitted === "function" && result.creados.length > 0) {
+      // new/updated rows immediately without requiring a manual reload.
+      if (typeof onCommitted === "function" && (creados > 0 || actualizados > 0)) {
         onCommitted();
       }
     } catch (error) {
@@ -226,13 +228,16 @@ export default function CargueMasivo({ onCommitted } = {}) {
   // Image upload completion — bump the count locally and ping the parent
   // so any product list it might be showing also refreshes its image data.
   const handleImagesUploaded = (productoId, newCount) => {
+    const bump = (list) =>
+      (list || []).map((p) =>
+        p.id === productoId ? { ...p, imagenes_count: newCount } : p
+      );
     setCommitted((c) =>
       c
         ? {
             ...c,
-            creados: c.creados.map((p) =>
-              p.id === productoId ? { ...p, imagenes_count: newCount } : p
-            ),
+            creados: bump(c.creados),
+            actualizados: bump(c.actualizados),
           }
         : c
     );
@@ -361,7 +366,7 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
       acc[r.status] = (acc[r.status] || 0) + 1;
       return acc;
     },
-    { creado: 0, ignorado: 0, fallido: 0 }
+    { creado: 0, actualizado: 0, fallido: 0 }
   );
 
   const allCols = [
@@ -371,7 +376,8 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
     ...campos.map((c) => ({ key: c.nombre, label: c.nombre, tipo: c.tipo })),
   ];
 
-  const canConfirm = counts.creado > 0 || counts.fallido > 0;
+  const canConfirm = counts.creado + counts.actualizado + counts.fallido > 0;
+  const totalToWrite = counts.creado + counts.actualizado;
 
   return (
     <div className="cm-card">
@@ -389,7 +395,7 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
               <CheckCircle2 size={14} /> {counts.creado} se crearán
             </span>
             <span className="cm-pill cm-pill-warn">
-              <AlertTriangle size={14} /> {counts.ignorado} ya existen
+              <AlertTriangle size={14} /> {counts.actualizado} se actualizarán
             </span>
             <span className="cm-pill cm-pill-error">
               <XCircle size={14} /> {counts.fallido} con errores
@@ -411,7 +417,6 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
               <tbody>
                 {rows.map((row, idx) => {
                   const badge = STATUS_BADGES[row.status];
-                  const disabled = row.status === "ignorado";
                   return (
                     <tr key={idx} className={`cm-tr-${row.status}`}>
                       <td>{row.fila ?? "—"}</td>
@@ -425,7 +430,7 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
                           <CellEditor
                             tipo={c.tipo}
                             value={row.data?.[c.key] ?? ""}
-                            disabled={disabled}
+                            disabled={false}
                             onChange={(v) => onCellChange(idx, c.key, v)}
                           />
                         </td>
@@ -437,9 +442,9 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
                               <li key={i}>{e}</li>
                             ))}
                           </ul>
-                        ) : row.status === "ignorado" ? (
+                        ) : row.status === "actualizado" ? (
                           <span style={{ color: "#92400e", fontSize: "0.82rem" }}>
-                            Producto con el mismo nombre ya existe
+                            Sobrescribirá el producto existente con este nombre
                           </span>
                         ) : (
                           <span style={{ color: "#94a3b8" }}>—</span>
@@ -454,7 +459,7 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
 
           <div className="cm-confirm-bar">
             <span style={{ marginRight: "auto", fontSize: "0.85rem", color: "#64748b" }}>
-              Las filas duplicadas (Ya existe) se ignoran al confirmar.
+              Los productos cuyo nombre ya existe serán sobrescritos con los nuevos valores.
             </span>
             <button
               className="cm-btn cm-btn-success"
@@ -464,7 +469,7 @@ function EditablePreview({ rows, campos, onCellChange, onConfirm, loadingCommit 
               <Save size={16} />
               {loadingCommit
                 ? "Guardando..."
-                : `Confirmar y crear ${counts.creado + counts.fallido}`}
+                : `Confirmar (${totalToWrite} a guardar${counts.fallido ? `, ${counts.fallido} con errores` : ""})`}
             </button>
           </div>
         </div>
@@ -505,42 +510,61 @@ function CellEditor({ tipo, value, disabled, onChange }) {
 // ---------------------------------------------------------------------------
 
 function CommittedPanel({ result, onUploadImages }) {
+  const creados = result.creados || [];
+  const actualizados = result.actualizados || [];
+  const renderRow = (p) => (
+    <li key={p.id} className="cm-created-row">
+      <div className="cm-created-info">
+        <span className="cm-created-id">#{p.id}</span>
+        <span className="cm-created-name">{p.nombre}</span>
+        <span className="cm-created-marca">{p.marca_nombre}</span>
+        <span className="cm-created-imgs">
+          <ImageIcon size={13} /> {p.imagenes_count || 0}/10
+        </span>
+      </div>
+      <button
+        className="cm-btn cm-btn-primary"
+        onClick={() => onUploadImages(p)}
+        disabled={(p.imagenes_count || 0) >= 10}
+      >
+        <ImageIcon size={14} />
+        Subir imágenes
+      </button>
+    </li>
+  );
+
   return (
     <div className="cm-card">
       <div className="cm-step">
         <span className="cm-step-number">4</span>
         <div className="cm-step-body" style={{ width: "100%" }}>
-          <h2>Productos creados</h2>
+          <h2>Resultado del cargue</h2>
           <p>
-            {result.creados.length} producto{result.creados.length === 1 ? "" : "s"} se
-            registraron correctamente. Sube imágenes a cada uno (hasta 10 por producto).
+            {creados.length} creado{creados.length === 1 ? "" : "s"} y{" "}
+            {actualizados.length} actualizado{actualizados.length === 1 ? "" : "s"}.
+            Sube imágenes a cada uno (hasta 10 por producto).
           </p>
 
-          {result.creados.length === 0 ? (
-            <div className="cm-empty">No se creó ningún producto.</div>
-          ) : (
-            <ul className="cm-created-list">
-              {result.creados.map((p) => (
-                <li key={p.id} className="cm-created-row">
-                  <div className="cm-created-info">
-                    <span className="cm-created-id">#{p.id}</span>
-                    <span className="cm-created-name">{p.nombre}</span>
-                    <span className="cm-created-marca">{p.marca_nombre}</span>
-                    <span className="cm-created-imgs">
-                      <ImageIcon size={13} /> {p.imagenes_count || 0}/10
-                    </span>
-                  </div>
-                  <button
-                    className="cm-btn cm-btn-primary"
-                    onClick={() => onUploadImages(p)}
-                    disabled={(p.imagenes_count || 0) >= 10}
-                  >
-                    <ImageIcon size={14} />
-                    Subir imágenes
-                  </button>
-                </li>
-              ))}
-            </ul>
+          {creados.length > 0 && (
+            <>
+              <h3 style={{ fontSize: "0.95rem", margin: "0.5rem 0", color: "#166534" }}>
+                Nuevos ({creados.length})
+              </h3>
+              <ul className="cm-created-list">{creados.map(renderRow)}</ul>
+            </>
+          )}
+
+          {actualizados.length > 0 && (
+            <>
+              <h3 style={{ fontSize: "0.95rem", margin: "1rem 0 0.5rem", color: "#92400e" }}>
+                Actualizados ({actualizados.length})
+              </h3>
+              <ul className="cm-created-list">{actualizados.map(renderRow)}</ul>
+            </>
+          )}
+
+          {creados.length === 0 && actualizados.length === 0 && (
+            <div className="cm-empty">No se guardó ningún producto.</div>
           )}
 
           {result.fallidos && result.fallidos.length > 0 && (

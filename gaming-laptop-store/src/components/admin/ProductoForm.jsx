@@ -37,6 +37,7 @@ const ProductoForm = ({
   // ── Base field state ───────────────────────────────────────────────────────
   const [formData, setFormData] = useState({
     nombre: "",
+    nombre_base: "",
     descripcion: "",
     marca: "",
     tipo_producto: "",
@@ -86,6 +87,7 @@ const ProductoForm = ({
 
       setFormData({
         nombre: producto.nombre || "",
+        nombre_base: producto.nombre_base || "",
         descripcion: producto.descripcion || "",
         marca: String(producto.marca || ""),
         tipo_producto: String(tipoId || ""),
@@ -275,6 +277,7 @@ const ProductoForm = ({
     const fd = new FormData();
 
     fd.append("nombre", formData.nombre.trim());
+    fd.append("nombre_base", formData.nombre_base.trim());
     fd.append("descripcion", formData.descripcion.trim());
     fd.append("marca", String(Number(formData.marca)));
     fd.append("tipo_producto", String(Number(formData.tipo_producto)));
@@ -604,6 +607,22 @@ const ProductoForm = ({
               required
             />
             {errors.nombre && <span className="pf-field-error">{errors.nombre}</span>}
+          </div>
+
+          {/* Nombre base (corto, para imágenes promocionales) */}
+          <div className="form-group">
+            <label>Nombre corto (imágenes promocionales)</label>
+            <input
+              name="nombre_base"
+              type="text"
+              placeholder="Ej: Acer Predator Helios Neo 16S"
+              value={formData.nombre_base}
+              onChange={handleChange}
+              maxLength={120}
+            />
+            <small style={{ color: "var(--subtitle-color)", fontSize: "0.78rem" }}>
+              Versión corta del nombre para mostrar en las tarjetas promocionales. Si lo dejas vacío se usa el nombre completo.
+            </small>
           </div>
 
           {/* Descripcion */}

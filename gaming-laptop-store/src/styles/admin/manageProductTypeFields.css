@@ -337,6 +337,30 @@
   font-weight: 500;
 }
 
+/* ── Promo card controls per row ────────────────────────── */
+.mptf-promo-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.75rem;
+  border-left: 1px dashed var(--border-color, #d1d5db);
+}
+
+.mptf-promo-input {
+  font-size: 0.82rem;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 4px;
+  background: var(--input-bg, #fff);
+  color: var(--text-color, #111827);
+}
+
+.mptf-promo-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #2979c8);
+  box-shadow: 0 0 0 2px rgba(41, 121, 200, 0.18);
+}
+
 /* ── No available fields message ────────────────────────── */
 .mptf-no-available {
   color: var(--subtitle-color);

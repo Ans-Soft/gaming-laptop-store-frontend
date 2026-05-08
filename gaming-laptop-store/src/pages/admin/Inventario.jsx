@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Download, Filter, X } from "lucide-react";
+import { Download, Filter, X, Image as ImageIcon } from "lucide-react";
 import DataTable from "../../components/admin/DataTable";
 import * as UnidadService from "../../services/UnidadService";
+import { descargarPromoZip } from "../../services/PromoImagesService";
 import "../../styles/admin/inventario.css";
 
 const Inventario = () => {
@@ -13,6 +14,8 @@ const Inventario = () => {
     producto: "",
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoProgress, setPromoProgress] = useState(null);
 
   useEffect(() => {
     loadUnidades();
@@ -54,6 +57,25 @@ const Inventario = () => {
 
   const handleClearFilters = () => {
     setFilters({ estado_producto: "", estado_venta: "", producto: "" });
+  };
+
+  const handleDownloadPromo = async () => {
+    if (promoLoading) return;
+    setPromoLoading(true);
+    setPromoProgress({ step: 0, total: 0, label: "Solicitando datos..." });
+    try {
+      await descargarPromoZip({
+        onProgress: (p) => setPromoProgress(p),
+      });
+    } catch (err) {
+      console.error("Error generando promo ZIP:", err);
+      alert(
+        "No se pudo generar el ZIP de imágenes. Revisa la consola para más detalles."
+      );
+    } finally {
+      setPromoLoading(false);
+      setPromoProgress(null);
+    }
   };
 
   const handleExport = () => {
@@ -198,9 +220,24 @@ const Inventario = () => {
     <div className="inv-container">
       <div className="inv-header">
         <h1>Reporte de Inventario</h1>
-        <button className="inv-btn-export" onClick={handleExport}>
-          <Download size={20} /> Exportar CSV
-        </button>
+        <div className="inv-header-actions">
+          <button
+            className="inv-btn-promo"
+            onClick={handleDownloadPromo}
+            disabled={promoLoading}
+            title="Genera un ZIP con una imagen promocional por cada unidad disponible (en stock, viajando o en oficina importadora)"
+          >
+            <ImageIcon size={20} />
+            {promoLoading
+              ? promoProgress && promoProgress.total
+                ? `Generando ${promoProgress.step}/${promoProgress.total}...`
+                : "Generando..."
+              : "Descargar imágenes"}
+          </button>
+          <button className="inv-btn-export" onClick={handleExport}>
+            <Download size={20} /> Exportar CSV
+          </button>
+        </div>
       </div>
 
       <div className="inv-cards">
@@ -238,6 +275,7 @@ const Inventario = () => {
                 <option value="">Todos</option>
                 <option value="en_stock">En Oficina</option>
                 <option value="viajando">Viajando</option>
+                <option value="en_oficina_importadora">En Oficina Importadora</option>
                 <option value="por_comprar">Por Comprar</option>
                 <option value="por_entregar">Por Entregar</option>
                 <option value="entregado">Entregado</option>

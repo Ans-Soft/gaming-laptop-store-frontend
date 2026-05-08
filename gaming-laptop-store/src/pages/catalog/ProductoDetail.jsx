@@ -52,7 +52,7 @@ export default function ProductoDetail() {
         const unitsForProduct = unidadesAll.filter(
           (u) =>
             u.producto === prod.id &&
-            ["en_stock", "viajando", "por_comprar"].includes(u.estado_producto)
+            ["en_stock", "viajando", "en_oficina_importadora", "por_comprar"].includes(u.estado_producto)
         );
         setProducto(prod);
         setUnidades(unitsForProduct);

@@ -43,6 +43,91 @@ const CONDICION_LABELS = {
   usado: "Usado",
 };
 
+// Friendly label + tracking URL builder per carrier slug. Coordinadora has a
+// public guia URL with the tracking as querystring. Interrapidísimo's portal
+// builds a session-scoped id on each visit, so the public link doesn't accept
+// the guia directly — we copy it to clipboard and open the tracker so the
+// user can paste it.
+const TRANSPORTADORA_INFO = {
+  coordinadora: {
+    label: "Coordinadora",
+    open: (numeroGuia) =>
+      `https://coordinadora.com/rastreo/rastreo-de-guia/detalle-de-rastreo-de-guia/?guia=${encodeURIComponent(numeroGuia)}`,
+    copyFirst: false,
+  },
+  interrapidisimo: {
+    label: "Interrapidísimo",
+    open: () => "https://siguetuenvio.interrapidisimo.com/",
+    copyFirst: true,
+  },
+};
+
+function TrackingLink({ transportadora, numeroGuia }) {
+  const info = TRANSPORTADORA_INFO[transportadora];
+  const label = info?.label || transportadora || "—";
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    if (!info) {
+      // Unknown carrier — just copy the tracking so the user can paste
+      // wherever.
+      try {
+        await navigator.clipboard.writeText(numeroGuia);
+      } catch {
+        /* ignore clipboard errors */
+      }
+      return;
+    }
+    if (info.copyFirst) {
+      try {
+        await navigator.clipboard.writeText(numeroGuia);
+      } catch {
+        /* ignore — user can copy manually */
+      }
+    }
+    window.open(info.open(numeroGuia), "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <a
+      href={info ? info.open(numeroGuia) : "#"}
+      onClick={handleClick}
+      title={
+        info?.copyFirst
+          ? `Click: copia ${numeroGuia} y abre el tracker de ${label}`
+          : `Abrir tracking ${numeroGuia} en ${label}`
+      }
+      style={{
+        display: "inline-flex",
+        flexDirection: "column",
+        lineHeight: 1.2,
+        textDecoration: "none",
+        color: "inherit",
+        cursor: "pointer",
+      }}
+    >
+      <code
+        style={{
+          fontFamily: "Courier New, monospace",
+          background: "var(--icon-bg)",
+          padding: "0.18rem 0.5rem",
+          borderRadius: "4px",
+          fontSize: "0.82rem",
+          fontWeight: 600,
+          color: "var(--primary-color, #2979c8)",
+          textDecoration: "underline dotted",
+          textUnderlineOffset: "2px",
+        }}
+      >
+        {numeroGuia}
+      </code>
+      <span style={{ fontSize: "0.72rem", color: "var(--subtitle-color)", marginTop: "2px" }}>
+        {label}
+      </span>
+    </a>
+  );
+}
+
 const Ventas = () => {
   const navigate = useNavigate();
   const [ventas, setVentas] = useState([]);
@@ -303,17 +388,17 @@ const Ventas = () => {
       loadVentas();
       setNotify({
         variant: "success",
-        title: "Envío actualizado",
+        title: "Entrega registrada",
         message:
           payload.tipo_entrega === "local"
-            ? "Marcada como entrega en oficina."
-            : `Tracking ${payload.numero_guia} (${payload.transportadora}) registrado.`,
+            ? "La venta quedó marcada como entregada en oficina."
+            : `Entrega registrada con tracking ${payload.numero_guia} (${payload.transportadora}).`,
       });
     } catch (error) {
       const msg =
         error.response?.data?.detail ||
         error.response?.data?.error ||
-        "No se pudo guardar el envío.";
+        "No se pudo registrar la entrega.";
       throw new Error(typeof msg === "object" ? JSON.stringify(msg) : msg);
     }
   };
@@ -575,7 +660,30 @@ const Ventas = () => {
       key: "tracking",
       label: "Tracking",
       render: (row) => {
-        // tipo_entrega='local' → recogida en oficina, no hay tracking.
+        // Any non-delivered sale shows "Pendiente" regardless of tipo_entrega
+        // — the delivery hasn't happened yet so there's nothing to display
+        // about how it occurred.
+        if (row.estado_entrega !== "entregado") {
+          return (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.3rem",
+                background: "#fef3c7",
+                color: "#92400e",
+                padding: "0.2rem 0.55rem",
+                borderRadius: "999px",
+                fontSize: "0.78rem",
+                fontWeight: 600,
+              }}
+            >
+              Pendiente
+            </span>
+          );
+        }
+
+        // Already delivered — show how. Local pickup has no tracking.
         if (row.tipo_entrega === "local") {
           return (
             <span
@@ -593,58 +701,21 @@ const Ventas = () => {
               }}
             >
               <Store size={11} />
-              {row.estado_entrega === "entregado" ? "Entregado en oficina" : "Recogida en oficina"}
+              Entregado en oficina
             </span>
           );
         }
-        // tipo_entrega='envio' (default) without a guide number yet — show
-        // "Pendiente" while estado_entrega is por_entregar so the user knows
-        // a tracking still needs to be registered.
+        // Delivered via shipment but no tracking number was registered.
         if (!row.numero_guia) {
-          if (row.estado_entrega === "por_entregar") {
-            return (
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.3rem",
-                  background: "#fef3c7",
-                  color: "#92400e",
-                  padding: "0.2rem 0.55rem",
-                  borderRadius: "999px",
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                }}
-              >
-                Pendiente
-              </span>
-            );
-          }
-          return <span style={{ color: "#9ca3af", fontSize: "0.85rem" }}>Sin envío</span>;
+          return (
+            <span style={{ color: "#9ca3af", fontSize: "0.85rem" }}>Entregado (sin tracking)</span>
+          );
         }
         return (
-          <span
-            title={row.transportadora ? `${row.transportadora} — ${row.numero_guia}` : row.numero_guia}
-            style={{ display: "inline-flex", flexDirection: "column", lineHeight: 1.2 }}
-          >
-            <code
-              style={{
-                fontFamily: "Courier New, monospace",
-                background: "var(--icon-bg)",
-                padding: "0.18rem 0.5rem",
-                borderRadius: "4px",
-                fontSize: "0.82rem",
-                fontWeight: 600,
-              }}
-            >
-              {row.numero_guia}
-            </code>
-            {row.transportadora && (
-              <span style={{ fontSize: "0.72rem", color: "var(--subtitle-color)", marginTop: "2px" }}>
-                {row.transportadora}
-              </span>
-            )}
-          </span>
+          <TrackingLink
+            transportadora={row.transportadora}
+            numeroGuia={row.numero_guia}
+          />
         );
       },
     },
@@ -682,7 +753,7 @@ const Ventas = () => {
     {
       show: (row) => row.active !== false && row.estado_entrega !== "entregado",
       icon: Package,
-      title: "Marcar / Crear envío",
+      title: "Registrar entrega",
       handler: (venta) => setEnvioTarget(venta),
     },
     {

@@ -33,6 +33,7 @@ const Productos = () => {
   const [productos, setProductos] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   const [selectedTypeFilter, setSelectedTypeFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingProducto, setEditingProducto] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showOrdenModal, setShowOrdenModal] = useState(false);
@@ -173,16 +174,42 @@ const Productos = () => {
     });
   };
 
-  // Filter products by type
-  const filteredProductos = selectedTypeFilter
-    ? productos.filter(
-        (p) => p.tipo_producto && p.tipo_producto.toString() === selectedTypeFilter
-      )
-    : productos;
+  // Filter products by type and free-text search.
+  // Search matches against nombre, nombre_base, marca and tipo (case-insensitive).
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredProductos = productos.filter((p) => {
+    if (
+      selectedTypeFilter &&
+      (!p.tipo_producto || p.tipo_producto.toString() !== selectedTypeFilter)
+    ) {
+      return false;
+    }
+    if (!normalizedSearch) return true;
+    const haystack = [
+      p.nombre,
+      p.nombre_base,
+      p.marca_nombre,
+      p.tipo_producto_nombre,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(normalizedSearch);
+  });
 
   const columns = [
     { key: "id", label: "ID" },
     { key: "nombre", label: "Nombre" },
+    {
+      key: "nombre_base",
+      label: "Nombre comercial",
+      render: (row) =>
+        row.nombre_base ? (
+          row.nombre_base
+        ) : (
+          <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Sin asignar</span>
+        ),
+    },
     {
       key: "marca_nombre",
       label: "Marca",
@@ -244,6 +271,9 @@ const Productos = () => {
             <SearchBox
               onRegisterClick={() => handleOpenModal()}
               registerLabel="Nuevo Producto"
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              placeholder="Buscar por nombre, marca o tipo..."
             />
 
             {/* Filter by Product Type */}
