@@ -18,6 +18,8 @@ import {
   Handshake,
   Wrench,
   LayoutDashboard,
+  Eye,
+  ShieldCheck,
 } from "lucide-react";
 import "../../styles/admin/adminSidebar.css";
 
@@ -74,6 +76,21 @@ const NAV_SECTIONS = [
         path: "/admin/productos-bajo-pedido",
         icon: Clock,
         label: "Productos Bajo Pedido",
+      },
+    ],
+  },
+  {
+    label: "Deal Watcher",
+    items: [
+      {
+        path: "/admin/deal-watcher",
+        icon: Eye,
+        label: "Productos Vigilados",
+      },
+      {
+        path: "/admin/deal-watcher/sellers",
+        icon: ShieldCheck,
+        label: "Sellers Confiables",
       },
     ],
   },

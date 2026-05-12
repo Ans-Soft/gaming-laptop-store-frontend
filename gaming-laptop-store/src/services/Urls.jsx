@@ -153,6 +153,28 @@ const urls = {
   // PROMO CARDS — JSON shape used by the frontend html2canvas + JSZip
   // pipeline that builds the marketing image ZIP for the inventory.
   promoCardsData: `${BASE_URL}/products/promo-cards/data/`,
+
+  // DEAL WATCHER — eBay listing watcher with Telegram alerts
+  dwMonitoredList: `${BASE_URL}/deal-watcher/monitored-products/list/`,
+  dwMonitoredCreate: `${BASE_URL}/deal-watcher/monitored-products/create/`,
+  dwMonitoredUpdate: (id) => `${BASE_URL}/deal-watcher/monitored-products/update/${id}/`,
+  dwMonitoredActivate: (id) => `${BASE_URL}/deal-watcher/monitored-products/activate/${id}/`,
+  dwMonitoredDeactivate: (id) => `${BASE_URL}/deal-watcher/monitored-products/deactivate/${id}/`,
+  dwMonitoredDetail: (id) => `${BASE_URL}/deal-watcher/monitored-products/detail/${id}/`,
+  dwMonitoredHistory: (id) => `${BASE_URL}/deal-watcher/monitored-products/history/${id}/`,
+
+  dwSellersList: `${BASE_URL}/deal-watcher/trusted-sellers/list/`,
+  dwSellersCreate: `${BASE_URL}/deal-watcher/trusted-sellers/create/`,
+  dwSellersUpdate: (id) => `${BASE_URL}/deal-watcher/trusted-sellers/update/${id}/`,
+  dwSellersActivate: (id) => `${BASE_URL}/deal-watcher/trusted-sellers/activate/${id}/`,
+  dwSellersDeactivate: (id) => `${BASE_URL}/deal-watcher/trusted-sellers/deactivate/${id}/`,
+
+  dwPauseStatus: `${BASE_URL}/deal-watcher/pauses/global/status/`,
+  dwPauseCreate: `${BASE_URL}/deal-watcher/pauses/global/create/`,
+  dwPauseLift: `${BASE_URL}/deal-watcher/pauses/global/lift/`,
+
+  dwTelegramSubscribersList: `${BASE_URL}/deal-watcher/telegram-subscribers/list/`,
+  dwTelegramSubscribersDeactivate: (id) => `${BASE_URL}/deal-watcher/telegram-subscribers/deactivate/${id}/`,
 };
 
 export default urls;
