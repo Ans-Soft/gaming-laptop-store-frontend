@@ -96,6 +96,25 @@ export async function liftGlobalPause() {
   return data;
 }
 
+// ---- On-demand check -----------------------------------------------------
+
+/**
+ * Ejecuta on-demand (al instante) la verificación de precios de todos los
+ * productos: actualiza Bajo Pedido y corre el Deal Watcher, notificando por
+ * Telegram si hay oferta. Es lo mismo que hace el cron, pero manual.
+ *
+ * @param {boolean} dryRun - si es true, no envía notificaciones.
+ * Petición síncrona y potencialmente lenta (llama a eBay por cada producto):
+ * se usa un timeout amplio.
+ */
+export async function runChecksNow({ dryRun = false } = {}) {
+  const { data } = await api.post(urls.dwRunNow, null, {
+    params: dryRun ? { dry_run: true } : {},
+    timeout: 180000,
+  });
+  return data;
+}
+
 // ---- Telegram Subscribers -----------------------------------------------
 
 export async function getTelegramSubscribers() {

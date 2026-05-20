@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   ShoppingBag,
   Users,
@@ -136,7 +136,19 @@ const NAV_SECTIONS = [
   },
 ];
 
+const SIDEBAR_PATHS = NAV_SECTIONS.flatMap((s) => s.items.map((i) => i.path));
+
 const AdminSidebar = ({ isCollapsed, onToggle, onLogout }) => {
+  const { pathname } = useLocation();
+
+  const isItemActive = (itemPath) => {
+    if (pathname === itemPath) return true;
+    if (!pathname.startsWith(itemPath + "/")) return false;
+    return !SIDEBAR_PATHS.some(
+      (p) => p !== itemPath && (p === pathname || pathname.startsWith(p + "/"))
+    );
+  };
+
   return (
     <aside className={`as-sidebar ${isCollapsed ? "as-sidebar--collapsed" : ""}`}>
       <button
@@ -157,7 +169,7 @@ const AdminSidebar = ({ isCollapsed, onToggle, onLogout }) => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={({ isActive }) => `as-item ${isActive ? "as-item--active" : ""}`}
+                className={() => `as-item ${isItemActive(item.path) ? "as-item--active" : ""}`}
                 title={isCollapsed ? item.label : undefined}
               >
                 <IconComponent size={20} />
