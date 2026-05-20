@@ -13,6 +13,7 @@ import TitleCrud from "../../components/admin/TitleCrud";
 import ConfirmModal from "../../components/admin/ConfirmModal";
 import MonitoredProductForm from "../../components/admin/MonitoredProductForm";
 import DealWatcherPauseBar from "../../components/admin/DealWatcherPauseBar";
+import RunChecksNowButton from "../../components/admin/RunChecksNowButton";
 
 import {
   getMonitoredProducts,
@@ -194,10 +195,11 @@ const MonitoredProducts = () => {
     <section>
       <div className="table-container">
         <DealWatcherPauseBar />
+        <RunChecksNowButton />
         <TitleCrud
           title="Productos Vigilados"
           icon={Eye}
-          description="Listings de eBay que el Deal Watcher monitorea cada 30 minutos"
+          description="Listings de eBay que el Deal Watcher monitorea automáticamente 3 veces al día"
         />
 
         <SearchBox
