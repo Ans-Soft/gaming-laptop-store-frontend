@@ -41,6 +41,7 @@ import PromoPreview from "./pages/admin/PromoPreview.jsx";
 import MonitoredProducts from "./pages/admin/MonitoredProducts.jsx";
 import MonitoredProductDetail from "./pages/admin/MonitoredProductDetail.jsx";
 import TrustedSellers from "./pages/admin/TrustedSellers.jsx";
+import DealWatcherConfig from "./pages/admin/DealWatcherConfig.jsx";
 
 
 const router = createBrowserRouter([
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
       { path: "/admin/ventas/:id", element: <VentaDetail /> },
       { path: "/admin/deal-watcher", element: <MonitoredProducts /> },
       { path: "/admin/deal-watcher/sellers", element: <TrustedSellers /> },
+      { path: "/admin/deal-watcher/config", element: <DealWatcherConfig /> },
       { path: "/admin/deal-watcher/:id", element: <MonitoredProductDetail /> },
     ],
   },
