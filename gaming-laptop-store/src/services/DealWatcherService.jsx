@@ -96,6 +96,23 @@ export async function liftGlobalPause() {
   return data;
 }
 
+// ---- Configuración del notificador (franja + presupuesto) ----------------
+
+export async function getNotificadorConfig() {
+  const { data } = await api.get(urls.dwConfigDetail);
+  return data.config ?? data;
+}
+
+export async function updateNotificadorConfig(payload) {
+  const { data } = await api.put(urls.dwConfigUpdate, payload);
+  return data.config ?? data;
+}
+
+export async function getNotificadorStatus() {
+  const { data } = await api.get(urls.dwConfigStatus);
+  return data;
+}
+
 // ---- On-demand check -----------------------------------------------------
 
 /**

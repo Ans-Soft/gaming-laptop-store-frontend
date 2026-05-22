@@ -173,6 +173,10 @@ const urls = {
   dwPauseCreate: `${BASE_URL}/deal-watcher/pauses/global/create/`,
   dwPauseLift: `${BASE_URL}/deal-watcher/pauses/global/lift/`,
 
+  dwConfigDetail: `${BASE_URL}/deal-watcher/config/detail/`,
+  dwConfigUpdate: `${BASE_URL}/deal-watcher/config/update/`,
+  dwConfigStatus: `${BASE_URL}/deal-watcher/config/status/`,
+
   dwRunNow: `${BASE_URL}/deal-watcher/run-now/`,
 
   dwTelegramSubscribersList: `${BASE_URL}/deal-watcher/telegram-subscribers/list/`,

@@ -20,6 +20,7 @@ import {
   LayoutDashboard,
   Eye,
   ShieldCheck,
+  Timer,
 } from "lucide-react";
 import "../../styles/admin/adminSidebar.css";
 
@@ -91,6 +92,11 @@ const NAV_SECTIONS = [
         path: "/admin/deal-watcher/sellers",
         icon: ShieldCheck,
         label: "Sellers Confiables",
+      },
+      {
+        path: "/admin/deal-watcher/config",
+        icon: Timer,
+        label: "Configuración",
       },
     ],
   },
