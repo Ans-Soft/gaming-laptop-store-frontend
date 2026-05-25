@@ -21,6 +21,7 @@ import {
   Eye,
   ShieldCheck,
   Timer,
+  RefreshCw,
 } from "lucide-react";
 import "../../styles/admin/adminSidebar.css";
 
@@ -97,6 +98,11 @@ const NAV_SECTIONS = [
         path: "/admin/deal-watcher/config",
         icon: Timer,
         label: "Configuración",
+      },
+      {
+        path: "/admin/deal-watcher/sync-bajo-pedido",
+        icon: RefreshCw,
+        label: "Sync Bajo Pedido",
       },
     ],
   },

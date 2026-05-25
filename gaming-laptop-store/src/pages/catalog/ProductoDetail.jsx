@@ -25,10 +25,22 @@ function formatPrice(price) {
   return "$" + numeric.toLocaleString("es-CO");
 }
 
+/**
+ * Map disponibilidad_catalogo to display text and CSS class.
+ * Consistent with CatalogCard.getAvailabilityDisplay.
+ */
+function getAvailabilityDisplay(disponibilidad) {
+  const map = {
+    en_stock: { text: "Disponible", className: "cc-stock cc-stock--en_stock" },
+    bajo_pedido: { text: "Bajo Pedido", className: "cc-stock cc-stock--bajo_pedido" },
+    sin_existencias: { text: "Agotado", className: "cc-stock cc-stock--sin_existencias" },
+  };
+  return map[disponibilidad] || { text: "No disponible", className: "cc-stock" };
+}
+
 export default function ProductoDetail() {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
-  const [unidades, setUnidades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
@@ -37,28 +49,30 @@ export default function ProductoDetail() {
     let alive = true;
     setLoading(true);
     setError(null);
-    Promise.all([
-      api.get(urls.productosDetail(id)),
-      api.get(urls.unidadesList, {
-        params: { active: true, estado_venta: "sin_vender" },
-      }),
-    ])
-      .then(([prodResp, unidadesResp]) => {
+
+    // Public endpoint (AllowAny) — no login required.
+    api
+      .get(urls.catalogoDetail(id))
+      .then((resp) => {
         if (!alive) return;
-        const prod = prodResp.data.producto || prodResp.data;
-        const unidadesAll = Array.isArray(unidadesResp.data)
-          ? unidadesResp.data
-          : unidadesResp.data.results ?? [];
-        const unitsForProduct = unidadesAll.filter(
-          (u) =>
-            u.producto === prod.id &&
-            ["en_stock", "viajando", "en_oficina_importadora", "por_comprar"].includes(u.estado_producto)
-        );
-        setProducto(prod);
-        setUnidades(unitsForProduct);
+        // The endpoint returns a flat object with the same keys as the list.
+        const data = resp.data;
+        setProducto({
+          id: data.id,
+          nombre: data.nombre,
+          nombre_base: data.nombre_base,
+          descripcion: data.descripcion,
+          marca_nombre: data.marca_nombre,
+          tipo_producto_nombre: data.tipo_producto_nombre,
+          campo_valores: data.campo_valores || [],
+          imagenes: data.imagenes || [],
+          disponibilidad: data.disponibilidad_catalogo,
+          precio: data.precio != null ? Number(data.precio) : null,
+        });
       })
       .catch((err) => alive && setError(err.message || "Error al cargar el producto"))
       .finally(() => alive && setLoading(false));
+
     return () => {
       alive = false;
     };
@@ -83,12 +97,10 @@ export default function ProductoDetail() {
     );
   }
 
-  const imagenes = producto.imagenes || [];
+  const imagenes = producto.imagenes;
   const mainImage = imagenes[activeImage];
-  const minPrice =
-    unidades.length > 0 ? Math.min(...unidades.map((u) => Number(u.precio))) : null;
-
-  const campos = producto.campo_valores || [];
+  const campos = producto.campo_valores;
+  const availabilityDisplay = getAvailabilityDisplay(producto.disponibilidad);
 
   return (
     <div className="pd-root">
@@ -128,12 +140,16 @@ export default function ProductoDetail() {
           )}
           <h1 className="pd-name">{producto.nombre}</h1>
 
-          {minPrice !== null && (
-            <div className="pd-price-row">
-              <span className="pd-price">{formatPrice(minPrice)}</span>
-              <span className="cc-stock cc-stock--en_stock">Disponible</span>
-            </div>
-          )}
+          <div className="pd-price-row">
+            {producto.precio !== null ? (
+              <span className="pd-price">{formatPrice(producto.precio)}</span>
+            ) : (
+              <span className="pd-price pd-price--empty">—</span>
+            )}
+            <span className={availabilityDisplay.className}>
+              {availabilityDisplay.text}
+            </span>
+          </div>
 
           {producto.descripcion && (
             <p className="pd-desc">{producto.descripcion}</p>
