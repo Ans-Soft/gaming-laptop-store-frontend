@@ -27,7 +27,7 @@ function getAvailabilityDisplay(disponibilidad) {
   const map = {
     en_stock: { text: "Disponible", className: "cc-stock cc-stock--en_stock" },
     bajo_pedido: { text: "Bajo Pedido", className: "cc-stock cc-stock--bajo_pedido" },
-    sin_existencias: { text: "Sin existencias", className: "cc-stock cc-stock--sin_existencias" },
+    sin_existencias: { text: "Agotado", className: "cc-stock cc-stock--sin_existencias" },
   };
   return map[disponibilidad] || { text: "No disponible", className: "cc-stock" };
 }

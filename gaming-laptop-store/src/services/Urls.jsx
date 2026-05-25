@@ -150,6 +150,10 @@ const urls = {
   importacionPlantilla: `${BASE_URL}/purchases/importaciones/plantilla/`,
   importacionCargar: `${BASE_URL}/purchases/importaciones/cargar/`,
 
+  // CATÁLOGO PÚBLICO — endpoints AllowAny (Hito 6)
+  catalogoList: `${BASE_URL}/products/catalogo/`,
+  catalogoDetail: (id) => `${BASE_URL}/products/catalogo/${id}/`,
+
   // PROMO CARDS — JSON shape used by the frontend html2canvas + JSZip
   // pipeline that builds the marketing image ZIP for the inventory.
   promoCardsData: `${BASE_URL}/products/promo-cards/data/`,
@@ -178,6 +182,9 @@ const urls = {
   dwConfigStatus: `${BASE_URL}/deal-watcher/config/status/`,
 
   dwRunNow: `${BASE_URL}/deal-watcher/run-now/`,
+
+  // SYNC BAJO PEDIDO — daily price-sync log monitoring (Hito 7)
+  syncBajoPedidoLogs: `${BASE_URL}/products/sync-bajo-pedido/logs/`,
 
   dwTelegramSubscribersList: `${BASE_URL}/deal-watcher/telegram-subscribers/list/`,
   dwTelegramSubscribersDeactivate: (id) => `${BASE_URL}/deal-watcher/telegram-subscribers/deactivate/${id}/`,

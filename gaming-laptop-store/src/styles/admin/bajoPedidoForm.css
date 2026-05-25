@@ -1,67 +1,193 @@
-.bpf-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 20px;
-}
+/* ================================================================
+   BajoPedidoForm — prefijo .bpf-
+   Diseñado para anidarse dentro de .modal-container (ModalBase)
+   ================================================================ */
 
-.bpf-form-group {
+/* ── Contenedor principal ── */
+.bpf-form {
   display: flex;
   flex-direction: column;
+  gap: 0;
 }
 
-.bpf-form-group.bpf-full {
+/* ── Sección con borde separador ── */
+.bpf-section {
+  padding: 1rem 0 1.25rem;
+  border-bottom: 1px solid var(--fourth-color);
+}
+
+.bpf-section--last {
+  border-bottom: none;
+  padding-bottom: 0.25rem;
+}
+
+/* ── Encabezado de sección ── */
+.bpf-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--primary-color);
+  margin-bottom: 0.85rem;
+}
+
+.bpf-section-label svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+/* ── Grid de 2 columnas ── */
+.bpf-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+}
+
+/* Campo que ocupa las 2 columnas */
+.bpf-col-2 {
   grid-column: 1 / -1;
 }
 
-.bpf-form-group label {
+/* ── Grupo de campo ── */
+.bpf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* ── Label ── */
+.bpf-label {
+  font-size: 0.82rem;
   font-weight: 600;
-  margin-bottom: 8px;
-  color: #1f2937;
-  font-size: 0.95rem;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
-.bpf-form-group label .required {
-  color: #dc2626;
-  margin-left: 4px;
+.bpf-required {
+  color: var(--error-color);
+  font-weight: 700;
+  font-size: 0.78rem;
 }
 
-.bpf-form-group input,
-.bpf-form-group select {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.95rem;
+/* ── Input / Select base ── */
+.bpf-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-size: 0.88rem;
   font-family: inherit;
-  transition: all 0.2s ease;
-}
-
-.bpf-form-group input:focus,
-.bpf-form-group select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  appearance: auto;
 }
 
-.bpf-form-group input:disabled,
-.bpf-form-group select:disabled {
-  background-color: #f3f4f6;
-  color: #9ca3af;
+.bpf-input::placeholder {
+  color: var(--subtitle-color);
+  opacity: 1;
+}
+
+.bpf-input:hover:not(:focus):not(:disabled) {
+  border-color: var(--third-color);
+}
+
+.bpf-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(41, 121, 200, 0.12);
+  background-color: var(--bg-color);
+}
+
+.bpf-input:disabled {
+  background-color: var(--card-bg-elevated);
+  color: var(--subtitle-color);
   cursor: not-allowed;
+  opacity: 0.75;
 }
 
-.bpf-form-group small {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-top: 6px;
+/* Input de URL — fuente ligeramente más pequeña para URLs largas */
+.bpf-input--url {
+  font-size: 0.82rem;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0;
 }
 
-.bpf-preview {
-  padding: 12px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-weight: 500;
-  color: #374151;
-  font-family: "Courier New", monospace;
+/* ── Texto de ayuda ── */
+.bpf-hint {
+  font-size: 0.76rem;
+  color: var(--subtitle-color);
+  line-height: 1.4;
+  margin-top: 1px;
+}
+
+/* ── Valor de solo lectura (producto en modo edición) ── */
+.bpf-readonly-value {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  background-color: var(--card-bg-elevated);
+  color: var(--subtitle-color);
+  font-size: 0.88rem;
+  font-style: italic;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Bloque de estado (modo edición) ── */
+.bpf-status-display {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  background-color: var(--card-bg-elevated);
+  min-height: 38px;
+}
+
+.bpf-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bpf-status--active {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.bpf-status--empty {
+  background-color: var(--error-bg);
+  color: var(--error-color);
+}
+
+.bpf-status--inactive {
+  background-color: var(--card-bg-elevated);
+  color: var(--subtitle-color);
+  border: 1px solid var(--fourth-color);
+}
+
+/* ── Responsive: 1 columna en pantallas angostas ── */
+@media (max-width: 520px) {
+  .bpf-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .bpf-col-2 {
+    grid-column: 1;
+  }
 }

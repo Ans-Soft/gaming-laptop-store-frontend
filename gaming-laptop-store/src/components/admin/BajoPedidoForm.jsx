@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { ShoppingCart, Edit } from "lucide-react";
+import { ShoppingCart, Edit, Link, Tag, DollarSign, Package } from "lucide-react";
 import ModalBase from "../../components/admin/ModalBase";
 import * as ProductoService from "../../services/ProductoService";
 import * as SupplierService from "../../services/SupplierService";
 import "../../styles/admin/bajoPedidoForm.css";
 
+const CONDICIONES = [
+  { value: "nuevo",       label: "Nuevo" },
+  { value: "open_box",    label: "Open Box" },
+  { value: "refurbished", label: "Refurbished" },
+  { value: "usado",       label: "Usado" },
+];
+
 const BajoPedidoForm = ({ onClose, onSubmit, bajoPedido }) => {
   const [formData, setFormData] = useState({
     producto: "",
     condicion: "nuevo",
+    precio: "",
     enlace_proveedor: "",
     proveedor: "",
   });
@@ -19,9 +27,6 @@ const BajoPedidoForm = ({ onClose, onSubmit, bajoPedido }) => {
 
   const isEditMode = Boolean(bajoPedido);
 
-  const CONDICIONES = ["nuevo", "open_box", "refurbished", "usado"];
-  const ESTADOS = ["activo", "sin_existencias", "inactivo"];
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -29,10 +34,18 @@ const BajoPedidoForm = ({ onClose, onSubmit, bajoPedido }) => {
   const fetchData = async () => {
     try {
       const productosData = await ProductoService.getProductos();
-      setProductos(productosData.producto || []);
+      setProductos(
+        Array.isArray(productosData)
+          ? productosData
+          : productosData.producto ?? productosData.results ?? []
+      );
 
       const proveedoresData = await SupplierService.getSuppliers();
-      setProveedores(proveedoresData || []);
+      setProveedores(
+        Array.isArray(proveedoresData)
+          ? proveedoresData
+          : proveedoresData.proveedor ?? proveedoresData.results ?? []
+      );
     } catch (error) {
       console.error("Error al obtener datos:", error);
     }
@@ -43,6 +56,7 @@ const BajoPedidoForm = ({ onClose, onSubmit, bajoPedido }) => {
       setFormData({
         producto: bajoPedido.producto || "",
         condicion: bajoPedido.condicion || "nuevo",
+        precio: bajoPedido.precio ?? "",
         enlace_proveedor: bajoPedido.enlace_proveedor || "",
         proveedor: bajoPedido.proveedor || "",
       });
@@ -57,135 +71,208 @@ const BajoPedidoForm = ({ onClose, onSubmit, bajoPedido }) => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      await onSubmit(formData, bajoPedido?.id);
+      // Build a payload that matches the backend serializers:
+      // - create expects `producto_id` + required `precio`
+      // - update does NOT accept producto_id (product can't change)
+      // - empty proveedor must be null (PK field), not ""
+      const payload = {
+        condicion: formData.condicion,
+        enlace_proveedor: formData.enlace_proveedor || "",
+        proveedor: formData.proveedor ? Number(formData.proveedor) : null,
+      };
+      if (formData.precio !== "" && formData.precio !== null) {
+        payload.precio = Number(formData.precio);
+      }
+      if (!isEditMode) {
+        payload.producto_id = Number(formData.producto);
+      }
+      await onSubmit(payload, bajoPedido?.id);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  /* ── Derived display for edit mode status badge ── */
+  const estadoMeta = {
+    activo:         { label: "Activo",          cls: "bpf-status--active" },
+    sin_existencias:{ label: "Sin existencias", cls: "bpf-status--empty" },
+    inactivo:       { label: "Inactivo",        cls: "bpf-status--inactive" },
+  };
+
   return (
     <ModalBase
-      title={isEditMode ? "Editar Bajo Pedido" : "Registrar Nuevo Bajo Pedido"}
-      icon={isEditMode ? <Edit size={24} /> : <ShoppingCart size={24} />}
+      title={isEditMode ? "Editar variante" : "Nueva variante"}
+      icon={isEditMode ? <Edit size={22} /> : <ShoppingCart size={22} />}
       subtitle={
         isEditMode
-          ? "Actualiza la información del sourcing bajo pedido"
-          : "Completa la información para sourcing en demanda"
+          ? "Actualiza la información del listing de bajo pedido"
+          : "Registra un nuevo listing de sourcing bajo demanda"
       }
       onClose={onClose}
       onSubmit={handleSubmit}
     >
-      <div className="bpf-form-grid">
-        <div className="bpf-form-group">
-          <label htmlFor="producto">
-            Producto <span className="required">*</span>
-          </label>
-          <select
-            id="producto"
-            name="producto"
-            value={formData.producto}
-            onChange={handleChange}
-            required
-            disabled={isSubmitting}
-          >
-            <option value="">Selecciona un producto...</option>
-            {productos.map((prod) => (
-              <option key={prod.id} value={prod.id}>
-                {prod.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="bpf-form">
 
-        <div className="bpf-form-group">
-          <label htmlFor="condicion">
-            Condición <span className="required">*</span>
-          </label>
-          <select
-            id="condicion"
-            name="condicion"
-            value={formData.condicion}
-            onChange={handleChange}
-            required
-            disabled={isSubmitting}
-          >
-            {CONDICIONES.map((c) => (
-              <option key={c} value={c}>
-                {c.charAt(0).toUpperCase() + c.slice(1).replace("_", " ")}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* ── Sección 1: Producto + Condición ── */}
+        <div className="bpf-section">
+          <div className="bpf-section-label">
+            <Package size={14} />
+            <span>Producto</span>
+          </div>
+          <div className="bpf-grid-2">
 
-        <div className="bpf-form-group bpf-full">
-          <label htmlFor="enlace_proveedor">
-            Enlace del Proveedor (URL eBay)
-          </label>
-          <input
-            id="enlace_proveedor"
-            name="enlace_proveedor"
-            type="url"
-            placeholder="Ej: https://ebay.com/itm/..."
-            value={formData.enlace_proveedor}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          />
-          <small style={{ color: "#666", marginTop: "4px", display: "block" }}>
-            Si está vacío, el precio no será actualizado por Celery
-          </small>
-        </div>
-
-        <div className="bpf-form-group">
-          <label htmlFor="proveedor">
-            Proveedor
-          </label>
-          <select
-            id="proveedor"
-            name="proveedor"
-            value={formData.proveedor}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          >
-            <option value="">-- Sin proveedor --</option>
-            {proveedores.map((prov) => (
-              <option key={prov.id} value={prov.id}>
-                {prov.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {isEditMode && bajoPedido && (
-          <>
-            <div className="bpf-form-group">
-              <label>Precio Actual (COP)</label>
-              <div className="bpf-preview">
-                ${Number(bajoPedido.precio).toLocaleString("es-CO")}
-              </div>
-              <small style={{ color: "#666", marginTop: "4px", display: "block" }}>
-                Actualizado automáticamente por Celery
-              </small>
+            <div className="bpf-field bpf-col-2">
+              <label htmlFor="bpf-producto" className="bpf-label">
+                Producto
+                {!isEditMode && <span className="bpf-required">*</span>}
+              </label>
+              {isEditMode ? (
+                /* En edición el producto no puede cambiar — mostrar como readonly */
+                <div className="bpf-readonly-value">
+                  {productos.find((p) => String(p.id) === String(formData.producto))?.nombre
+                    ?? (formData.producto ? `ID ${formData.producto}` : "—")}
+                </div>
+              ) : (
+                <select
+                  id="bpf-producto"
+                  name="producto"
+                  value={formData.producto}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
+                  className="bpf-input"
+                >
+                  <option value="">Selecciona un producto...</option>
+                  {productos.map((prod) => (
+                    <option key={prod.id} value={prod.id}>
+                      {prod.nombre}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
-            <div className="bpf-form-group">
-              <label>Estado</label>
-              <div className="bpf-preview">
-                {bajoPedido.estado === "activo" && (
-                  <span style={{ color: "#059669", fontWeight: "600" }}>✓ Activo</span>
-                )}
-                {bajoPedido.estado === "sin_existencias" && (
-                  <span style={{ color: "#dc2626", fontWeight: "600" }}>Sin Existencias</span>
-                )}
-                {bajoPedido.estado === "inactivo" && (
-                  <span style={{ color: "#6b7280", fontWeight: "600" }}>Inactivo</span>
-                )}
-              </div>
-              <small style={{ color: "#666", marginTop: "4px", display: "block" }}>
-                Asignado automáticamente por Celery
-              </small>
+            <div className="bpf-field">
+              <label htmlFor="bpf-condicion" className="bpf-label">
+                Condición <span className="bpf-required">*</span>
+              </label>
+              <select
+                id="bpf-condicion"
+                name="condicion"
+                value={formData.condicion}
+                onChange={handleChange}
+                required
+                disabled={isSubmitting}
+                className="bpf-input"
+              >
+                {CONDICIONES.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
             </div>
-          </>
-        )}
+
+            {/* Estado (solo edición) */}
+            {isEditMode && bajoPedido && (
+              <div className="bpf-field">
+                <label className="bpf-label">Estado actual</label>
+                <div className="bpf-status-display">
+                  {(() => {
+                    const meta = estadoMeta[bajoPedido.estado] ?? { label: bajoPedido.estado, cls: "" };
+                    return <span className={`bpf-status-badge ${meta.cls}`}>{meta.label}</span>;
+                  })()}
+                  <span className="bpf-hint">Gestionado por el sync diario</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Sección 2: Precio + Proveedor ── */}
+        <div className="bpf-section">
+          <div className="bpf-section-label">
+            <DollarSign size={14} />
+            <span>Precio y proveedor</span>
+          </div>
+          <div className="bpf-grid-2">
+
+            <div className="bpf-field">
+              <label htmlFor="bpf-precio" className="bpf-label">
+                Precio (COP)
+                {!isEditMode && <span className="bpf-required">*</span>}
+              </label>
+              <input
+                id="bpf-precio"
+                name="precio"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Ej: 5 000 000"
+                value={formData.precio}
+                onChange={handleChange}
+                required={!isEditMode}
+                disabled={isSubmitting}
+                className="bpf-input"
+              />
+              <span className="bpf-hint">
+                {isEditMode
+                  ? "Sobreescribe el precio; el sync diario puede ajustarlo si hay enlace eBay."
+                  : "Precio base. El sync diario lo ajustará si hay enlace eBay."}
+              </span>
+            </div>
+
+            <div className="bpf-field">
+              <label htmlFor="bpf-proveedor" className="bpf-label">
+                Proveedor
+              </label>
+              <select
+                id="bpf-proveedor"
+                name="proveedor"
+                value={formData.proveedor}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                className="bpf-input"
+              >
+                <option value="">Sin proveedor asignado</option>
+                {proveedores.map((prov) => (
+                  <option key={prov.id} value={prov.id}>
+                    {prov.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ── Sección 3: Enlace eBay (ancho completo) ── */}
+        <div className="bpf-section bpf-section--last">
+          <div className="bpf-section-label">
+            <Link size={14} />
+            <span>Enlace del listing</span>
+          </div>
+
+          <div className="bpf-field">
+            <label htmlFor="bpf-enlace" className="bpf-label">
+              URL del proveedor (eBay u otro)
+            </label>
+            <input
+              id="bpf-enlace"
+              name="enlace_proveedor"
+              type="url"
+              placeholder="https://www.ebay.com/itm/..."
+              value={formData.enlace_proveedor}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              className="bpf-input bpf-input--url"
+            />
+            <span className="bpf-hint">
+              Si se deja vacío, el precio no será actualizado automáticamente por el sync de bajo pedido.
+            </span>
+          </div>
+        </div>
+
       </div>
     </ModalBase>
   );
