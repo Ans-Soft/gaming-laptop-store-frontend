@@ -188,6 +188,16 @@ const urls = {
 
   dwTelegramSubscribersList: `${BASE_URL}/deal-watcher/telegram-subscribers/list/`,
   dwTelegramSubscribersDeactivate: (id) => `${BASE_URL}/deal-watcher/telegram-subscribers/deactivate/${id}/`,
+
+  // PRÉSTAMO — control de préstamo (app aislada, prefijo /api/prestamo/)
+  prestamoResumen: `${BASE_URL}/api/prestamo/resumen/`,
+  prestamoProyeccion: `${BASE_URL}/api/prestamo/proyeccion/`,
+  prestamoMovimientos: `${BASE_URL}/api/prestamo/movimientos/`,
+  prestamoMovimientoDetail: (id) => `${BASE_URL}/api/prestamo/movimientos/${id}/`,
+  prestamoPagoRegular: `${BASE_URL}/api/prestamo/pago-regular/`,
+  prestamoComprobantes: `${BASE_URL}/api/prestamo/comprobantes/`,
+  prestamoAuditoria: `${BASE_URL}/api/prestamo/auditoria/`,
+  prestamoConfiguracion: `${BASE_URL}/api/prestamo/configuracion/`,
 };
 
 export default urls;

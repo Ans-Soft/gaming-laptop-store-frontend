@@ -22,10 +22,38 @@ import {
   ShieldCheck,
   Timer,
   RefreshCw,
+  Landmark,
+  History,
+  TableProperties,
 } from "lucide-react";
 import "../../styles/admin/adminSidebar.css";
 
 const NAV_SECTIONS = [
+  {
+    label: "Préstamo",
+    items: [
+      {
+        path: "/admin/prestamo",
+        icon: Landmark,
+        label: "Resumen",
+      },
+      {
+        path: "/admin/prestamo/movimientos",
+        icon: History,
+        label: "Movimientos",
+      },
+      {
+        path: "/admin/prestamo/proyeccion",
+        icon: TableProperties,
+        label: "Proyección",
+      },
+      {
+        path: "/admin/prestamo/auditoria",
+        icon: ShieldCheck,
+        label: "Auditoría",
+      },
+    ],
+  },
   {
     label: "Gestión",
     items: [
