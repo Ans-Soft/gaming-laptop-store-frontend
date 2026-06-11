@@ -43,6 +43,10 @@ import MonitoredProductDetail from "./pages/admin/MonitoredProductDetail.jsx";
 import TrustedSellers from "./pages/admin/TrustedSellers.jsx";
 import DealWatcherConfig from "./pages/admin/DealWatcherConfig.jsx";
 import SyncBajoPedidoMonitor from "./pages/admin/SyncBajoPedidoMonitor.jsx";
+import PrestamoDashboard from "./pages/admin/Prestamo/PrestamoDashboard.jsx";
+import PrestamoMovimientos from "./pages/admin/Prestamo/PrestamoMovimientos.jsx";
+import PrestamoProyeccion from "./pages/admin/Prestamo/PrestamoProyeccion.jsx";
+import PrestamoAuditoria from "./pages/admin/Prestamo/PrestamoAuditoria.jsx";
 
 
 const router = createBrowserRouter([
@@ -65,7 +69,11 @@ const router = createBrowserRouter([
   {
     element: <AdminLayout />,
     children: [
-      { path: "/admin", element: <Navigate to="/admin/dashboard" replace /> },
+      { path: "/admin", element: <Navigate to="/admin/prestamo" replace /> },
+      { path: "/admin/prestamo", element: <PrestamoDashboard /> },
+      { path: "/admin/prestamo/movimientos", element: <PrestamoMovimientos /> },
+      { path: "/admin/prestamo/proyeccion", element: <PrestamoProyeccion /> },
+      { path: "/admin/prestamo/auditoria", element: <PrestamoAuditoria /> },
       { path: "/admin/dashboard", element: <Dashboard /> },
       { path: "/admin/ganancia-neta", element: <GananciaNeta /> },
       { path: "/admin/ordenes-envio", element: <OrdenesEnvio /> },
