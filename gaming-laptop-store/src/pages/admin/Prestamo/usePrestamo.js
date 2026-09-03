@@ -64,10 +64,10 @@ export function useDeleteMovimiento() {
   return useMutation({ mutationFn: deleteMovimiento, onSuccess: invalidate });
 }
 
-export function usePagoRegularPreview(enabled = true) {
+export function usePagoRegularPreview(enabled = true, mes = null) {
   return useQuery({
-    queryKey: ["prestamo", "pago-regular-preview"],
-    queryFn: () => getPagoRegularPreview(),
+    queryKey: ["prestamo", "pago-regular-preview", mes],
+    queryFn: () => getPagoRegularPreview(mes || undefined),
     enabled,
     staleTime: 0,
   });

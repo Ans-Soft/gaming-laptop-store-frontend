@@ -4,6 +4,7 @@ import ModalBase from "./ModalBase";
 import {
   usePagoRegularPreview,
   useRegistrarPagoRegular,
+  useResumen,
 } from "../../pages/admin/Prestamo/usePrestamo";
 import { formatCOP2 } from "../../pages/admin/Prestamo/prestamoUtils";
 import { uploadComprobante } from "../../services/PrestamoService";
@@ -16,12 +17,17 @@ import { uploadComprobante } from "../../services/PrestamoService";
  * Los montos los calcula el motor para el período vigente.
  */
 const PagoRegularModal = ({ onClose }) => {
-  const { data: preview, isLoading, isError } = usePagoRegularPreview(true);
+  const { data: resumen } = useResumen();
+  const plazo = resumen?.plazo || 12;
+
+  const [mesSeleccionado, setMesSeleccionado] = useState(null);
+  const { data: preview, isLoading, isError } = usePagoRegularPreview(true, mesSeleccionado);
   const mut = useRegistrarPagoRegular();
   const [error, setError] = useState(null);
   const [comprobanteUrl, setComprobanteUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 
+  const mesEfectivo = mesSeleccionado ?? preview?.mes;
   const yaPagado = preview?.ya_pagado;
 
   const handleFile = async (e) => {
@@ -43,8 +49,7 @@ const PagoRegularModal = ({ onClose }) => {
   const handleConfirm = async () => {
     setError(null);
     try {
-      // período vigente (default del backend) + comprobante opcional
-      await mut.mutateAsync({ comprobanteUrl });
+      await mut.mutateAsync({ mes: mesEfectivo, comprobanteUrl });
       onClose();
     } catch (e) {
       setError(e.response?.data?.message || "No se pudo registrar el pago regular.");
@@ -101,9 +106,22 @@ const PagoRegularModal = ({ onClose }) => {
 
       {preview && preview.configurado !== false && (
         <>
+          <label className="pr-field">
+            <span>Mes a registrar</span>
+            <select
+              value={mesEfectivo || ""}
+              onChange={(e) => { setMesSeleccionado(Number(e.target.value)); setError(null); }}
+              style={{ width: "100%", padding: "0.4rem 0.6rem", borderRadius: "6px", border: "1px solid var(--border, #d1d5db)" }}
+            >
+              {Array.from({ length: plazo }, (_, i) => i + 1).map((m) => (
+                <option key={m} value={m}>Mes {m}</option>
+              ))}
+            </select>
+          </label>
+
           {yaPagado && (
             <div className="pr-notice pr-notice--warn">
-              El pago regular del mes {preview.mes} ya fue registrado.
+              El pago regular del mes {mesEfectivo} ya fue registrado.
             </div>
           )}
 
@@ -135,7 +153,7 @@ const PagoRegularModal = ({ onClose }) => {
 
           {!yaPagado && (
             <p className="pr-hint">
-              Se crearán 3 movimientos con fecha {fechaTxt}
+              Se crearán 3 movimientos para el mes {mesEfectivo} con fecha {fechaTxt}
               {comprobanteUrl ? ", con el comprobante adjunto" : ""}. Los abonos
               adicionales se registran aparte.
             </p>
